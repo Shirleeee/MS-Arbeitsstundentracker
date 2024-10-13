@@ -95,12 +95,24 @@ Betroffene Datei in der IDE öffnen und damit Konflikte auflösen.
 
 Quelle: [Git Branching - Basic Branching and Merging](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging) 
 
-# Nützliche Git-Tools und Plattformen
+## Nützliche Git-Tools und Plattformen
 
 Im Folgenden werden einige Tools und Plattformen vorgestellt,
-die bei der Nutzung behilflich sein können.
+die bei der Nutzung von Git behilflich sein können.
 
-## Git-Tools
+### Git-Tools
+
+- GitHub Desktop
+- GitKraken
+- IntelliJ IDEA
+- SmartGit
+- Tower
 
 
-## Plattformen
+### Plattformen
+
+- Amazon AWS CodeCommit
+- Github
+- GitLab
+- Microsoft Azure DevOps
+- SourceForge
