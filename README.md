@@ -95,6 +95,61 @@ Betroffene Datei in der IDE öffnen und damit Konflikte auflösen.
 
 Quelle: [Git Branching - Basic Branching and Merging](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging) 
 
+
+## Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository
+
+### Remote Repository
+
+Ein Remote Repository ist ein Git-Repository, welches auf einem Server gespeichert wird. Das Remote Repository dient als
+zentrale Anlaufstelle und enthält den aktuellsten Stand des Projektes.
+
+### Lokales Repository
+
+Ein lokales Repository ist ein Verzeichnis, das lokal auf dem Computer gespeichert wird und eine Kopie der Inhalte des
+Remote Repositories enthält. Das lokale Repository sollte regelmäßig mit dem Remote Repository synchronisiert werden, um
+immer auf dem aktuellsten Stand zu sein.
+
+### Lokales Repository mit IntelliJ/PyCharm anlegen
+
+Das Remote Repository kann ganz leicht mithilfe von IntelliJ/PyCharm geklont und als lokales Repository eingerichtet werden:
+
+* im Menü **New** > **Project from Version Control...** auswählen
+
+Das Repository kann entweder über die Repository-URL oder über den jeweiligen Dienst, wie zum Beispiel GitHub geklont
+werden.
+
+### Git-Kommandos in IntelliJ/PyCharm
+
+In IntelliJ/PyCharm lassen sich alle Git-Kommandos über die grafische Benutzeroberfläche ausführen. Ein praktisches
+Werkzeug dafür ist das Commit-Tool.
+
+Das Commit-Tool zeigt alle vorgenommenen Änderungen an. Hier können die Änderungen in den ausgewählten Dateien direkt
+committet oder committet und gepusht werden. Dazu gehört es auch, eine Commit-Message zu verfassen, welche die
+Änderungen kurz zusammenfasst.
+
+### Zusätzliche Funktionen in IntelliJ/PyCharm
+
+Eine Funktion, welche nicht zu Git gehört, ist das **Shelven** von Änderungen. Dieses Feature ist vor allem hilfreich, wenn
+man zwischen verschiedenen Branches, an denen man arbeitet, wechseln möchte.
+
+* alle Änderungen markieren, die geshelvt werden sollen
+* Rechtsklick auf die markierten Änderungen
+* **Shelve Changes...** auswählen
+
+Um geshelvte Änderungen wiederherzustellen, geht man folgendermaßen vor:
+
+* im Reiter **Shelf** einen Rechtsklick auf die zu unshelvenden Änderungen machen
+* **Unshelve...** auswählen
+
+Außerdem kann man in IntelliJ/PyCharm leicht neue Branches erstellen und zwischen bestehenden Branches wechseln. Um einen
+neuen Branch zu erstellen, klickt man mit Rechtsklick auf den Branch, auf dem der neue Branch basieren soll und wählt
+**New Branch from ' '...** aus.
+
+Um zwischen Branches zu wechseln, macht man einen Rechtsklick auf den Branch, zu dem man wechseln möchte und wählt
+**Checkout** aus. Idealerweise shelvt man vorher seine Änderungen, um sie nicht unbeabsichtigt mit in den neuen Branch
+zu übernehmen.
+
+
 ## Nützliche Git-Tools und Plattformen
 
 Im Folgenden werden einige Tools und Plattformen vorgestellt,
