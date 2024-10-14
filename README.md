@@ -171,3 +171,22 @@ die bei der Nutzung von Git behilflich sein können.
 - GitLab
 - Microsoft Azure DevOps
 - SourceForge
+
+
+Wer hat welchen Beitrag geleistet?
+
+Sarina Schoknecht: 
+o Was ist Git und warum sollte es verwendet werden?
+o Grundlegende Git-Befehle (z. B. git init, git add, git commit, git push)
+
+Shirley Lein: 
+o Branches und ihre Nutzung, Umgang mit Merge-Konflikten
+
+Shirley: 
+o Branches und ihre Nutzung, Umgang mit Merge-Konflikten
+
+Josephine Hoegen: 
+o Git mit IntelliJ/PyCharm benutzen: Local Repository und Remote Repository
+
+Philip Wehling: 
+o Nützliche Git-Tools und Plabormen (z. B. GitHub)
