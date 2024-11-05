@@ -16,16 +16,16 @@ public class Task {
 //    @Column(name = "id") //TODO: column name anpassen
     private Long id;
 
-//    @Column(name = "") //TODO: column name anpassen
+//    @Column(name = "projectId") //TODO: column name anpassen
     private Long projectId;
 
-//    @Column(name = "") //TODO: column name anpassen
+//    @Column(name = "name") //TODO: column name anpassen
     private String name;
 
-//    @Column(name = "") //TODO: column name anpassen
+//    @Column(name = "description") //TODO: column name anpassen
     private String description;
 
-//    @Column(name = "") //TODO: column name anpassen
+//    @Column(name = "deadline") //TODO: column name anpassen
     private String deadline;
 
 }
