@@ -7,13 +7,13 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 @Entity
-//@Table(name = "") //TODO: table name anpassen
+//@Table(name = "tasks") //TODO: table name anpassen
 @Data
 public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "") //TODO: column name anpassen
+//    @Column(name = "id") //TODO: column name anpassen
     private Long id;
 
 //    @Column(name = "") //TODO: column name anpassen

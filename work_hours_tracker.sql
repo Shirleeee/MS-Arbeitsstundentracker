@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 05, 2024 at 10:03 AM
+-- Generation Time: Nov 05, 2024 at 12:27 PM
 -- Server version: 8.0.36
 -- PHP Version: 8.0.30
 
@@ -38,6 +38,19 @@ CREATE TABLE `projects` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `reports`
+--
+
+CREATE TABLE `reports` (
+  `id` bigint NOT NULL,
+  `userId` bigint NOT NULL,
+  `date` datetime NOT NULL,
+  `link` varchar(256) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tasks`
 --
 
@@ -52,16 +65,16 @@ CREATE TABLE `tasks` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `time`
+-- Table structure for table `timeentry`
 --
 
-CREATE TABLE `time` (
+CREATE TABLE `timeentry` (
   `id` bigint NOT NULL,
   `taskId` bigint NOT NULL,
   `startTime` datetime DEFAULT NULL,
   `endTime` datetime DEFAULT NULL,
   `duration` bigint DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -86,15 +99,22 @@ ALTER TABLE `projects`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `reports`
+--
+ALTER TABLE `reports`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_report_users_idx` (`userId`);
+
+--
 -- Indexes for table `tasks`
 --
 ALTER TABLE `tasks`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `time`
+-- Indexes for table `timeentry`
 --
-ALTER TABLE `time`
+ALTER TABLE `timeentry`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -114,15 +134,21 @@ ALTER TABLE `projects`
   MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `reports`
+--
+ALTER TABLE `reports`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
   MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `time`
+-- AUTO_INCREMENT for table `timeentry`
 --
-ALTER TABLE `time`
+ALTER TABLE `timeentry`
   MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
 
 --
@@ -142,15 +168,21 @@ ALTER TABLE `projects`
   ADD CONSTRAINT `fk_projects_users` FOREIGN KEY (`id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `reports`
+--
+ALTER TABLE `reports`
+  ADD CONSTRAINT `fk_reports_users` FOREIGN KEY (`userId`) REFERENCES `users` (`id`);
+
+--
 -- Constraints for table `tasks`
 --
 ALTER TABLE `tasks`
   ADD CONSTRAINT `fk_tasks_users` FOREIGN KEY (`id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `time`
+-- Constraints for table `timeentry`
 --
-ALTER TABLE `time`
+ALTER TABLE `timeentry`
   ADD CONSTRAINT `fk_time_tasks` FOREIGN KEY (`id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
