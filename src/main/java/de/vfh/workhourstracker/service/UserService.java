@@ -1,5 +1,6 @@
 package de.vfh.workhourstracker.service;
 
+import de.vfh.workhourstracker.entity.User;
 import de.vfh.workhourstracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,4 +15,25 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public String validateName(String name) {
+        //TODO
+        return null;
+    }
+
+    public String validateMailAddress(String mailAddress) {
+        //TODO
+        return null;
+    }
 }
