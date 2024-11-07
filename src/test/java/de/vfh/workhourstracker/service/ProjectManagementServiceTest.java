@@ -16,7 +16,7 @@ public class ProjectManagementServiceTest {
     //region Test validateName
     @Test
     public void validateName_ValidName_ReturnString() {
-        String testName = "testName";
+        String testName = "Test Name";
         String validName = projectManagementService.validateName(testName);
         Assertions.assertNotNull(validName);
         Assertions.assertEquals(validName, testName);
@@ -61,7 +61,7 @@ public class ProjectManagementServiceTest {
     //region Test validateDeadline
     @Test
     public void validateDeadline_ValidDeadline_ReturnLocalDate() {
-        String testDeadline = ""; //klären: welche Formate sollen als valide gelten?
+        String testDeadline = "2025-10-12T23:59:59";
         LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertNotNull(localDate);
         //Assertions.assertEquals("", localDate);
@@ -69,14 +69,14 @@ public class ProjectManagementServiceTest {
 
     @Test
     public void validateDeadline_DeadlineInThePast_ReturnNull() {
-        String testDeadline = ""; //klären: welche Formate sollen als valide gelten?
+        String testDeadline = "2023-12-10T23:59:59";
         LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertNull(localDate);
     }
 
     @Test
     public void validateDeadline_InvalidFormat_ReturnNull() {
-        String testDeadline = ""; //klären: welche Formate sollen als valide gelten?
+        String testDeadline = "10.12.2025";
         LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertNull(localDate);
     }

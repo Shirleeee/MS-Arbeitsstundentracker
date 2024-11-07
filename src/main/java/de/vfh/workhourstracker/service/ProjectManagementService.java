@@ -59,7 +59,6 @@ public class ProjectManagementService {
         return null;
     }
 
-    //klären: welche Formate sollen als valide gelten?
     public LocalDate validateDeadline(String deadline) {
         //TODO
         return null;

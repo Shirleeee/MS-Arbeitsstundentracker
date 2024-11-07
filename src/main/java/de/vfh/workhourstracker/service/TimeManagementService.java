@@ -5,6 +5,7 @@ import de.vfh.workhourstracker.repository.TimeEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Service
@@ -29,21 +30,17 @@ public class TimeManagementService {
         timeEntryRepository.deleteById(id);
     }
 
-    //klären: welche Formate sollen als valide gelten?
     public LocalDateTime validateStartTime(String startTime) {
         //TODO
         return null;
     }
 
-    //klären: welche Formte sollen als valide gelten
     public LocalDateTime validateEndTime(String endTime) {
         //TODO
         return null;
     }
 
-    //klären: soll die duration in Sekunden oder Minuten gespeichert werden oder
-    //lieber in einem anderen Format?
-    public Long validateDuration(Long duration) {
+    public Duration validateDuration(String duration) {
         //TODO
         return null;
     }
