@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class ProjectManagementService {
@@ -19,6 +21,33 @@ public class ProjectManagementService {
     public ProjectManagementService(ProjectRepository projectRepository, TaskRepository taskRepository) {
         this.projectRepository = projectRepository;
         this.taskRepository = taskRepository;
+
+    }
+
+
+    public void createProject(Long userId, String name, String description, String deadline) {
+
+        validateProjectId(userId);
+        validateName(name);
+        validateDescription(description);
+        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
+
+        Project newProject = new Project(userId, name, description, dateTimeDeadline);
+        this.saveProject(newProject);
+        //return Wert?
+    }
+
+
+    public void createTask(Long projectId, String name, String description, String deadline) {
+
+        validateProjectId(projectId);
+        validateName(name);
+        validateDescription(description);
+        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
+
+        Task newTask = new Task(projectId, name, description, dateTimeDeadline);
+        this.saveTask(newTask);
+        //return Wert?
     }
 
     //region project
@@ -51,16 +80,50 @@ public class ProjectManagementService {
 
     public String validateName(String name) {
         //TODO
-        return null;
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Name darf nicht leer sein.");
+        }
+
+        return name;
     }
 
     public String validateDescription(String description) {
         //TODO
-        return null;
+        if (description == null) {
+            return "";
+        }
+        return description;
     }
 
-    public LocalDate validateDeadline(String deadline) {
+    public void validateProjectId(Long projectId) {
         //TODO
-        return null;
+        if (projectId == null || projectId < 0) {
+            throw new IllegalArgumentException("Keine valide id vorhanden.");
+        }
+
+    }
+
+    //klären: welche Formate sollen als valide gelten?
+    public LocalDateTime validateDeadline(String deadline) {
+        //TODO
+        if (deadline == null) {
+            return null;
+        }
+
+        LocalDateTime dateTimeDeadline;
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            dateTimeDeadline = LocalDateTime.parse(deadline, formatter);
+
+            if (now.isBefore(dateTimeDeadline)) {
+                throw new IllegalArgumentException("Deadline liegt in der Vergangenheit.");
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Deadline hat falsches Format. Format: yyyy-MM-dd'T'HH:mm:ss");
+        }
+
+
+        return dateTimeDeadline;
     }
 }

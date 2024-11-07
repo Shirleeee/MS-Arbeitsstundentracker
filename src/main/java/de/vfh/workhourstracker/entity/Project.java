@@ -27,4 +27,16 @@ public class Project {
     @Column(name = "deadline")
     private LocalDateTime deadline;
 
+    public Project() {
+        // JPA benötigt diesen Konstruktor, um Entitäten zu instanziieren???
+    }
+
+    public Project(Long userId, String name,String description, LocalDateTime deadline) {
+        this.userId = userId;
+        this.name =  name;
+        this.description = description;
+        this.deadline = deadline;
+    }
+
+
 }

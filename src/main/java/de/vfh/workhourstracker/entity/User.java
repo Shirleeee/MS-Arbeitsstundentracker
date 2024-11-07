@@ -18,4 +18,14 @@ public class User {
 
     @Column(name = "mail_address")
     private String mailAddress;
+
+
+    public User() {
+
+    }
+    public User( String name, String mailAddress) {
+        this.name = name;
+        this.mailAddress = mailAddress;
+
+    }
 }

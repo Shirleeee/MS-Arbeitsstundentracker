@@ -24,4 +24,13 @@ public class Report {
     @Column(name = "link")
     private String link;
 
+    public Report() {
+
+    }
+    public Report(Long userId, LocalDateTime date, String link) {
+        this.userId = userId;
+        this.date = date;
+        this.link = link;
+    }
+
 }

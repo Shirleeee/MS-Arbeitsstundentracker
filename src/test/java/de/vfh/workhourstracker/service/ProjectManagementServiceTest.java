@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @SpringBootTest
 public class ProjectManagementServiceTest {
@@ -61,23 +62,23 @@ public class ProjectManagementServiceTest {
     //region Test validateDeadline
     @Test
     public void validateDeadline_ValidDeadline_ReturnLocalDate() {
-        String testDeadline = "2025-10-12T23:59:59";
-        LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
+        String testDeadline = "2025-10-12T23:59:59";     
+        LocalDateTime localDate = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertNotNull(localDate);
         //Assertions.assertEquals("", localDate);
     }
 
     @Test
     public void validateDeadline_DeadlineInThePast_ReturnNull() {
-        String testDeadline = "2023-12-10T23:59:59";
-        LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
+        String testDeadline = "2023-12-10T23:59:59";    
+        LocalDateTime localDate = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertNull(localDate);
     }
 
     @Test
     public void validateDeadline_InvalidFormat_ReturnNull() {
-        String testDeadline = "10.12.2025";
-        LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
+        String testDeadline = "10.12.2025";     
+        LocalDateTime localDate = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertNull(localDate);
     }
     //endregion
