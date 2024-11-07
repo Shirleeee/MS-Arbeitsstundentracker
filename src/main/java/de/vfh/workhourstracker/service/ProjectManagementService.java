@@ -27,10 +27,10 @@ public class ProjectManagementService {
 
     public void createProject(Long userId, String name, String description, String deadline) {
 
-        validateProjectId(userId);
-        validateName(name);
-        validateDescription(description);
-        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
+//        validateProjectId(userId);
+//        validateName(name);
+//        validateDescription(description);
+//        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
 
         Project newProject = new Project(userId, name, description, dateTimeDeadline);
         this.saveProject(newProject);
@@ -40,10 +40,10 @@ public class ProjectManagementService {
 
     public void createTask(Long projectId, String name, String description, String deadline) {
 
-        validateProjectId(projectId);
-        validateName(name);
-        validateDescription(description);
-        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
+//        validateProjectId(projectId);
+//        validateName(name);
+//        validateDescription(description);
+//        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
 
         Task newTask = new Task(projectId, name, description, dateTimeDeadline);
         this.saveTask(newTask);
@@ -80,50 +80,55 @@ public class ProjectManagementService {
 
     public String validateName(String name) {
         //TODO
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Name darf nicht leer sein.");
-        }
+//        if (name == null || name.isEmpty()) {
+//            throw new IllegalArgumentException("Name darf nicht leer sein.");
+//        }
 
-        return name;
+//        return name;
+        return null;
     }
+
 
     public String validateDescription(String description) {
         //TODO
-        if (description == null) {
-            return "";
-        }
-        return description;
+//        if (description == null) {
+//            return "";
+//        }
+//        return description;
+
+        return null;
     }
 
-    public void validateProjectId(Long projectId) {
-        //TODO
-        if (projectId == null || projectId < 0) {
-            throw new IllegalArgumentException("Keine valide id vorhanden.");
-        }
-
-    }
+//    public void validateProjectId(Long projectId) {
+//        //TODO
+//      if (projectId == null || projectId < 0) {
+//          throw new IllegalArgumentException("Keine valide id vorhanden.");
+//      }
+//        return null;
+//    }
 
     //klären: welche Formate sollen als valide gelten?
     public LocalDateTime validateDeadline(String deadline) {
         //TODO
-        if (deadline == null) {
-            return null;
-        }
-
-        LocalDateTime dateTimeDeadline;
-        try {
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-            dateTimeDeadline = LocalDateTime.parse(deadline, formatter);
-
-            if (now.isBefore(dateTimeDeadline)) {
-                throw new IllegalArgumentException("Deadline liegt in der Vergangenheit.");
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Deadline hat falsches Format. Format: yyyy-MM-dd'T'HH:mm:ss");
-        }
-
-
-        return dateTimeDeadline;
+//        if (deadline == null) {
+//            return null;
+//        }
+//
+//        LocalDateTime dateTimeDeadline;
+//        try {
+//            LocalDateTime now = LocalDateTime.now();
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+//            dateTimeDeadline = LocalDateTime.parse(deadline, formatter);
+//
+//            if (now.isBefore(dateTimeDeadline)) {
+//                throw new IllegalArgumentException("Deadline liegt in der Vergangenheit.");
+//            }
+//        } catch (Exception e) {
+//            throw new IllegalArgumentException("Deadline hat falsches Format. Format: yyyy-MM-dd'T'HH:mm:ss");
+//        }
+//
+//
+//        return dateTimeDeadline;
+        return null;
     }
 }
