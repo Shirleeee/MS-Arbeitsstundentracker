@@ -30,7 +30,7 @@ public class ProjectManagementService {
 //        validateProjectId(userId);
 //        validateName(name);
 //        validateDescription(description);
-//        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
+       LocalDateTime dateTimeDeadline = validateDeadline(deadline);
 
         Project newProject = new Project(userId, name, description, dateTimeDeadline);
         this.saveProject(newProject);
@@ -43,7 +43,7 @@ public class ProjectManagementService {
 //        validateProjectId(projectId);
 //        validateName(name);
 //        validateDescription(description);
-//        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
+        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
 
         Task newTask = new Task(projectId, name, description, dateTimeDeadline);
         this.saveTask(newTask);
@@ -91,10 +91,10 @@ public class ProjectManagementService {
 
     public String validateDescription(String description) {
         //TODO
-//        if (description == null) {
-//            return "";
-//        }
-//        return description;
+        if (description == null) {
+           return "";
+       }
+
 
         return null;
     }
@@ -110,10 +110,10 @@ public class ProjectManagementService {
     //klären: welche Formate sollen als valide gelten?
     public LocalDateTime validateDeadline(String deadline) {
         //TODO
-//        if (deadline == null) {
-//            return null;
-//        }
-//
+        if (deadline == null) {
+            return null;
+        }
+
 //        LocalDateTime dateTimeDeadline;
 //        try {
 //            LocalDateTime now = LocalDateTime.now();
