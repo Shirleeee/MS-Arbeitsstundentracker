@@ -29,11 +29,22 @@ public class UserService {
 
     public String validateName(String name) {
         //TODO
-        return null;
+        if (name == null || name.isEmpty()) {
+            return null;
+
+        } else if (name.length() < 156) {
+            return name;
+        }
+        return name;
+
     }
 
     public String validateMailAddress(String mailAddress) {
         //TODO
-        return null;
+        if (mailAddress == null || mailAddress.isEmpty()) {
+            return null;
+
+        }
+        return mailAddress;
     }
 }
