@@ -85,7 +85,7 @@ public class ProjectManagementService {
             //throw new IllegalArgumentException("Name darf nicht leer sein.");
         }
 
-        return null;
+       return name;
     }
 
 
@@ -97,7 +97,7 @@ public class ProjectManagementService {
         }
 
 
-        return null;
+        return description;
     }
 
 //    public void validateProjectId(Long projectId) {
