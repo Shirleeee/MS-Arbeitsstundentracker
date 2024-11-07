@@ -27,10 +27,10 @@ public class ProjectManagementService {
 
     public void createProject(Long userId, String name, String description, String deadline) {
 
-//        validateProjectId(userId);
-//        validateName(name);
-//        validateDescription(description);
-       LocalDateTime dateTimeDeadline = validateDeadline(deadline);
+//       validateProjectId(userId);
+        validateName(name);
+        validateDescription(description);
+        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
 
         Project newProject = new Project(userId, name, description, dateTimeDeadline);
         this.saveProject(newProject);
@@ -40,9 +40,9 @@ public class ProjectManagementService {
 
     public void createTask(Long projectId, String name, String description, String deadline) {
 
-//        validateProjectId(projectId);
-//        validateName(name);
-//        validateDescription(description);
+        //  validateProjectId(projectId);
+        validateName(name);
+        validateDescription(description);
         LocalDateTime dateTimeDeadline = validateDeadline(deadline);
 
         Task newTask = new Task(projectId, name, description, dateTimeDeadline);
@@ -80,20 +80,21 @@ public class ProjectManagementService {
 
     public String validateName(String name) {
         //TODO
-//        if (name == null || name.isEmpty()) {
-//            throw new IllegalArgumentException("Name darf nicht leer sein.");
-//        }
+        if (name == null || name.isEmpty()) {
+            return null;
+            //throw new IllegalArgumentException("Name darf nicht leer sein.");
+        }
 
-//        return name;
         return null;
     }
 
 
     public String validateDescription(String description) {
         //TODO
-        if (description == null) {
-           return "";
-       }
+        if (description == null || description.isEmpty()) {
+            return null;
+
+        }
 
 
         return null;
@@ -112,23 +113,32 @@ public class ProjectManagementService {
         //TODO
         if (deadline == null) {
             return null;
+        } else {
+
+            LocalDateTime dateTimeDeadline;
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+                dateTimeDeadline = LocalDateTime.parse(deadline, formatter);
+
+            } catch (Exception e) {
+                return null;
+                // throw new IllegalArgumentException("Deadline hat falsches Format. Format: yyyy-MM-dd'T'HH:mm:ss");
+            }
+
+            try {
+                LocalDateTime now = LocalDateTime.now();
+                if (now.isAfter(dateTimeDeadline)) {
+                    return null;
+                    // throw new IllegalArgumentException("Deadline liegt in der Vergangenheit.");
+                }
+            } catch (Exception e) {
+
+                // throw new IllegalArgumentException("Deadline darf nicht in der Vergangenheit liegen.");
+                return null;
+            }
+            return dateTimeDeadline;
         }
 
-//        LocalDateTime dateTimeDeadline;
-//        try {
-//            LocalDateTime now = LocalDateTime.now();
-//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-//            dateTimeDeadline = LocalDateTime.parse(deadline, formatter);
-//
-//            if (now.isBefore(dateTimeDeadline)) {
-//                throw new IllegalArgumentException("Deadline liegt in der Vergangenheit.");
-//            }
-//        } catch (Exception e) {
-//            throw new IllegalArgumentException("Deadline hat falsches Format. Format: yyyy-MM-dd'T'HH:mm:ss");
-//        }
-//
-//
-//        return dateTimeDeadline;
-        return null;
+
     }
 }
