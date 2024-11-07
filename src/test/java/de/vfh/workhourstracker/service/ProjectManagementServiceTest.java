@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @SpringBootTest
 public class ProjectManagementServiceTest {
@@ -62,7 +63,7 @@ public class ProjectManagementServiceTest {
     @Test
     public void validateDeadline_ValidDeadline_ReturnLocalDate() {
         String testDeadline = ""; //klären: welche Formate sollen als valide gelten?
-        LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
+        LocalDateTime localDate = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertNotNull(localDate);
         //Assertions.assertEquals("", localDate);
     }
@@ -70,14 +71,14 @@ public class ProjectManagementServiceTest {
     @Test
     public void validateDeadline_DeadlineInThePast_ReturnNull() {
         String testDeadline = ""; //klären: welche Formate sollen als valide gelten?
-        LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
+        LocalDateTime localDate = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertNull(localDate);
     }
 
     @Test
     public void validateDeadline_InvalidFormat_ReturnNull() {
         String testDeadline = ""; //klären: welche Formate sollen als valide gelten?
-        LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
+        LocalDateTime localDate = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertNull(localDate);
     }
     //endregion

@@ -6,6 +6,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 @Entity
 //@Table(name = "timeentry") //TODO: table name anpassen
 @Data
@@ -20,12 +23,22 @@ public class TimeEntry {
     private Long taskId;
 
 //    @Column(name = "startTime") //TODO: column name anpassen
-    private String startTime;
+    private LocalDateTime startTime;
 
 //    @Column(name = "endTime") //TODO: column name anpassen
-    private String endTime;
+    private LocalDateTime endTime;
 
 //    @Column(name = "duration") //TODO: column name anpassen
-    private Long duration;
+    private Duration duration;
 
+
+    public TimeEntry() {
+
+    }
+    public TimeEntry(Long taskId, LocalDateTime startTime, LocalDateTime endTime, Duration duration) {
+        this.taskId = taskId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.duration = duration;
+    }
 }

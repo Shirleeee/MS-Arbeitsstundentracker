@@ -19,4 +19,13 @@ public class User {
 //    @Column(name = "email") //TODO: column name anpassen
     private String mailAddress;
 
+
+    public User() {
+
+    }
+    public User( String name, String mailAddress) {
+        this.name = name;
+        this.mailAddress = mailAddress;
+
+    }
 }
