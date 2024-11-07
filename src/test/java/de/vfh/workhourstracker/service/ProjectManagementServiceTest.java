@@ -1,5 +1,6 @@
 package de.vfh.workhourstracker.service;
 
+import de.vfh.workhourstracker.WorkHoursTrackerApplication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@SpringBootTest
+@SpringBootTest(classes = WorkHoursTrackerApplication.class)
 public class ProjectManagementServiceTest {
 
     @Autowired
