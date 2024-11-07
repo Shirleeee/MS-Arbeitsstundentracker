@@ -108,7 +108,7 @@ public class ProjectManagementService {
 //    }
 
     //klären: welche Formate sollen als valide gelten?
-    public LocalDateTime validateDeadline(String deadline) {
+    public LocalDate validateDeadline(String deadline) {
         //TODO
         if (deadline == null) {
             return null;

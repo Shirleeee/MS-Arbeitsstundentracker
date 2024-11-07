@@ -1,34 +1,31 @@
 package de.vfh.workhourstracker.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
-//@Table(name = "timeentry") //TODO: table name anpassen
+@Table(name = "time_entry")
 @Data
 public class TimeEntry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "id") //TODO: column name anpassen
+    @Column(name = "id")
     private Long id;
 
-//    @Column(name = "taskId") //TODO: column name anpassen
+    @Column(name = "task_id")
     private Long taskId;
 
-//    @Column(name = "startTime") //TODO: column name anpassen
+    @Column(name = "start_time")
     private LocalDateTime startTime;
 
-//    @Column(name = "endTime") //TODO: column name anpassen
+    @Column(name = "end_time")
     private LocalDateTime endTime;
 
-//    @Column(name = "duration") //TODO: column name anpassen
+    @Column(name = "duration")
     private Duration duration;
 
 

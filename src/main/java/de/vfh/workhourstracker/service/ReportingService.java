@@ -8,8 +8,6 @@ import de.vfh.workhourstracker.repository.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
 public class ReportingService {
 
@@ -48,17 +46,5 @@ public class ReportingService {
 
     public void delete(Report report) {
         reportRepository.delete(report);
-    }
-
-    //das hier eventuell austauschen durch created_at in der Datenbank
-    public LocalDateTime validateDate(String date) {
-        //TODO
-        return null;
-    }
-
-    //gibt es noch bessere Wege, um den Report zu speichern?
-    public String validateLink(String link) {
-        //TODO
-        return null;
     }
 }
