@@ -84,8 +84,13 @@ public class ProjectManagementService {
             return null;
             //throw new IllegalArgumentException("Name darf nicht leer sein.");
         }
+        String namePattern = "^[a-zA-ZäöüÄÖÜß\\s'-]{1,155}$";
+        if (name.matches(namePattern)) {
+            return name;
+        } else {
+            return null;
+        }
 
-       return name;
     }
 
 
@@ -95,7 +100,9 @@ public class ProjectManagementService {
             return null;
 
         }
-
+        if (description.length() > 1024) {
+            return null;
+        }
 
         return description;
     }
