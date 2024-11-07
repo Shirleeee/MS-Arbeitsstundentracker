@@ -4,19 +4,18 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-//@Table(name = "users") //TODO: table name anpassen
+@Table(name = "user")
 @Data
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "id") //TODO: column name anpassen
+    @Column(name = "id")
     private Long id;
 
-//    @Column(name = "name") //TODO: column name anpassen
+    @Column(name = "name")
     private String name;
 
-//    @Column(name = "email") //TODO: column name anpassen
+    @Column(name = "mail_address")
     private String mailAddress;
-
 }

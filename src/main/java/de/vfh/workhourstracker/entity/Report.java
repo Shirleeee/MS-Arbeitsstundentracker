@@ -3,23 +3,25 @@ package de.vfh.workhourstracker.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
-//@Table(name = "reports") //TODO: table name anpassen
+@Table(name = "report")
 @Data
 public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //    @Column(name = "id") //TODO: column name anpassen
+    @Column(name = "id")
     private Long id;
 
-    //    @Column(name = "userId") //TODO: column name anpassen
+    @Column(name = "user_id")
     private Long userId;
 
-    //    @Column(name = "date") //TODO: column name anpassen
-    private String date;
+    @Column(name = "date")
+    private LocalDateTime date;
 
-    //    @Column(name = "link") //TODO: column name anpassen
+    @Column(name = "link")
     private String link;
 
 }
