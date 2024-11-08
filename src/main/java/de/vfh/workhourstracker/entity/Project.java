@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @Data
 public class Project {
 
+    //Test-Kommentar
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
