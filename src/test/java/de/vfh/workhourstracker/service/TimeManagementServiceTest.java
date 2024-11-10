@@ -4,11 +4,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class TimeManagementServiceTest {
 
     @Autowired
