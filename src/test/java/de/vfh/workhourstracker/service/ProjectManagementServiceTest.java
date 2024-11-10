@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @SpringBootTest
-@ActiveProfiles("test")
 public class ProjectManagementServiceTest {
 
     @Autowired

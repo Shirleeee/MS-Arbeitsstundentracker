@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(classes = WorkHoursTrackerApplication.class)
-@ActiveProfiles("test")
+
 public class UserServiceTest {
     @Autowired
     private UserService userService;

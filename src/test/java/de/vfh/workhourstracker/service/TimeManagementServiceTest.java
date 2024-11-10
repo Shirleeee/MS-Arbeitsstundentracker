@@ -10,7 +10,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @SpringBootTest
-@ActiveProfiles("test")
 class TimeManagementServiceTest {
 
     @Autowired
