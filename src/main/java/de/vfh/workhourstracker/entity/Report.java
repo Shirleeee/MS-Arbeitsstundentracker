@@ -27,8 +27,7 @@ public class Report {
     public Report() {
 
     }
-    public Report(Long userId, LocalDateTime date, String link) {
-        this.userId = userId;
+    public Report( LocalDateTime date, String link) {
         this.date = date;
         this.link = link;
     }

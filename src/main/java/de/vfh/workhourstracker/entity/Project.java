@@ -31,8 +31,8 @@ public class Project {
         // JPA benötigt diesen Konstruktor, um Entitäten zu instanziieren???
     }
 
-    public Project(Long userId, String name,String description, LocalDateTime deadline) {
-        this.userId = userId;
+    public Project( String name,String description, LocalDateTime deadline) {
+
         this.name =  name;
         this.description = description;
         this.deadline = deadline;

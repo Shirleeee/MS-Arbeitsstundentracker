@@ -4,6 +4,7 @@ import de.vfh.workhourstracker.entity.Project;
 import de.vfh.workhourstracker.entity.Task;
 import de.vfh.workhourstracker.repository.ProjectRepository;
 import de.vfh.workhourstracker.repository.TaskRepository;
+import de.vfh.workhourstracker.util.EventLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ public class ProjectManagementService {
 
     private final ProjectRepository projectRepository;
     private final TaskRepository taskRepository;
+    EventLogger eventLogger = new EventLogger();
 
     @Autowired
     public ProjectManagementService(ProjectRepository projectRepository, TaskRepository taskRepository) {
@@ -24,8 +26,8 @@ public class ProjectManagementService {
 
     }
 
-
-    public void createProject(Long userId, String name, String description, String deadline) {
+    //region project
+    public Project createProject(String name, String description, String deadline) {
 
 //       validateProjectId(userId);
         validateName(name);
@@ -55,8 +57,8 @@ public class ProjectManagementService {
         return projectRepository.findById(projectId).orElse(null);
     }
 
-    public void saveProject(Project project) {
-        projectRepository.save(project);
+    public Project saveProject(Project project) {
+        return projectRepository.save(project);
     }
 
     public void deleteProject(Long projectId) {
@@ -69,8 +71,8 @@ public class ProjectManagementService {
         return taskRepository.findById(taskId).orElse(null);
     }
 
-    public void saveTask(Task task) {
-        taskRepository.save(task);
+    public Task saveTask(Task task) {
+        return taskRepository.save(task);
     }
 
     public void deleteTask(Long taskId) {
@@ -82,7 +84,6 @@ public class ProjectManagementService {
         //TODO
         if (name == null || name.isEmpty()) {
             return null;
-            //throw new IllegalArgumentException("Name darf nicht leer sein.");
         }
         String namePattern = "^[a-zA-ZäöüÄÖÜß\\s'-]{1,155}$";
         if (name.matches(namePattern)) {
@@ -107,40 +108,27 @@ public class ProjectManagementService {
         return description;
     }
 
-//    public void validateProjectId(Long projectId) {
-//        //TODO
-//      if (projectId == null || projectId < 0) {
-//          throw new IllegalArgumentException("Keine valide id vorhanden.");
-//      }
-//        return null;
-//    }
 
-    //klären: welche Formate sollen als valide gelten?
     public LocalDateTime validateDeadline(String deadline) {
         //TODO
         if (deadline == null) {
+            eventLogger.logWarning("Deadline darf nicht leer sein.");
             return null;
         } else {
+            String deadlinePattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}";
 
-            LocalDateTime dateTimeDeadline;
-            try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-                dateTimeDeadline = LocalDateTime.parse(deadline, formatter);
-
-            } catch (Exception e) {
+            if (!deadline.matches(deadlinePattern)) {
+                eventLogger.logWarning("Deadline ist nicht valide.");
                 return null;
-                // throw new IllegalArgumentException("Deadline hat falsches Format. Format: yyyy-MM-dd'T'HH:mm:ss");
             }
 
-            try {
-                LocalDateTime now = LocalDateTime.now();
-                if (now.isAfter(dateTimeDeadline)) {
-                    return null;
-                    // throw new IllegalArgumentException("Deadline liegt in der Vergangenheit.");
-                }
-            } catch (Exception e) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            LocalDateTime dateTimeDeadline = LocalDateTime.parse(deadline, formatter);
 
-                // throw new IllegalArgumentException("Deadline darf nicht in der Vergangenheit liegen.");
+            LocalDateTime now = LocalDateTime.now();
+
+            if (!now.isBefore(dateTimeDeadline)) {
+                eventLogger.logWarning("Deadline liegt in der Vergangenheit");
                 return null;
             }
             return dateTimeDeadline;

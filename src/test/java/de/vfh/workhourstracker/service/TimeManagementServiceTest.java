@@ -8,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @SpringBootTest
 class TimeManagementServiceTest {
@@ -20,8 +21,13 @@ class TimeManagementServiceTest {
     public void validateStartTime_ValidFormat_ReturnLocalDateTime() {
         String testStartTime = "2024-11-11T08:00:00";
         LocalDateTime localDateTime = timeManagementService.validateStartTime(testStartTime);
-      //  Assertions.assertNotNull(localDateTime);
-    //    Assertions.assertEquals(LocalDateTime.of(2024, 11, 11, 8, 0, 0), localDateTime);
+
+      /*  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        String formattedDateTime = localDateTime.format(formatter);
+        Assertions.assertNotNull(localDateTime);
+
+        Assertions.assertEquals(LocalDateTime.of(2024, 11, 11, 8, 0, 0), localDateTime);
+*/
     }
 
     @Test
@@ -44,7 +50,7 @@ class TimeManagementServiceTest {
     public void validateEndTime_ValidFormat_ReturnLocalDateTime() {
         String testEndTime = "2024-11-11T08:00:00";
         LocalDateTime localDateTime = timeManagementService.validateEndTime(testEndTime);
-       // Assertions.assertNotNull(localDateTime);
+        // Assertions.assertNotNull(localDateTime);
         //Assertions.assertEquals(LocalDateTime.of(2024, 11, 11, 8, 0, 0), localDateTime);
     }
 
@@ -68,8 +74,8 @@ class TimeManagementServiceTest {
     public void validateDuration_ValidFormat_ReturnDuration() {
         String testDuration = "PT2H30M30S";
         Duration duration = timeManagementService.validateDuration(testDuration);
-      //  Assertions.assertNotNull(duration);
-       // Assertions.assertEquals(9030L, duration.toSeconds());
+        //  Assertions.assertNotNull(duration);
+        // Assertions.assertEquals(9030L, duration.toSeconds());
     }
 
     @Test
