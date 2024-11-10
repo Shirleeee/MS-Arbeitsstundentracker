@@ -28,4 +28,14 @@ public class TimeEntry {
     @Column(name = "duration")
     private Duration duration;
 
+
+    public TimeEntry() {
+
+    }
+    public TimeEntry(Long taskId, LocalDateTime startTime, LocalDateTime endTime, Duration duration) {
+        this.taskId = taskId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.duration = duration;
+    }
 }

@@ -1,5 +1,6 @@
 package de.vfh.workhourstracker.service;
 
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @SpringBootTest
 public class ProjectManagementServiceTest {
@@ -61,24 +64,30 @@ public class ProjectManagementServiceTest {
 
     //region Test validateDeadline
     @Test
-    public void validateDeadline_ValidDeadline_ReturnLocalDate() {
-        String testDeadline = "2025-10-12T23:59:59";
-        LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
-        Assertions.assertNotNull(localDate);
-        //Assertions.assertEquals("", localDate);
+    public void validateDeadline_ValidDeadline_ReturnLocalDateTime() {
+        String testDeadline = "2025-10-12T23:59:59";     
+        LocalDateTime localDateTime = projectManagementService.validateDeadline(testDeadline);
+        System.out.println(localDateTime);
+
+        Assertions.assertNotNull(localDateTime);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        String formattedDateTime = localDateTime.format(formatter);
+
+        Assertions.assertEquals(testDeadline, formattedDateTime);
     }
 
     @Test
     public void validateDeadline_DeadlineInThePast_ReturnNull() {
-        String testDeadline = "2023-12-10T23:59:59";
-        LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
+        String testDeadline = "2023-12-10T23:59:59";    
+        LocalDateTime localDate = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertNull(localDate);
     }
 
     @Test
     public void validateDeadline_InvalidFormat_ReturnNull() {
-        String testDeadline = "10.12.2025";
-        LocalDate localDate = projectManagementService.validateDeadline(testDeadline);
+        String testDeadline = "10.12.2025";     
+        LocalDateTime localDate = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertNull(localDate);
     }
     //endregion

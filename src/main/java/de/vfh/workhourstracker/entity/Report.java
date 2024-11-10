@@ -24,4 +24,12 @@ public class Report {
     @Column(name = "link")
     private String link;
 
+    public Report() {
+
+    }
+    public Report( LocalDateTime date, String link) {
+        this.date = date;
+        this.link = link;
+    }
+
 }
