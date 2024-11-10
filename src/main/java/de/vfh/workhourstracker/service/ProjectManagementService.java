@@ -8,7 +8,6 @@ import de.vfh.workhourstracker.util.EventLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -29,30 +28,15 @@ public class ProjectManagementService {
     //region project
     public Project createProject(String name, String description, String deadline) {
 
-//       validateProjectId(userId);
         validateName(name);
         validateDescription(description);
         LocalDateTime dateTimeDeadline = validateDeadline(deadline);
 
-        Project newProject = new Project(userId, name, description, dateTimeDeadline);
-        this.saveProject(newProject);
-        //return Wert?
+        Project newProject = this.saveProject(new Project(name, description, dateTimeDeadline));
+
+        return newProject;
     }
 
-
-    public void createTask(Long projectId, String name, String description, String deadline) {
-
-        //  validateProjectId(projectId);
-        validateName(name);
-        validateDescription(description);
-        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
-
-        Task newTask = new Task(projectId, name, description, dateTimeDeadline);
-        this.saveTask(newTask);
-        //return Wert?
-    }
-
-    //region project
     public Project findProject(Long projectId) {
         return projectRepository.findById(projectId).orElse(null);
     }
@@ -67,6 +51,16 @@ public class ProjectManagementService {
     //endregion
 
     //region task
+    public Task createTask(Long projectId, String name, String description, String deadline) {
+
+        validateName(name);
+        validateDescription(description);
+        LocalDateTime dateTimeDeadline = validateDeadline(deadline);
+
+        Task newTask = this.saveTask(new Task(projectId, name, description, dateTimeDeadline));
+        return newTask;
+    }
+
     public Task findTask(Long taskId) {
         return taskRepository.findById(taskId).orElse(null);
     }
@@ -80,37 +74,31 @@ public class ProjectManagementService {
     }
     //endregion
 
+    //region validation
     public String validateName(String name) {
-        //TODO
         if (name == null || name.isEmpty()) {
-            return null;
-        }
-        String namePattern = "^[a-zA-ZäöüÄÖÜß\\s'-]{1,155}$";
-        if (name.matches(namePattern)) {
-            return name;
-        } else {
+            eventLogger.logWarning("Name darf nicht leer sein.");
             return null;
         }
 
+        return name;
     }
 
 
     public String validateDescription(String description) {
-        //TODO
         if (description == null || description.isEmpty()) {
+            eventLogger.logWarning("Beschreibung darf nicht leer sein.");
             return null;
-
         }
         if (description.length() > 1024) {
+            eventLogger.logWarning("Beschreibung ist zu lang.");
             return null;
         }
-
         return description;
     }
 
 
     public LocalDateTime validateDeadline(String deadline) {
-        //TODO
         if (deadline == null) {
             eventLogger.logWarning("Deadline darf nicht leer sein.");
             return null;
@@ -133,7 +121,6 @@ public class ProjectManagementService {
             }
             return dateTimeDeadline;
         }
-
-
     }
+    //endregion
 }
