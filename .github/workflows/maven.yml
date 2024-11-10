@@ -31,7 +31,7 @@ jobs:
     - name: Start MySQL
       uses: samin/mysql-action@v1
       with:
-        mysql database: test_db
+        mysql database: work_hours_tracker
         mysql root password: ''
 
     - name: Build with Maven
