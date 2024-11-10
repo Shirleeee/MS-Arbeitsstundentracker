@@ -9,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDate;
 
 @SpringBootTest
-@ActiveProfiles("test")
 public class ProjectManagementServiceTest {
 
     @Autowired
