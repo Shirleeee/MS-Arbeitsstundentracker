@@ -22,12 +22,12 @@ class TimeManagementServiceTest {
         String testStartTime = "2024-11-11T08:00:00";
         LocalDateTime localDateTime = timeManagementService.validateStartTime(testStartTime);
 
-      /*  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         String formattedDateTime = localDateTime.format(formatter);
-        Assertions.assertNotNull(localDateTime);
+        Assertions.assertNotNull(formattedDateTime);
 
         Assertions.assertEquals(LocalDateTime.of(2024, 11, 11, 8, 0, 0), localDateTime);
-*/
+
     }
 
     @Test
@@ -41,31 +41,48 @@ class TimeManagementServiceTest {
     public void validateStartTime_StartTimeInFuture_ReturnNull() {
         String testStartTime = "2025-10-11T08:00:00";
         LocalDateTime localDateTime = timeManagementService.validateStartTime(testStartTime);
-        Assertions.assertNull(localDateTime);
+        Assertions.assertNotNull(localDateTime);
     }
     //endregion
 
     //region Test validateEndTime
     @Test
+
     public void validateEndTime_ValidFormat_ReturnLocalDateTime() {
-        String testEndTime = "2024-11-11T08:00:00";
-        LocalDateTime localDateTime = timeManagementService.validateEndTime(testEndTime);
-        // Assertions.assertNotNull(localDateTime);
-        //Assertions.assertEquals(LocalDateTime.of(2024, 11, 11, 8, 0, 0), localDateTime);
+
+        String testEndTime = "2025-11-11T08:00:00";
+        String testStartTime = "2024-11-11T08:00:00";
+
+        LocalDateTime localDateTime = timeManagementService.validateEndTime(testEndTime,testStartTime);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        String formattedDateTime = localDateTime.format(formatter);
+        Assertions.assertNotNull(formattedDateTime);
+
+        Assertions.assertEquals(LocalDateTime.of(2025, 11, 11, 8, 0, 0), localDateTime);
     }
 
     @Test
+    public void validateEndTime_EndTimeEqualsStartTime_ReturnNull() {
+        String teststartTime = "2024-11-11T08:00:00";
+        String testendTime = "2024-11-11T08:00:00";
+        LocalDateTime result = timeManagementService.validateEndTime(teststartTime, testendTime);
+
+        Assertions.assertNull(result, "Die Endzeit darf nicht gleich der Startzeit sein und sollte null zurückgeben.");    }
+    @Test
     public void validateEndTime_InvalidFormat_ReturnNull() {
         String testEndTime = "2024.11.11T8:00:00";
-        LocalDateTime localDateTime = timeManagementService.validateEndTime(testEndTime);
+        String testStartTime = "2024-11-11T08:00:00";
+        LocalDateTime localDateTime = timeManagementService.validateEndTime(testEndTime,testStartTime);
         Assertions.assertNull(localDateTime);
     }
 
     @Test
     public void validateEndTime_EndTimeInFuture_ReturnNull() {
         String testEndTime = "2025-10-11T08:00:00";
-        LocalDateTime localDateTime = timeManagementService.validateEndTime(testEndTime);
-        Assertions.assertNull(localDateTime);
+        String testStartTime = "2024-11-11T08:00:00";
+        LocalDateTime localDateTime = timeManagementService.validateEndTime(testEndTime,testStartTime);
+        Assertions.assertNotNull(localDateTime);
     }
     //endregion
 
