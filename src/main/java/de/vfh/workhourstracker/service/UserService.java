@@ -29,44 +29,43 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-
+    //region validation
     public String validateName(String name) {
-        //TODO
         if (name == null || name.isEmpty()) {
+            eventLogger.logError("Name darf nicht leer sein.");
             return null;
-
-        } else if (name.length() < 156) {
-            return name;
+        }
+        if (name.length() > 64) {
+            eventLogger.logError("Name darf nicht länger als 64 Zeichen sein.");
+            return null;
         }
 
         String namePattern = "^[a-zA-ZäöüÄÖÜß\\s'-]{1,155}$";
-        if (name.matches(namePattern)) {
-            return name;
-        } else {
+        if (!name.matches(namePattern)) {
             eventLogger.logWarning("Name ist nicht valide.");
             return null;
         }
-
-
+        return name;
     }
 
     public String validateMailAddress(String mailAddress) {
         //TODO
         if (mailAddress == null || mailAddress.isEmpty()) {
+            eventLogger.logError("E-Mail-Addresse darf nicht leer sein.");
             return null;
 
-        } else if (mailAddress.length() < 156) {
-            return mailAddress;
         }
-        String mailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        if (mailAddress.length() >= 64) {
+            eventLogger.logError("E-Mail-Addresse darf nicht länger als 64 Zeichen sein.");
+            return null;
+        }
 
-        if (mailAddress.matches(mailPattern)) {
-            return mailAddress;
-        } else {
+        String mailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        if (!mailAddress.matches(mailPattern)) {
             eventLogger.logWarning("Mailadresse ist nicht valide.");
             return null;
         }
-
-
+        return mailAddress;
     }
+    //endregion
 }

@@ -33,9 +33,8 @@ public class TimeManagementService {
         timeEntryRepository.deleteById(id);
     }
 
+    //region validation
     public LocalDateTime validateStartTime(String startTime) {
-
-
         if (startTime == null) {
             eventLogger.logWarning("Startzeitpunkt darf nicht leer sein.");
             return null;
@@ -110,6 +109,19 @@ public class TimeManagementService {
             eventLogger.logWarning("Dauer darf nicht leer sein.");
             return null;
         }
-        return null;
+        String durationPattern = "^P(T(?:(\\d+)H)?(?:(\\d+)M)?(?:(\\d+)S)?)$";
+
+        if (!duration.matches(durationPattern)) {
+            eventLogger.logWarning("Dauer ist nicht valide.");
+            return null;
+        }
+        Duration parsedDuration = Duration.parse(duration);
+        if (parsedDuration.toHours() > 24L) {
+            eventLogger.logWarning("Dauer ist zu lang.");
+            return null;
+        }
+
+        return Duration.parse(duration);
     }
+    //endregion
 }
