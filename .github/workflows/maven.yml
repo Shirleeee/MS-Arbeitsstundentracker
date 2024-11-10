@@ -33,7 +33,7 @@ jobs:
       with:
         mysql database: work_hours_tracker
         mysql user: root
-        mysql password: ""
+        mysql password: ''
 
     - name: Wait for MySQL to start
       run: sleep 10
