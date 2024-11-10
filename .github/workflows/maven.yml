@@ -16,17 +16,33 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
+
+    - name: Start MySQL
+      uses: samin/mysql-action@v1
+      with:
+        mysql database: work_hours_tracker_test
+        mysql root password: root_password
+        mysql username: root
+
+    - name: Wait for MySQL to start
+      run: sleep 10
+
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+
+    - name: Run Tests
+      run: mvn -B test -X
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
