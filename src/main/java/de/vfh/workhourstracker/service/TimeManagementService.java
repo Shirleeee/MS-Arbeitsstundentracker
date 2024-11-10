@@ -2,16 +2,19 @@ package de.vfh.workhourstracker.service;
 
 import de.vfh.workhourstracker.entity.TimeEntry;
 import de.vfh.workhourstracker.repository.TimeEntryRepository;
+import de.vfh.workhourstracker.util.EventLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class TimeManagementService {
 
     private final TimeEntryRepository timeEntryRepository;
+    EventLogger eventLogger = new EventLogger();
 
     @Autowired
     public TimeManagementService(TimeEntryRepository timeEntryRepository) {
@@ -31,17 +34,82 @@ public class TimeManagementService {
     }
 
     public LocalDateTime validateStartTime(String startTime) {
-        //TODO
-        return null;
+
+
+        if (startTime == null) {
+            eventLogger.logWarning("Startzeitpunkt darf nicht leer sein.");
+            return null;
+        } else {
+            String startTimePattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}";
+
+            if (!startTime.matches(startTimePattern)) {
+                eventLogger.logWarning("Startzeitpunkt ist nicht valide.");
+                return null;
+            }
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            LocalDateTime dateTimeStartTime = LocalDateTime.parse(startTime, formatter);
+//! Doppelter Code
+            LocalDateTime now = LocalDateTime.now();
+
+            if (!now.isBefore(dateTimeStartTime)) {
+                eventLogger.logWarning("Startzeitpunkt liegt in der Vergangenheit");
+                return null;
+            }
+
+            return dateTimeStartTime;
+        }
+
     }
 
-    public LocalDateTime validateEndTime(String endTime) {
-        //TODO
-        return null;
+    public LocalDateTime validateEndTime(String endTime, String startTime) {
+        if (endTime == null || endTime.isEmpty()) {
+            eventLogger.logWarning("Endzeitpunkt darf nicht leer sein.");
+            return null;
+        }
+
+        String endTimePattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}";
+
+        if (!endTime.matches(endTimePattern)) {
+            eventLogger.logWarning("Endzeitpunkt ist nicht valide.");
+            return null;
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        LocalDateTime dateTimeEndTime = LocalDateTime.parse(endTime, formatter);
+//! Doppelter Code
+        LocalDateTime now = LocalDateTime.now();
+
+        if (!now.isBefore(dateTimeEndTime)) {
+            eventLogger.logWarning("Endzeitpunkt liegt in der Vergangenheit");
+            return null;
+        }
+
+
+        LocalDateTime dateTimeStartTime = LocalDateTime.parse(startTime, formatter);
+
+        if (!dateTimeStartTime.isBefore(dateTimeEndTime)) {
+            eventLogger.logWarning("Endzeitpunkt liegt vor Startzeitpunkt.");
+            return null;
+        }
+
+        if (dateTimeStartTime.isEqual(dateTimeEndTime)) {
+            eventLogger.logWarning("Endzeitpunkt ist gleich Startzeitpunkt.");
+            return null;
+        }
+
+        if (!dateTimeEndTime.isAfter(dateTimeStartTime.plusDays(1))) {
+            eventLogger.logWarning("Endzeitpunkt liegt nicht mindestens 1 Tag nach Startzeitpunkt.");
+            return null;
+        }
+
+        return dateTimeEndTime;
     }
 
     public Duration validateDuration(String duration) {
-        //TODO
+        if (duration == null || duration.isEmpty()) {
+            eventLogger.logWarning("Dauer darf nicht leer sein.");
+            return null;
+        }
         return null;
     }
 }

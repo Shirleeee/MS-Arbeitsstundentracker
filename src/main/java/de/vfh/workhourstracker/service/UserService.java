@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    EventLogger eventLogger = new EventLogger();
 
     @Autowired
     public UserService(UserRepository userRepository) {
@@ -28,7 +29,6 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    EventLogger eventLogger = new EventLogger();
 
     public String validateName(String name) {
         //TODO
@@ -46,6 +46,8 @@ public class UserService {
             eventLogger.logWarning("Name ist nicht valide.");
             return null;
         }
+
+
     }
 
     public String validateMailAddress(String mailAddress) {
@@ -53,7 +55,18 @@ public class UserService {
         if (mailAddress == null || mailAddress.isEmpty()) {
             return null;
 
+        } else if (mailAddress.length() < 156) {
+            return mailAddress;
         }
-        return mailAddress;
+        String mailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
+        if (mailAddress.matches(mailPattern)) {
+            return mailAddress;
+        } else {
+            eventLogger.logWarning("Mailadresse ist nicht valide.");
+            return null;
+        }
+
+
     }
 }
