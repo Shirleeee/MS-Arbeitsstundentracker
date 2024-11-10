@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -21,11 +20,9 @@ class TimeManagementServiceTest {
     public void validateStartTime_ValidFormat_ReturnLocalDateTime() {
         String testStartTime = "2024-11-11T08:00:00";
         LocalDateTime localDateTime = timeManagementService.validateStartTime(testStartTime);
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         String formattedDateTime = localDateTime.format(formatter);
         Assertions.assertNotNull(formattedDateTime);
-
         Assertions.assertEquals(LocalDateTime.of(2024, 11, 11, 8, 0, 0), localDateTime);
 
     }
@@ -47,26 +44,21 @@ class TimeManagementServiceTest {
 
     //region Test validateEndTime
     @Test
-
     public void validateEndTime_ValidFormat_ReturnLocalDateTime() {
-
         String testEndTime = "2025-11-11T08:00:00";
         String testStartTime = "2024-11-11T08:00:00";
-
         LocalDateTime localDateTime = timeManagementService.validateEndTime(testEndTime,testStartTime);
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         String formattedDateTime = localDateTime.format(formatter);
         Assertions.assertNotNull(formattedDateTime);
-
         Assertions.assertEquals(LocalDateTime.of(2025, 11, 11, 8, 0, 0), localDateTime);
     }
 
     @Test
     public void validateEndTime_EndTimeEqualsStartTime_ReturnNull() {
-        String teststartTime = "2024-11-11T08:00:00";
-        String testendTime = "2024-11-11T08:00:00";
-        LocalDateTime result = timeManagementService.validateEndTime(teststartTime, testendTime);
+        String testStartTime = "2024-11-11T08:00:00";
+        String testEndTime = "2024-11-11T08:00:00";
+        LocalDateTime result = timeManagementService.validateEndTime(testStartTime, testEndTime);
 
         Assertions.assertNull(result, "Die Endzeit darf nicht gleich der Startzeit sein und sollte null zurückgeben.");    }
     @Test
@@ -91,8 +83,8 @@ class TimeManagementServiceTest {
     public void validateDuration_ValidFormat_ReturnDuration() {
         String testDuration = "PT2H30M30S";
         Duration duration = timeManagementService.validateDuration(testDuration);
-        //  Assertions.assertNotNull(duration);
-        // Assertions.assertEquals(9030L, duration.toSeconds());
+        Assertions.assertNotNull(duration);
+        Assertions.assertEquals(9030L, duration.toSeconds());
     }
 
     @Test
