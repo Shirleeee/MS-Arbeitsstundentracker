@@ -32,8 +32,8 @@ jobs:
       uses: samin/mysql-action@v1
       with:
         mysql database: work_hours_tracker_test
-        mysql root password: root_password
         mysql username: root
+        mysql password: root_password
 
     - name: Wait for MySQL to start
       run: sleep 10
