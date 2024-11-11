@@ -22,15 +22,15 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_DATABASE: work_hours_tracker
         ports:
           - 3306:3306
-#        options: >
-#          --health-cmd="mysqladmin ping -h localhost"
-#          --health-interval=10s
-#          --health-timeout=5s
-#          --health-retries=3
+        options: >
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
         
     steps:
     - uses: actions/checkout@v4
