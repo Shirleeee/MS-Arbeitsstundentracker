@@ -18,13 +18,13 @@ class TimeManagementServiceTest {
     //region Test validateStartTime
     @Test
     public void validateStartTime_ValidFormat_ReturnLocalDateTime() {
-        String testStartTime = "2024-11-11T08:00:00";
+        String testStartTime = "2025-11-11T08:00:00";
         LocalDateTime localDateTime = timeManagementService.validateStartTime(testStartTime);
+        Assertions.assertNotNull(localDateTime);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         String formattedDateTime = localDateTime.format(formatter);
         Assertions.assertNotNull(formattedDateTime);
-        Assertions.assertEquals(LocalDateTime.of(2024, 11, 11, 8, 0, 0), localDateTime);
-
+        Assertions.assertEquals(LocalDateTime.of(2025, 11, 11, 8, 0, 0), localDateTime);
     }
 
     @Test

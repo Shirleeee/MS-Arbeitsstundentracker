@@ -52,7 +52,7 @@ public class TimeManagementService {
             LocalDateTime now = LocalDateTime.now();
 
             if (!now.isBefore(dateTimeStartTime)) {
-                eventLogger.logWarning("Startzeitpunkt liegt in der Vergangenheit");
+                eventLogger.logWarning("Startzeitpunkt liegt in der Zukunft.");
                 return null;
             }
 
@@ -79,7 +79,7 @@ public class TimeManagementService {
         LocalDateTime now = LocalDateTime.now();
 
         if (!now.isBefore(dateTimeEndTime)) {
-            eventLogger.logWarning("Endzeitpunkt liegt in der Vergangenheit");
+            eventLogger.logWarning("Endzeitpunkt liegt in der Zukunft.");
             return null;
         }
 

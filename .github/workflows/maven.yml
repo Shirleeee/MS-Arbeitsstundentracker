@@ -18,12 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
-#    env:
-#      DB_DATABASE: work_hours_tracker
-#      DB_USER: root
-#      DB_HOST: 127.0.0.1
-#      DB_CONNECTION: mysql
-
     services:
       mysql:
         image: mysql:5.7
@@ -43,13 +37,6 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-
-#    - name: Start MySQL
-#      uses: samin/mysql-action@v1
-#      with:
-#        mysql database: work_hours_tracker
-#        mysql user: root
-#        mysql password: ''
 
     - name: Wait for MySQL to start
       run: |
