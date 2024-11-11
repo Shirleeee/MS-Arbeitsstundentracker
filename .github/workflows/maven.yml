@@ -18,6 +18,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: ""
+          MYSQL_DATABASE: work_hours_tracker
+        ports:
+          - 3306:3306
+        options:
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        
     steps:
     - uses: actions/checkout@v4
 
@@ -28,15 +42,23 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Start MySQL
-      uses: samin/mysql-action@v1
-      with:
-        mysql database: work_hours_tracker
-        mysql user: root
-        mysql password: ''
+#    - name: Start MySQL
+#      uses: samin/mysql-action@v1
+#      with:
+#        mysql database: work_hours_tracker
+#        mysql user: root
+#        mysql password: ''
 
     - name: Wait for MySQL to start
-      run: sleep 10
+      run: |
+          for i in {1..10}; do
+            if mysqladmin ping -h"127.0.0.1" --silent; then
+              echo "MySQL is up and running"
+              break
+            fi
+            echo "Waiting for MySQL..."
+            sleep 3
+          done
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
