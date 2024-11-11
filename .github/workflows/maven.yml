@@ -20,7 +20,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql:latest
+        image: mysql:5.7
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_DATABASE: work_hours_tracker
