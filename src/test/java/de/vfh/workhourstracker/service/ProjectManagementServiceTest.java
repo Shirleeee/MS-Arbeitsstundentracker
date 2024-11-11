@@ -32,7 +32,7 @@ public class ProjectManagementServiceTest {
                 "invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores " +
                 "et ea rebum. Stet clita kasd gubergren, no sea takimata ";
         String invalidName = projectManagementService.validateName(testName);
-        Assertions.assertNotNull(invalidName);
+        Assertions.assertNull(invalidName);
     }
     //endregion
 

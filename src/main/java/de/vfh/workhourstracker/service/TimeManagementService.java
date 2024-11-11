@@ -51,7 +51,7 @@ public class TimeManagementService {
 //! Doppelter Code
             LocalDateTime now = LocalDateTime.now();
 
-            if (!now.isBefore(dateTimeStartTime)) {
+            if (now.isBefore(dateTimeStartTime)) {
                 eventLogger.logWarning("Startzeitpunkt liegt in der Zukunft.");
                 return null;
             }
@@ -78,7 +78,7 @@ public class TimeManagementService {
 //! Doppelter Code
         LocalDateTime now = LocalDateTime.now();
 
-        if (!now.isBefore(dateTimeEndTime)) {
+        if (now.isBefore(dateTimeEndTime)) {
             eventLogger.logWarning("Endzeitpunkt liegt in der Zukunft.");
             return null;
         }
@@ -95,12 +95,6 @@ public class TimeManagementService {
             eventLogger.logWarning("Endzeitpunkt ist gleich Startzeitpunkt.");
             return null;
         }
-
-        if (!dateTimeEndTime.isAfter(dateTimeStartTime.plusDays(1))) {
-            eventLogger.logWarning("Endzeitpunkt liegt nicht mindestens 1 Tag nach Startzeitpunkt.");
-            return null;
-        }
-
         return dateTimeEndTime;
     }
 

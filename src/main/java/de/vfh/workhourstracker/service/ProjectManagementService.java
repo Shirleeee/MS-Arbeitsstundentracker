@@ -80,7 +80,10 @@ public class ProjectManagementService {
             eventLogger.logWarning("Name darf nicht leer sein.");
             return null;
         }
-
+        if (name.length() > 256) {
+            eventLogger.logWarning("Name ist zu lang");
+            return null;
+        }
         return name;
     }
 
