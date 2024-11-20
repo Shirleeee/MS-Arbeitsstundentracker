@@ -1,6 +1,7 @@
 package de.vfh.workhourstracker.service;
 
 import de.vfh.workhourstracker.WorkHoursTrackerApplication;
+import de.vfh.workhourstracker.usermanagement.application.services.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

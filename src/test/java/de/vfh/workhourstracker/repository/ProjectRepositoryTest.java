@@ -1,7 +1,6 @@
 package de.vfh.workhourstracker.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
 
 //@SpringBootTest
 public class ProjectRepositoryTest {
