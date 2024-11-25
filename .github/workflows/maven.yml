@@ -41,14 +41,14 @@ jobs:
     - name: Install dependencies
       working-directory: src/main/frontend
       run: npm install
-
+    - name: Set permissions
+      working-directory: src/main/frontend
+      run: chmod +x ./node_modules/.bin/vite
     - name: Build project
       working-directory: src/main/frontend
       run: npm run build
 
-    - name: Set permissions
-      working-directory: src/main/frontend
-      run: chmod +x ./node_modules/.bin/vite
+
 
     - name: Wait for MySQL to start
       run: |
