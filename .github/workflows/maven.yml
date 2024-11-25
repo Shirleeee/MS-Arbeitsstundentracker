@@ -48,9 +48,7 @@ jobs:
     - name: Set permissions for working directory
       working-directory: src/main/frontend
       run: chmod -R 755 .
-    - name: Set permissions
-      working-directory: src/main/frontend
-      run: chmod +x ./node_modules/.bin/vite
+
     - name: Build project
       working-directory: src/main/frontend
       run: npm run build

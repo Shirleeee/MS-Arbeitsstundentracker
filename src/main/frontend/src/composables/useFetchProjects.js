@@ -1,5 +1,5 @@
 import { ref } from "vue";
-
+import {parseDuration} from "./../utils/timeUtils.js"
 // Custom Hook für Projekte, Tasks und Time Entries
 export function useFetchProjects() {
     const projects = ref([]);
@@ -10,22 +10,24 @@ export function useFetchProjects() {
     const fetchData = async () => {
         try {
             const [projectsRes, tasksRes, timeEntriesRes] = await Promise.all([
-                fetch("http://localhost:3000/projects").then(res => res.json()),
-                fetch("http://localhost:3000/tasks").then(res => res.json()),
-                fetch("http://localhost:3000/timeEntries").then(res => res.json()),
+                fetch(`http://localhost:8081/api/project`).then(res => res.json()),
+                fetch(`http://localhost:8081/api/task`).then(res => res.json()),
+                fetch(`http://localhost:8081/api/time_entries`).then(res => res.json()),
             ]);
 
             // Daten transformieren
             projects.value = mapProjects(projectsRes, tasksRes, timeEntriesRes);
         } catch (err) {
             error.value = "Fehler beim Abrufen der Daten: " + err.message;
-            console.error(error.value);
+            console.error(error.value + "" + err);
         }
     };
 
     // Transformationslogik für Projekte, Tasks und Time Entries
     const mapProjects = (projects, tasks, timeEntries) => {
         return projects.map(project => {
+
+            console.log(project)
             const projectTasks = tasks.filter(task => task.projectId.toString() === project.id.toString());
 
             const mappedTasks = projectTasks.map(task => {
@@ -37,7 +39,7 @@ export function useFetchProjects() {
                     projectId: project.id,
                     timer: null,
                     isPlaying: false,
-                    trackedTime: taskTimeEntries.reduce((sum, entry) => sum + entry.duration, 0),
+                    trackedTime: taskTimeEntries.reduce((sum, entry) => sum + parseDuration(entry.duration), 0),
                 });
 
                 return {
@@ -49,7 +51,7 @@ export function useFetchProjects() {
             });
 
             const totalTrackedTime = mappedTasks.reduce((sum, task) => {
-                return sum + task.timeEntries.reduce((timeSum, entry) => timeSum + entry.duration, 0);
+                return sum + task.timeEntries.reduce((timeSum, entry) => timeSum + parseDuration(entry.duration), 0);
             }, 0);
 
             return {

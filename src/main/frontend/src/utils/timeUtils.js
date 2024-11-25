@@ -10,3 +10,23 @@ export function secondsToTimeFormat(seconds) {
 
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
 }
+
+export const parseDuration = (durationStr) => {
+    try {
+        // Prüfen, ob das Format mit "PT" beginnt
+        if (durationStr.startsWith("PT")) {
+            const match = durationStr.match(/PT(\d+(?:\.\d+)?)S/); // Extrahiert die Sekunden aus dem String
+            if (match) {
+                console.log("MATCH",match)
+                return parseInt(match[1]); // Gibt die Dauer in Sekunden als Zahl zurück
+            } else {
+                throw new Error("Ungültiges Duration-Format");
+            }
+        }
+        // Falls kein "PT"-Format, einfach versuchen, die Zahl zu parsen
+        return parseInt(durationStr);
+    } catch (err) {
+        console.error("Fehler beim Parsen der Duration:", err);
+        return 0; // Standardwert bei Fehlern
+    }
+};

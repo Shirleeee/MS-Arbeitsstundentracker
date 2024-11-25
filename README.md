@@ -1,7 +1,6 @@
 # MS-Arbeitsstundentracker
 
 
-
 ## Was ist Git und warum sollte es verwendet werden?
 
 Git ist ein Versionskontrollsystem, das hauptsächlich in der Softwareentwicklung verwendet wird, um Änderungen an Dateien, insbesondere Quellcode, zu verfolgen und zu verwalten.
