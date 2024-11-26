@@ -17,7 +17,7 @@ export const parseDuration = (durationStr) => {
         if (durationStr.startsWith("PT")) {
             const match = durationStr.match(/PT(\d+(?:\.\d+)?)S/); // Extrahiert die Sekunden aus dem String
             if (match) {
-                console.log("MATCH",match)
+
                 return parseInt(match[1]); // Gibt die Dauer in Sekunden als Zahl zurück
             } else {
                 throw new Error("Ungültiges Duration-Format");

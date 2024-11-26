@@ -1,21 +1,52 @@
 <script setup>
-
+import axios from 'axios';
 
 </script>
 <script>
+
+import {ref} from "vue";
+import axios from "axios";
 
 export default {
   props: ['text'],
   data() {
     return {
-
-      title: 'create forms in vue 3',
-      description: 'forms are easy to create in vue 3'
+      title : ref('create forms in vue 300'),
+      description : ref('create forms in vue 3'),
+      userId: ref('101'),
+      currentDay:  this.getCurrentDay,
+      deadline : ref(''),
     }
   },
+
   methods: {
+    getCurrentDay:()=>{
+      const today = new Date();
+      return today.toISOString().split('T')[0];
+    },
+     submitData : async () => {
+       console.log('Class: methods, Function: submitData, Line 35 (): '
+           , deadline);
+      try {
+        const data = {
+          name: title.value,
+          description: description.value,
+          userId:parseInt(userId.value),//TODO
+          deadline: new Date(deadline.value)  ,
+        };
+  console.log('Class: methods, Function: submitData, Line 37 (): '
+  , new Date(deadline));
+        const response = await axios.post('http://localhost:8081/api/submitProjectData', data, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        console.log('Daten erfolgreich gesendet:', response.data);
+      } catch (error) {
+        console.error('Fehler beim Senden der Daten:', error);
+      }
+    },
     create() {
-      console.log('this.title', this.$refs.name)
       this.$refs.name.classList.add('active')
       this.$refs.name.focus()
     },
@@ -32,17 +63,21 @@ export default {
 
       <h1 class="green">{{ text }}</h1>
 
-      <p>{{ text }}: {{ title }}</p>
+      <p>{{ text }}: {{ name }}</p>
 
-      <form action="" method="get" @submit="create">
+      <form action="" method="get" @submit.prevent="submitData">
         <label for="title">{{ text }} Title</label>
-        <input type="text" name="title" id="title" ref="name" v-model="title">
+        <input type="text" name="title" id="title" ref="title" v-model="title">
+        <input hidden value="101" type="text" name="userId" id="userId" ref="userId" v-model="userId">
 
         <label for="projectDescription">Description</label>
         <textarea cols="40" rows="10" name="description" id="description"
                   v-model="description"></textarea>
+        <label for="deadline">Deadline date:</label>
 
-        <button @click="create">Create {{ text }}</button>
+        <input type="date" id="deadline" name="deadline" :value=currentDay  />
+
+        <button type="submit">Create {{ text }}</button>
       </form>
     </div>
 

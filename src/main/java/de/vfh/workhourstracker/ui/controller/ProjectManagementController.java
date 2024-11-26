@@ -6,9 +6,7 @@ import de.vfh.workhourstracker.projectmanagement.domain.model.Task;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
@@ -35,5 +33,11 @@ public class ProjectManagementController {
     @GetMapping("/task")
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
+    }
+
+    @PostMapping("/submitProjectData")
+    public String submitData(@RequestBody Project project) {
+        projectRepository.save(project);
+        return "Daten empfangen: " + project.toString();
     }
 }

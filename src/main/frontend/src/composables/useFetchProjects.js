@@ -10,24 +10,44 @@ export function useFetchProjects() {
     const fetchData = async () => {
         try {
             const [projectsRes, tasksRes, timeEntriesRes] = await Promise.all([
-                fetch(`http://localhost:8081/api/project`).then(res => res.json()),
-                fetch(`http://localhost:8081/api/task`).then(res => res.json()),
-                fetch(`http://localhost:8081/api/time_entries`).then(res => res.json()),
+                fetch(`http://localhost:8081/api/project`).then(res => {
+                    //console.log(res);
+                    return res.text();  // Lese die Antwort als Text
+                }),
+                fetch(`http://localhost:8081/api/task`).then(res => {
+                    //console.log(res);
+                    return res.text();  // Lese die Antwort als Text
+                }),
+                fetch(`http://localhost:8081/api/time_entries`).then(res => {
+                    //console.log(res);
+                    return res.text();  // Lese die Antwort als Text
+                }),
             ]);
 
+            // console.log("Projects response:", projectsRes);
+            // console.log("Tasks response:", tasksRes);
+            // console.log("Time Entries response:", timeEntriesRes);
+
+            // Jetzt kannst du sicherstellen, dass es sich um gültiges JSON handelt:
+            const projectsData = JSON.parse(projectsRes);  // Versuche, es in JSON zu parsen
+            const tasksData = JSON.parse(tasksRes);
+            const timeEntriesData = JSON.parse(timeEntriesRes);
+
             // Daten transformieren
-            projects.value = mapProjects(projectsRes, tasksRes, timeEntriesRes);
+            projects.value = mapProjects(projectsData, tasksData, timeEntriesData);
+
         } catch (err) {
             error.value = "Fehler beim Abrufen der Daten: " + err.message;
-            console.error(error.value + "" + err);
+            console.error(error.value + " " + err);
         }
+
     };
 
     // Transformationslogik für Projekte, Tasks und Time Entries
     const mapProjects = (projects, tasks, timeEntries) => {
         return projects.map(project => {
 
-            console.log(project)
+
             const projectTasks = tasks.filter(task => task.projectId.toString() === project.id.toString());
 
             const mappedTasks = projectTasks.map(task => {
