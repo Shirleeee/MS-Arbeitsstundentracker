@@ -95,3 +95,5 @@ yarn-error.log*
 .npm/
 
 
+src/main/frontend/node_modules/@esbuild/win32-x64/esbuild.exe
+src/main/frontend/node_modules/@rollup/rollup-win32-x64-msvc/rollup.win32-x64-msvc.node
