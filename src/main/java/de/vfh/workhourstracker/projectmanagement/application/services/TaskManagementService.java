@@ -1,16 +1,15 @@
 package de.vfh.workhourstracker.projectmanagement.application.services;
 
-import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
-import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectDescription;
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
-import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectName;
-import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectCreated;
-import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectUpdated;
+import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
+import de.vfh.workhourstracker.projectmanagement.domain.task.TaskDescription;
+import de.vfh.workhourstracker.projectmanagement.domain.task.TaskId;
+import de.vfh.workhourstracker.projectmanagement.domain.task.TaskName;
+import de.vfh.workhourstracker.projectmanagement.domain.task.events.TaskCreated;
+import de.vfh.workhourstracker.projectmanagement.domain.task.events.TaskUpdated;
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
-import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.TaskRepository;
 import de.vfh.workhourstracker.shared.util.EventLogger;
-import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -19,18 +18,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class ProjectManagementService {
+public class TaskManagementService {
     private final ApplicationEventPublisher eventPublisher;
-    private final ProjectRepository projectRepository;
+    private final TaskRepository taskRepository;
     EventLogger eventLogger = new EventLogger();
 
     @Autowired
-    public ProjectManagementService(ProjectRepository projectRepository, TaskRepository taskRepository, ApplicationEventPublisher eventPublisher) {
-        this.projectRepository = projectRepository;
+    public TaskManagementService(ApplicationEventPublisher eventPublisher, TaskRepository taskRepository) {
         this.eventPublisher = eventPublisher;
+        this.taskRepository = taskRepository;
     }
 
-    public Project createProject(UserId userId, String name, String description, LocalDateTime deadline) {
+    public Task createTask(ProjectId projectId, String name, String description, LocalDateTime deadline) {
         String validName = validateName(name);
         String validDescription = validateDescription(description);
         LocalDateTime validDeadline = validateDeadline(deadline);
@@ -40,31 +39,32 @@ public class ProjectManagementService {
             return null;
         }
 
-        Project project = new Project(userId, new ProjectName(validName), new ProjectDescription(validDescription), new Deadline(validDeadline));
-        project = projectRepository.save(project);
+        Task task = new Task(projectId, new TaskName(name), new TaskDescription(description), new Deadline(validDeadline));
+        task = taskRepository.save(task);
 
-        ProjectCreated event = new ProjectCreated(this, project.getId(), project.getUserId(), project.getName(), project.getDescription(), project.getDeadline());
+        TaskCreated event = new TaskCreated(this, task.getId(), task.getProjectId(), task.getName(), task.getDescription(), task.getDeadline());
         eventPublisher.publishEvent(event);
 
-        return project;
+        return task;
     }
 
-    public Project saveProject(Project project) {
-        return projectRepository.save(project);
+    public Task saveTask(Task task) {
+        return taskRepository.save(task);
     }
 
-    public Project findProject(Long projectId) {
-        return projectRepository.findById(projectId).orElse(null);
+    public Task findTask(Long taskId) {
+        return taskRepository.findById(taskId).orElse(null);
     }
 
-    public List<Project> findAllProjects() {
-        return projectRepository.findAll();
+    public List<Task> findAllTasks() {
+        return taskRepository.findAll();
     }
 
-    public Project updateProject(ProjectId projectId, UserId userId, String name, String description, LocalDateTime deadline) {
-        Project existingProject = projectRepository.findById(projectId.getValue()).orElse(null);
-        if (existingProject == null) {
-            eventLogger.logError("Project with ID " + projectId.getValue() + " does not exist in database.");
+    public Task updateTask(TaskId taskId, ProjectId projectId, String name, String description, LocalDateTime deadline) {
+        //TODO: wie macht man das am besten mit der ID?
+        Task existingTask = taskRepository.findById(taskId.getTaskId()).orElse(null);
+        if (existingTask == null) {
+            eventLogger.logError("Task with ID " + taskId.getTaskId() + " does not exist in database.");
             return null;
         }
 
@@ -73,24 +73,24 @@ public class ProjectManagementService {
         LocalDateTime validDeadline = validateDeadline(deadline);
 
         if (validName == null || validDescription == null || validDeadline == null) {
-            eventLogger.logError("Project could not be updated because of invalid input.");
+            eventLogger.logError("Task could not be updated because of invalid input.");
             return null;
         }
 
-        existingProject.setName(new ProjectName(validName));
-        existingProject.setDescription(new ProjectDescription(validDescription));
-        existingProject.setDeadline(new Deadline(validDeadline));
+        existingTask.setName(new TaskName(name));
+        existingTask.setDescription(new TaskDescription(description));
+        existingTask.setDeadline(new Deadline(validDeadline));
 
-        existingProject = projectRepository.save(existingProject);
+        existingTask = taskRepository.save(existingTask);
 
-        ProjectUpdated event = new ProjectUpdated(this, existingProject.getId(), existingProject.getUserId(), existingProject.getName(), existingProject.getDescription(), existingProject.getDeadline());
+        TaskUpdated event = new TaskUpdated(this, existingTask.getId(), existingTask.getProjectId(), existingTask.getName(), existingTask.getDescription(), existingTask.getDeadline());
         eventPublisher.publishEvent(event);
 
-        return existingProject;
+        return existingTask;
     }
 
-    public void deleteProject(Long projectId) {
-        projectRepository.deleteById(projectId);
+    public void deleteTask(Long taskId) {
+        taskRepository.deleteById(taskId);
     }
 
     //region validation
@@ -106,7 +106,6 @@ public class ProjectManagementService {
         return name;
     }
 
-
     public String validateDescription(String description) {
         if (description == null || description.isEmpty()) {
             eventLogger.logWarning("Beschreibung darf nicht leer sein.");
@@ -119,7 +118,6 @@ public class ProjectManagementService {
         return description;
     }
 
-
     public LocalDateTime validateDeadline(LocalDateTime deadline) {
         if (deadline == null) {
             eventLogger.logWarning("Deadline darf nicht leer sein.");
@@ -130,6 +128,11 @@ public class ProjectManagementService {
             return null;
         }
         return deadline;
+
     }
     //endregion
 }
+
+
+
+

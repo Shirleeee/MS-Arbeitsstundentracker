@@ -1,6 +1,6 @@
 package de.vfh.workhourstracker.service;
 
-import de.vfh.workhourstracker.projectmanagement.application.services.ProjectManagementService;
+import de.vfh.workhourstracker.projectmanagement.application.services.TaskManagementService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,16 +9,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDateTime;
 
 @SpringBootTest
-public class ProjectManagementServiceTest {
+public class TaskManagementServiceTest {
 
     @Autowired
-    private ProjectManagementService projectManagementService;
+    private TaskManagementService taskManagementService;
 
     //region Test validateName
     @Test
-    public void validateName_ValidName_ReturnString() {
+    public void validateName_ValidateName_ReturnString() {
         String testName = "Test Name";
-        String validName = projectManagementService.validateName(testName);
+        String validName = taskManagementService.validateName(testName);
         Assertions.assertNotNull(validName);
         Assertions.assertEquals(validName, testName);
     }
@@ -28,7 +28,7 @@ public class ProjectManagementServiceTest {
         String testName = "tooLongTestName Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor " +
                 "invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores " +
                 "et ea rebum. Stet clita kasd gubergren, no sea takimata ";
-        String invalidName = projectManagementService.validateName(testName);
+        String invalidName = taskManagementService.validateName(testName);
         Assertions.assertNull(invalidName);
     }
     //endregion
@@ -37,7 +37,7 @@ public class ProjectManagementServiceTest {
     @Test
     public void validateDescription_ValidDescription_ReturnString() {
         String testDescription = "This is a test description";
-        String validDescription = projectManagementService.validateDescription(testDescription);
+        String validDescription = taskManagementService.validateDescription(testDescription);
         Assertions.assertNotNull(validDescription);
         Assertions.assertEquals(testDescription, validDescription);
     }
@@ -54,7 +54,7 @@ public class ProjectManagementServiceTest {
                 "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est " +
                 "Lorem ipsum dolor sit amet. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, " +
                 "vel illum dolore eu feugiat nulla facilisis a";
-        String invalidDescription = projectManagementService.validateDescription(testDescription);
+        String invalidDescription = taskManagementService.validateDescription(testDescription);
         Assertions.assertNull(invalidDescription);
     }
     //endregion
@@ -63,7 +63,7 @@ public class ProjectManagementServiceTest {
     @Test
     public void validateDeadline_ValidDeadline_ReturnLocalDateTime() {
         LocalDateTime testDeadline = LocalDateTime.of(2025, 12, 10, 23, 59, 59);
-        LocalDateTime validDeadline = projectManagementService.validateDeadline(testDeadline);
+        LocalDateTime validDeadline = taskManagementService.validateDeadline(testDeadline);
         Assertions.assertNotNull(validDeadline);
         Assertions.assertEquals(testDeadline, validDeadline);
     }
@@ -71,7 +71,7 @@ public class ProjectManagementServiceTest {
     @Test
     public void validateDeadline_DeadlineInThePast_ReturnNull() {
         LocalDateTime testDeadline = LocalDateTime.of(2024, 3, 10, 23, 59, 59);
-        LocalDateTime invalidDeadline = projectManagementService.validateDeadline(testDeadline);
+        LocalDateTime invalidDeadline = taskManagementService.validateDeadline(testDeadline);
         Assertions.assertNull(invalidDeadline);
     }
     //endregion
