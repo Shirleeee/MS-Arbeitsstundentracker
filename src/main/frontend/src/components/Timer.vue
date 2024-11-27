@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from 'vue';
-import { secondsToTimeFormat } from "@/utils/timeUtils.js";
-import IconEcosystem from "@/components/icons/IconEcosystem.vue";
+import {ref} from 'vue';
+import {secondsToTimeFormat} from "@/utils/timeUtils.js";
+import PlayButtonSVG from "@/components/icons/PlayButtonSVG.vue";
 import IconSupport from "@/components/icons/IconSupport.vue";
 
 const props = defineProps({
@@ -25,10 +25,26 @@ const stopTimer = (timer) => {
   <div class="icons">
     <p>Time Elapsed: {{ secondsToTimeFormat(timer.trackedTime) }}</p>
     <i class="play-btn" @click="startTimer(timer)">
-      <IconEcosystem />
+      <PlayButtonSVG/>
     </i>
     <i class="stop-btn" @click="stopTimer(timer)">
-      <IconSupport />
+      <IconSupport/>
     </i>
   </div>
 </template>
+
+
+<style scoped>
+
+
+.icons {
+  & > * {
+    padding-block: 1rem;
+
+    padding-right: 5px;
+    cursor: pointer;
+  }
+}
+
+
+</style>

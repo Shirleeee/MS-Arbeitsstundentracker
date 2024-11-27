@@ -1,6 +1,6 @@
 <script setup>
 import CreateModal from "@/components/Modal.vue";
-
+import {useFetchProjects} from "@/composables/useFetchProjects.js";
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -9,32 +9,28 @@ const props = defineProps({
 });
 
 
-console.log('Class:BUTTONS, Function: , Line 5 (): ', props.text)
 
-const showModal = ref(false);
+const isModalOpen = ref(false);
 
-function toggleModal() {
-  showModal.value = !showModal.value;
-}
+const toggleModal = () => {
+  isModalOpen.value = !isModalOpen.value;
+};
+const emit = defineEmits(['submit-success']);
+const handleSubmitSuccess = (data) => {
+  isModalOpen.value = false;
+  emit('submit-success', data);
+};
 </script>
 
 <template>
-
   <div class="btn-container">
-
     <div class="export-btn-wrapper">
       <button>Export</button>
     </div>
-
-
     <div class="create-btn-wrapper">
-      <div v-if="showModal">
-        <CreateModal :text= text  :additionalData="additionalData" @close="toggleModal" >
-        </CreateModal>
-      </div>
-      <button @click="toggleModal">Create {{ text }}</button>
+      <CreateModal v-if="isModalOpen" :text="text" :additionalData="additionalData"  @submit-success="handleSubmitSuccess" />
+      <button @click="toggleModal" >Create {{ text }} </button>
     </div>
-
   </div>
 </template>
 

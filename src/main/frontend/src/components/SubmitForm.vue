@@ -1,23 +1,6 @@
-<template>
-  <form @submit.prevent="submit">
-    <label for="title">Title</label>
-    <input type="text" id="title" v-model="title"/>
-
-    <label for="description">Description</label>
-    <textarea id="description" v-model="description"></textarea>
-
-    <label for="deadline">Deadline date:</label>
-    <input type="date" id="deadline" v-model="deadline"/>
-
-    <input type="hidden" v-if="additionalField" :value="additionalValue" :name="additionalField"/>
-
-    <button type="submit">Submit {{ formType }}</button>
-  </form>
-</template>
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-
 const props = defineProps({
   formType: {
     type: String,
@@ -36,6 +19,7 @@ const props = defineProps({
     required: false,
   },
 });
+const emit = defineEmits(['submit-success']);
 
 const title = ref('create form in vueJs');
 const description = ref('create form in vueJs');
@@ -59,12 +43,33 @@ const submit = async () => {
       },
     });
 
-    console.log('Daten erfolgreich gesendet:', response.data);
+
+    emit('submit-success', response.data);
   } catch (error) {
     console.error('Fehler beim Senden der Daten:', error);
   }
 };
 </script>
+
+
+<template>
+
+  <form @submit.prevent="submit">
+    <label for="title">Title</label>
+    <input type="text" id="title" v-model="title"/>
+
+    <label for="description">Description</label>
+    <textarea id="description" v-model="description"></textarea>
+
+    <label for="deadline">Deadline date:</label>
+    <input type="date" id="deadline" v-model="deadline"/>
+
+    <input type="hidden" v-if="additionalField" :value="additionalValue" :name="additionalField"/>
+
+    <button type="submit">Submit {{ formType }}</button>
+  </form>
+</template>
+
 
 <style scoped>
 

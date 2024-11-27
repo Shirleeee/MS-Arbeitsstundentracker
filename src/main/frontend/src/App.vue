@@ -1,16 +1,33 @@
 <script setup>
-import HelloWorld from './components/Modal.vue'
 
-import Main from './components/Main.vue'
-import Header from './components/Header.vue'
-import './assets/global.css'
+
+
+import { useFetchProjects } from "@/composables/useFetchProjects";
+import Header from "@/components/Header.vue";
+import Main from "@/components/Main.vue";
+import { ref,computed } from "vue";
+
+const { projects, fetchData, error } = useFetchProjects();
+fetchData();
+const reversedProjects = computed(() => {
+  return projects.value.slice().reverse();
+});
+console.log(reversedProjects);
+const updateProjects = (newProject) => {
+
+  if (!newProject.tasks) {
+  newProject.tasks = [];
+}
+  projects.value.push(newProject);
+};
 </script>
 
 <template>
 
-  <Header />
+  <Header :projects="reversedProjects" @update-projects="updateProjects" />
   <main>
-    <Main />
+    <div v-if="error" class="error">{{ error }}</div>
+    <Main :projects="reversedProjects" />
   </main>
 </template>
 

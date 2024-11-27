@@ -2,12 +2,12 @@
 
 import { ref, computed } from 'vue';
 import SubmitForm from './SubmitForm.vue';
-console.log('Class:MODAL, Function: , Line 5 (): '
-, );
+
 const props = defineProps({
   text: String,
   additionalData: Object
 });
+
 
 
 const userId = ref('101');
@@ -17,18 +17,22 @@ const getCurrentDay = computed(() => {
   const today = new Date();
   return today.toISOString().split('T')[0];
 });
+const emit = defineEmits(['submit-success', 'close']);
 
+const handleSubmitSuccess = (data) => {
+
+  emit('submit-success',data);
+  // Emit the 'close' event to close the modal
+  emit('close');
+};
 
 </script>
 
 <template>
-  <div class="backdrop greetings" @click.self="this.$emit('close')">
+  <div class="backdrop greetings" @click.self="emit('close')">
     <div class="modal">
 
       <h1 class="green">{{ text }}</h1>
-
-      <p>{{ text }}: {{ name }}</p>
-
 
       <SubmitForm
           v-if="text === 'Project'"
@@ -36,6 +40,7 @@ const getCurrentDay = computed(() => {
           submitUrl="http://localhost:8081/api/submitProjectData"
           additionalField="userId"
           :additionalValue="userId"
+          @submit-success="handleSubmitSuccess"
       />
 
       <SubmitForm
@@ -43,7 +48,8 @@ const getCurrentDay = computed(() => {
           formType="Task"
           submitUrl="http://localhost:8081/api/submitTaskData"
           additionalField="projectId"
-          :additionalValue="projectId"
+          :additionalValue="props.additionalData.id"
+          @submit-success="handleSubmitSuccess"
       />
     </div>
 
