@@ -1,29 +1,49 @@
+
+<script setup>
+import { ref } from 'vue';
+import { secondsToTimeFormat } from "@/utils/timeUtils";
+import Task from "./Task.vue";
+import Buttons from "@/components/Buttons.vue";
+
+const props = defineProps({
+  project: {
+    type: Object,
+    required: true,
+    default: () => ({ tasks: [] })
+  },
+  taskTimer: Array
+});
+
+const text = ref('Task');
+
+const handleNewData = (data) => {
+  if (!data) {
+    console.error('Received undefined data',data);
+    return;
+  }
+
+
+
+  if (data.projectId) {
+    props.project.tasks.push(data);
+  }
+
+};
+</script>
+
 <template>
   <div class="proj-wrapper">
     <div class="proj-head">
-      <h2 class="title">{{ project.id }} - {{ project.name }}</h2>
+      <h2 class="title"> {{ project.name }}</h2>
       <p class="deadline">Deadline Project: {{ project.deadlineDate }}</p>
       <p class="total-time">Total: {{ secondsToTimeFormat(project.total) }}</p>
     </div>
     <Task v-for="task in project.tasks" :key="task.id" :task="task" />
   </div>
-  <Buttons :text="text" :project="project"></Buttons>
+  <Buttons :text="text" :additionalData="project" @submit-success="handleNewData" ></Buttons>
 </template>
 
-<script>
-import { secondsToTimeFormat } from "@/utils/timeUtils";
-import Task from "./Task.vue";
-import Buttons from "@/components/Buttons.vue";
 
-export default {
-  props: {
-    project: Object,
-    taskTimer: Array
-  },
-  components: {Buttons, Task },
-  methods: { secondsToTimeFormat },
-};
-</script>
 
 
 <style scoped>

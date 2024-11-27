@@ -9,3 +9,8 @@
 2. Apache und MySQL starten und MySQL Admin aufrufen.
 3. In phpMyAdmin die Datenbank work_hours_tracker anlegen.
 4. In IntelliJ die Datenbank hinzufügen.
+
+
+### 3. Entwicklungsserver starten 
+
+1. Frontend und Backend zusammen starten im Verzeichnis src/main/frontend/ mit dem Befehl `npm start` 

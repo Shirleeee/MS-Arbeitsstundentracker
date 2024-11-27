@@ -1,49 +1,56 @@
 <script setup>
 
+import { ref, computed } from 'vue';
+import SubmitForm from './SubmitForm.vue';
+
+const props = defineProps({
+  text: String,
+  additionalData: Object
+});
+
+
+
+const userId = ref('101');
+const projectId = ref('');
+
+const getCurrentDay = computed(() => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+});
+const emit = defineEmits(['submit-success', 'close']);
+
+const handleSubmitSuccess = (data) => {
+
+  emit('submit-success',data);
+  // Emit the 'close' event to close the modal
+  emit('close');
+};
 
 </script>
-<script>
 
-export default {
-  props: ['text'],
-  data() {
-    return {
-
-      title: 'create forms in vue 3',
-      description: 'forms are easy to create in vue 3'
-    }
-  },
-  methods: {
-    create() {
-      console.log('this.title', this.$refs.name)
-      this.$refs.name.classList.add('active')
-      this.$refs.name.focus()
-    },
-    closeModal() {
-
-      this.$emit('close');
-    }
-  }
-}
-</script>
 <template>
-  <div class="backdrop greetings" @click.self="$emit('close')">
+  <div class="backdrop greetings" @click.self="emit('close')">
     <div class="modal">
 
       <h1 class="green">{{ text }}</h1>
 
-      <p>{{ text }}: {{ title }}</p>
+      <SubmitForm
+          v-if="text === 'Project'"
+          formType="Project"
+          submitUrl="http://localhost:8081/api/submitProjectData"
+          additionalField="userId"
+          :additionalValue="userId"
+          @submit-success="handleSubmitSuccess"
+      />
 
-      <form action="" method="get" @submit="create">
-        <label for="title">{{ text }} Title</label>
-        <input type="text" name="title" id="title" ref="name" v-model="title">
-
-        <label for="projectDescription">Description</label>
-        <textarea cols="40" rows="10" name="description" id="description"
-                  v-model="description"></textarea>
-
-        <button @click="create">Create {{ text }}</button>
-      </form>
+      <SubmitForm
+          v-if="text === 'Task'"
+          formType="Task"
+          submitUrl="http://localhost:8081/api/submitTaskData"
+          additionalField="projectId"
+          :additionalValue="props.additionalData.id"
+          @submit-success="handleSubmitSuccess"
+      />
     </div>
 
   </div>
@@ -52,14 +59,6 @@ export default {
 </template>
 
 <style scoped>
-form {
-  display: flex;
-  flex-direction: column;
-
-  & > label {
-    color: #181818;
-  }
-}
 
 .modal {
   width: 400px;
@@ -89,10 +88,10 @@ h1 {
   top: -10px;
 }
 
+
 h3 {
   font-size: 1.2rem;
 }
-
 .greetings h1,
 .greetings h3 {
   text-align: center;
