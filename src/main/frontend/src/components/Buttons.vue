@@ -1,29 +1,23 @@
 <script setup>
-
-
-</script>
-<script>
 import CreateModal from "@/components/Modal.vue";
 
-export default {
-props: ['text'],
-  name: 'Home',
-  components: {CreateModal},
-  data() {
-    return {
-      showModal: false,
-    }
-  },
-  methods: {
+import { ref } from 'vue';
 
-    toggleModal() {
+const props = defineProps({
+  text: String,
+  additionalData: Object
+});
 
-      this.showModal = !this.showModal
-    }
 
-  }
+console.log('Class:BUTTONS, Function: , Line 5 (): ', props.text)
+
+const showModal = ref(false);
+
+function toggleModal() {
+  showModal.value = !showModal.value;
 }
 </script>
+
 <template>
 
   <div class="btn-container">
@@ -35,7 +29,7 @@ props: ['text'],
 
     <div class="create-btn-wrapper">
       <div v-if="showModal">
-        <CreateModal :text="text" :project="project" @close="toggleModal" >
+        <CreateModal :text= text  :additionalData="additionalData" @close="toggleModal" >
         </CreateModal>
       </div>
       <button @click="toggleModal">Create {{ text }}</button>

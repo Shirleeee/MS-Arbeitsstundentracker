@@ -36,8 +36,13 @@ public class ProjectManagementController {
     }
 
     @PostMapping("/submitProjectData")
-    public String submitData(@RequestBody Project project) {
+    public String submitProjectData(@RequestBody Project project) {
         projectRepository.save(project);
         return "Daten empfangen: " + project.toString();
+    }
+    @PostMapping("/submitTaskData")
+    public String submitTaskData(@RequestBody Task task) {
+        taskRepository.save(task);
+        return "Daten empfangen: " + task.toString();
     }
 }

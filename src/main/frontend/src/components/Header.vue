@@ -20,9 +20,7 @@ import Buttons from '@/components/Buttons.vue';
   <header>
     <div class="header-container">
       <h1>Hallo Shirley</h1>
-    <Buttons :text="text">
-
-    </Buttons>
+    <Buttons :text="text"> </Buttons>
 
     </div>
 

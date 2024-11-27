@@ -1,24 +1,20 @@
-<template>
-  <div>
-    <div v-if="error" class="error">{{ error }}</div>
-    <Project v-for="project in projects" :key="project.id" :project="project" />
-  </div>
-</template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
 import { useFetchProjects } from "@/composables/useFetchProjects";
 import Project from "@/components/Project.vue";
 
-export default {
-  components: { Project },
-  setup() {
+const { projects, taskTimer, fetchData, error } = useFetchProjects();
+fetchData();
 
-    const { projects, taskTimer, fetchData, error } = useFetchProjects();
-
-
-    fetchData();
-
-    return { projects, taskTimer, error };
-  },
-};
+const reversedProjects = computed(() => {
+  return projects.value.slice().reverse();
+});
 </script>
+<template>
+  <div>
+    <div v-if="error" class="error">{{ error }}</div>
+    <Project v-for="project in reversedProjects" :key="project.id" :project="project"/>
+  </div>
+</template>
+

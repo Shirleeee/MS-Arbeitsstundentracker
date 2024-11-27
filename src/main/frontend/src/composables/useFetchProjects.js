@@ -28,8 +28,8 @@ export function useFetchProjects() {
             // console.log("Tasks response:", tasksRes);
             // console.log("Time Entries response:", timeEntriesRes);
 
-            // Jetzt kannst du sicherstellen, dass es sich um gültiges JSON handelt:
-            const projectsData = JSON.parse(projectsRes);  // Versuche, es in JSON zu parsen
+
+            const projectsData = JSON.parse(projectsRes);
             const tasksData = JSON.parse(tasksRes);
             const timeEntriesData = JSON.parse(timeEntriesRes);
 

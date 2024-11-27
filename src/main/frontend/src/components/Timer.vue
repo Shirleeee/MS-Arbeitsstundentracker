@@ -1,3 +1,26 @@
+<script setup>
+import { ref } from 'vue';
+import { secondsToTimeFormat } from "@/utils/timeUtils.js";
+import IconEcosystem from "@/components/icons/IconEcosystem.vue";
+import IconSupport from "@/components/icons/IconSupport.vue";
+
+const props = defineProps({
+  timer: Object,
+});
+
+const startTimer = (timer) => {
+  timer.timer = setInterval(() => {
+    timer.trackedTime += 1;
+  }, 1000);
+  timer.isPlaying = true;
+};
+
+const stopTimer = (timer) => {
+  clearInterval(timer.timer);
+  timer.isPlaying = false;
+};
+</script>
+
 <template>
   <div class="icons">
     <p>Time Elapsed: {{ secondsToTimeFormat(timer.trackedTime) }}</p>
@@ -9,29 +32,3 @@
     </i>
   </div>
 </template>
-
-<script>
-import { secondsToTimeFormat } from "@/utils/timeUtils.js";
-import IconEcosystem from "@/components/icons/IconEcosystem.vue";
-import IconSupport from "@/components/icons/IconSupport.vue";
-
-export default {
-  props: {
-    timer: Object,
-  },
-  methods: {
-    startTimer(timer) {
-      timer.timer = setInterval(() => {
-        timer.trackedTime += 1;
-      }, 1000);
-      timer.isPlaying = true;
-    },
-    stopTimer(timer) {
-      clearInterval(timer.timer);
-      timer.isPlaying = false;
-    },
-    secondsToTimeFormat,
-  },
-  components: { IconEcosystem, IconSupport },
-};
-</script>

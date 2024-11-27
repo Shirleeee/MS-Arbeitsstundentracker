@@ -1,3 +1,19 @@
+
+<script setup>
+import { ref } from 'vue';
+import { secondsToTimeFormat } from "@/utils/timeUtils";
+import Task from "./Task.vue";
+import Buttons from "@/components/Buttons.vue";
+
+const props = defineProps({
+  project: Object,
+  taskTimer: Array
+});
+
+const text = ref('Task');
+const showModal = ref(false);
+</script>
+
 <template>
   <div class="proj-wrapper">
     <div class="proj-head">
@@ -7,23 +23,10 @@
     </div>
     <Task v-for="task in project.tasks" :key="task.id" :task="task" />
   </div>
-  <Buttons :text="text" :project="project"></Buttons>
+  <Buttons :text="text" :additionalData= project.id ></Buttons>
 </template>
 
-<script>
-import { secondsToTimeFormat } from "@/utils/timeUtils";
-import Task from "./Task.vue";
-import Buttons from "@/components/Buttons.vue";
 
-export default {
-  props: {
-    project: Object,
-    taskTimer: Array
-  },
-  components: {Buttons, Task },
-  methods: { secondsToTimeFormat },
-};
-</script>
 
 
 <style scoped>
