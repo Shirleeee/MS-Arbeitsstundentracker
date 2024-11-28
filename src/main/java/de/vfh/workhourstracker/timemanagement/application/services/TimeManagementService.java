@@ -1,11 +1,9 @@
 package de.vfh.workhourstracker.timemanagement.application.services;
 
 import de.vfh.workhourstracker.projectmanagement.domain.task.TaskId;
-import de.vfh.workhourstracker.timemanagement.domain.timeentry.EndTime;
-import de.vfh.workhourstracker.timemanagement.domain.timeentry.StartTime;
-import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
-import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;
-import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeEntryCreated;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.*;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeTrackingEndedAndTimeEntryCreated;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeTrackingStarted;
 import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
 import de.vfh.workhourstracker.shared.util.EventLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +27,10 @@ public class TimeManagementService {
         this.timeEntryRepository = timeEntryRepository;
     }
 
-    public TimeEntry createTimeEntry(TaskId taskId, String startTime, String endTime, String timePeriod) {
+    public TimeEntry createTimeEntry(TaskId taskId, LocalDateTime startTime, LocalDateTime endTime) {
         LocalDateTime validStartTime = validateStartTime(startTime);
         LocalDateTime validEndTime = validateEndTime(endTime, startTime);
-        Duration validTimePeriod = validateDuration(timePeriod);
+        Duration validTimePeriod = validateDuration(calculateDuration(startTime, endTime));
 
         if (validStartTime == null || validEndTime == null || validTimePeriod == null) {
             eventLogger.logError("Time entry could not be created because of invalid input.");
@@ -42,10 +40,55 @@ public class TimeManagementService {
         TimeEntry timeEntry = new TimeEntry(taskId, new StartTime(validStartTime), new EndTime(validEndTime), new TimePeriod(validTimePeriod));
         timeEntry = timeEntryRepository.save(timeEntry);
 
-        TimeEntryCreated event = new TimeEntryCreated(this, timeEntry.getId(), timeEntry.getTaskId(), timeEntry.getStartTime(), timeEntry.getEndTime(), timeEntry.getTimePeriod());
+        TimeTrackingEndedAndTimeEntryCreated event = new TimeTrackingEndedAndTimeEntryCreated(this, timeEntry.getId(), timeEntry.getTaskId(), timeEntry.getStartTime(), timeEntry.getEndTime(), timeEntry.getTimePeriod());
         eventPublisher.publishEvent(event);
 
         return timeEntry;
+    }
+
+    public TimeEntry startTimeTracking(TaskId taskId, LocalDateTime startTime) {
+        LocalDateTime validStartTime = validateStartTime(startTime);
+
+        if (validStartTime == null) {
+            eventLogger.logError("Time entry could not be created because of invalid input.");
+            return null;
+        }
+
+        TimeEntry timeEntry = new TimeEntry(taskId, new StartTime(validStartTime), null, null);
+        timeEntry = timeEntryRepository.save(timeEntry);
+
+        TimeTrackingStarted event = new TimeTrackingStarted(this, timeEntry.getId(), timeEntry.getTaskId(), timeEntry.getStartTime());
+        eventPublisher.publishEvent(event);
+
+        return timeEntry;
+    }
+
+    public TimeEntry endTimeTrackingAndCreateTimeEntry(TimeEntryId timeEntryId, LocalDateTime endTime) {
+        TimeEntry existingTimeEntry = timeEntryRepository.findById(timeEntryId.getTimeEntryId()).orElse(null);
+        if (existingTimeEntry == null) {
+            eventLogger.logError("Time entry with ID " + timeEntryId.getTimeEntryId() + " could not be found in database.");
+            return null;
+        }
+        LocalDateTime startTime = existingTimeEntry.getStartTime().getStartTime();
+
+        LocalDateTime validEndTime = validateEndTime(endTime, startTime);
+        Duration validDuration = validateDuration(calculateDuration(startTime, endTime));
+
+        if (validEndTime == null || validDuration == null) {
+            eventLogger.logError("Time entry could not be created because of invalid input.");
+            return null;
+        }
+
+        existingTimeEntry.setEndTime(new EndTime(validEndTime));
+        existingTimeEntry.setTimePeriod(new TimePeriod(validDuration));
+
+        existingTimeEntry = timeEntryRepository.save(existingTimeEntry);
+
+        TimeTrackingEndedAndTimeEntryCreated event = new TimeTrackingEndedAndTimeEntryCreated(this, existingTimeEntry.getId(), existingTimeEntry.getTaskId(), existingTimeEntry.getStartTime(), existingTimeEntry.getEndTime(), existingTimeEntry.getTimePeriod());
+        eventPublisher.publishEvent(event);
+
+        return existingTimeEntry;
+
     }
 
     public TimeEntry findTimeEntryById(Long id) {
@@ -64,89 +107,58 @@ public class TimeManagementService {
         timeEntryRepository.deleteById(id);
     }
 
+    private Duration calculateDuration(LocalDateTime startTime, LocalDateTime endTime) {
+        return Duration.between(startTime, endTime);
+    }
+
     //region validation
-    public LocalDateTime validateStartTime(String startTime) {
+    public LocalDateTime validateStartTime(LocalDateTime startTime) {
         if (startTime == null) {
             eventLogger.logWarning("Startzeitpunkt darf nicht leer sein.");
             return null;
-        } else {
-            String startTimePattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}";
-
-            if (!startTime.matches(startTimePattern)) {
-                eventLogger.logWarning("Startzeitpunkt ist nicht valide.");
-                return null;
-            }
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-            LocalDateTime dateTimeStartTime = LocalDateTime.parse(startTime, formatter);
-//! Doppelter Code
-            LocalDateTime now = LocalDateTime.now();
-
-            if (now.isBefore(dateTimeStartTime)) {
-                eventLogger.logWarning("Startzeitpunkt liegt in der Zukunft.");
-                return null;
-            }
-
-            return dateTimeStartTime;
         }
 
+        if (LocalDateTime.now().isBefore(startTime)) {
+            eventLogger.logWarning("Startzeitpunkt liegt in der Zukunft.");
+            return null;
+        }
+
+        return startTime;
     }
 
-    public LocalDateTime validateEndTime(String endTime, String startTime) {
-        if (endTime == null || endTime.isEmpty()) {
+    public LocalDateTime validateEndTime(LocalDateTime endTime, LocalDateTime startTime) {
+        if (endTime == null) {
             eventLogger.logWarning("Endzeitpunkt darf nicht leer sein.");
             return null;
         }
 
-        String endTimePattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}";
-
-        if (!endTime.matches(endTimePattern)) {
-            eventLogger.logWarning("Endzeitpunkt ist nicht valide.");
-            return null;
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        LocalDateTime dateTimeEndTime = LocalDateTime.parse(endTime, formatter);
-//! Doppelter Code
-        LocalDateTime now = LocalDateTime.now();
-
-        if (now.isBefore(dateTimeEndTime)) {
+        if (LocalDateTime.now().isBefore(endTime)) {
             eventLogger.logWarning("Endzeitpunkt liegt in der Zukunft.");
             return null;
         }
 
-
-        LocalDateTime dateTimeStartTime = LocalDateTime.parse(startTime, formatter);
-
-        if (!dateTimeStartTime.isBefore(dateTimeEndTime)) {
+        if (!startTime.isBefore(endTime)) {
             eventLogger.logWarning("Endzeitpunkt liegt vor Startzeitpunkt.");
             return null;
         }
 
-        if (dateTimeStartTime.isEqual(dateTimeEndTime)) {
+        if (startTime.isEqual(endTime)) {
             eventLogger.logWarning("Endzeitpunkt ist gleich Startzeitpunkt.");
             return null;
         }
-        return dateTimeEndTime;
+        return endTime;
     }
 
-    public Duration validateDuration(String duration) {
-        if (duration == null || duration.isEmpty()) {
+    public Duration validateDuration(Duration duration) {
+        if (duration == null) {
             eventLogger.logWarning("Dauer darf nicht leer sein.");
             return null;
         }
-        String durationPattern = "^P(T(?:(\\d+)H)?(?:(\\d+)M)?(?:(\\d+)S)?)$";
-
-        if (!duration.matches(durationPattern)) {
-            eventLogger.logWarning("Dauer ist nicht valide.");
-            return null;
-        }
-        Duration parsedDuration = Duration.parse(duration);
-        if (parsedDuration.toHours() > 24L) {
+        if (duration.toHours() > 24L) {
             eventLogger.logWarning("Dauer ist zu lang.");
             return null;
         }
-
-        return Duration.parse(duration);
+        return duration;
     }
     //endregion
 }
