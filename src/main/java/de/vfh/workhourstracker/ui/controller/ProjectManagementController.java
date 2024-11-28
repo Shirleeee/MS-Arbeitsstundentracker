@@ -1,10 +1,9 @@
 package de.vfh.workhourstracker.ui.controller;
 
 import de.vfh.workhourstracker.projectmanagement.application.services.ProjectManagementService;
-import de.vfh.workhourstracker.projectmanagement.domain.model.Project;
-import de.vfh.workhourstracker.projectmanagement.domain.model.Task;
-import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
-import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.TaskRepository;
+import de.vfh.workhourstracker.projectmanagement.application.services.TaskManagementService;
+import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
+import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,35 +15,35 @@ import java.util.List;
 public class ProjectManagementController {
 
     private final ProjectManagementService projectManagementService;
-
-    private final ProjectRepository projectRepository;
-    private final TaskRepository taskRepository;
+    private final TaskManagementService taskManagementService; //TODO: in eigenen Controller auslagern
 
     @Autowired
-    public ProjectManagementController(ProjectManagementService projectManagementService, ProjectRepository projectRepository, TaskRepository taskRepository) {
+    public ProjectManagementController(ProjectManagementService projectManagementService, TaskManagementService taskManagementService) {
         this.projectManagementService = projectManagementService;
-        this.projectRepository = projectRepository;
-        this.taskRepository = taskRepository;
+        this.taskManagementService = taskManagementService;
     }
+
     @GetMapping("/project")
     public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+        return projectManagementService.findAllProjects();
     }
+
     @GetMapping("/task")
     public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+        return taskManagementService.findAllTasks();
     }
 
     @PostMapping("/submitProjectData")
     public Project submitProjectData(@RequestBody Project project) {
-        projectRepository.save(project);
+        projectManagementService.saveProject(project);
         return project;
     }
+
     @PostMapping("/submitTaskData")
     public Task submitTaskData(@RequestBody Task task) {
 
 //        this.projectManagementService.createTask(task.getProjectId(), task.getName(), task.getDescription(), String.valueOf(task.getDeadline()));
-        taskRepository.save(task);
+        taskManagementService.saveTask(task);
      //TODO
         return  task;
     }

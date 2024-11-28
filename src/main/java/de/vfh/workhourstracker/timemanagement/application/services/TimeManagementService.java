@@ -1,28 +1,59 @@
 package de.vfh.workhourstracker.timemanagement.application.services;
 
-import de.vfh.workhourstracker.timemanagement.domain.model.TimeEntry;
+import de.vfh.workhourstracker.projectmanagement.domain.task.TaskId;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.EndTime;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.StartTime;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeEntryCreated;
 import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
 import de.vfh.workhourstracker.shared.util.EventLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class TimeManagementService {
-
+    private final ApplicationEventPublisher eventPublisher;
     private final TimeEntryRepository timeEntryRepository;
     EventLogger eventLogger = new EventLogger();
 
     @Autowired
-    public TimeManagementService(TimeEntryRepository timeEntryRepository) {
+    public TimeManagementService(ApplicationEventPublisher eventPublisher, TimeEntryRepository timeEntryRepository) {
+        this.eventPublisher = eventPublisher;
         this.timeEntryRepository = timeEntryRepository;
+    }
+
+    public TimeEntry createTimeEntry(TaskId taskId, String startTime, String endTime, String timePeriod) {
+        LocalDateTime validStartTime = validateStartTime(startTime);
+        LocalDateTime validEndTime = validateEndTime(endTime, startTime);
+        Duration validTimePeriod = validateDuration(timePeriod);
+
+        if (validStartTime == null || validEndTime == null || validTimePeriod == null) {
+            eventLogger.logError("Time entry could not be created because of invalid input.");
+            return null;
+        }
+
+        TimeEntry timeEntry = new TimeEntry(taskId, new StartTime(validStartTime), new EndTime(validEndTime), new TimePeriod(validTimePeriod));
+        timeEntry = timeEntryRepository.save(timeEntry);
+
+        TimeEntryCreated event = new TimeEntryCreated(this, timeEntry.getId(), timeEntry.getTaskId(), timeEntry.getStartTime(), timeEntry.getEndTime(), timeEntry.getTimePeriod());
+        eventPublisher.publishEvent(event);
+
+        return timeEntry;
     }
 
     public TimeEntry findTimeEntryById(Long id) {
         return timeEntryRepository.findById(id).orElse(null);
+    }
+
+    public List<TimeEntry> findAllTimeEntries() {
+        return timeEntryRepository.findAll();
     }
 
     public void save(TimeEntry timeEntry) {

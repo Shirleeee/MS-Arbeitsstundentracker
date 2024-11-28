@@ -1,12 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: Nov 05, 2024 at 12:27 PM
--- Server version: 8.0.36
--- PHP Version: 8.0.30
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -24,166 +15,103 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `projects`
+-- Table structure for table `user`
 --
-
-CREATE TABLE `projects` (
-  `id` bigint NOT NULL,
-  `userId` bigint NOT NULL,
-  `name` varchar(256) NOT NULL,
-  `description` varchar(1024) DEFAULT NULL,
-  `deadline` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `reports`
---
-
-CREATE TABLE `reports` (
-  `id` bigint NOT NULL,
-  `userId` bigint NOT NULL,
-  `date` datetime NOT NULL,
-  `link` varchar(256) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE IF NOT EXISTS `user`
+(
+    `id`           bigint       NOT NULL AUTO_INCREMENT,
+    `name`         varchar(256) NOT NULL,
+    `mail_address` varchar(256) NOT NULL,
+    `created_at`   datetime     DEFAULT NULL,
+    `updated_at`   datetime DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tasks`
+-- Table structure for table `project`
 --
 
-CREATE TABLE `tasks` (
-  `id` bigint NOT NULL,
-  `projectid` bigint NOT NULL,
-  `name` varchar(256) NOT NULL,
-  `description` varchar(1024) DEFAULT NULL,
-  `deadline` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `timeentry`
---
-
-CREATE TABLE `timeentry` (
-  `id` bigint NOT NULL,
-  `taskId` bigint NOT NULL,
-  `startTime` datetime DEFAULT NULL,
-  `endTime` datetime DEFAULT NULL,
-  `duration` bigint DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+CREATE TABLE IF NOT EXISTS `project`
+(
+    `id`          bigint       NOT NULL AUTO_INCREMENT,
+    `user_id`     bigint       NOT NULL,
+    `name`        varchar(256) NOT NULL,
+    `description` varchar(1024) DEFAULT NULL,
+    `deadline`    datetime     NOT NULL,
+    `created_at`  datetime     DEFAULT NULL,
+    `updated_at`  datetime      DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Table structure for table `task`
 --
 
-CREATE TABLE `users` (
-  `id` bigint NOT NULL,
-  `name` varchar(256) NOT NULL,
-  `email` varchar(256) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE IF NOT EXISTS `task`
+(
+    `id`          bigint       NOT NULL AUTO_INCREMENT,
+    `project_id`  bigint       NOT NULL,
+    `name`        varchar(256) NOT NULL,
+    `description` varchar(1024) DEFAULT NULL,
+    `deadline`    datetime      DEFAULT NULL,
+    `created_at`  datetime     DEFAULT NULL,
+    `updated_at`  datetime      DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`project_id`) REFERENCES `project` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
--- Indexes for dumped tables
+-- Table structure for table `time_entry`
 --
 
---
--- Indexes for table `projects`
---
-ALTER TABLE `projects`
-  ADD PRIMARY KEY (`id`);
+CREATE TABLE IF NOT EXISTS `time_entry`
+(
+    `id`          bigint   NOT NULL AUTO_INCREMENT,
+    `task_id`     bigint   NOT NULL,
+    `start_time`  datetime DEFAULT NULL,
+    `end_time`    datetime DEFAULT NULL,
+    `time_period` bigint   DEFAULT NULL,
+    `created_at`  datetime DEFAULT NULL,
+    `updated_at`  datetime DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`task_id`) REFERENCES `task` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
+-- --------------------------------------------------------
 
 --
--- Indexes for table `reports`
---
-ALTER TABLE `reports`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_report_users_idx` (`userId`);
-
---
--- Indexes for table `tasks`
---
-ALTER TABLE `tasks`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `timeentry`
---
-ALTER TABLE `timeentry`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
+-- Table structure for table `report`
 --
 
---
--- AUTO_INCREMENT for table `projects`
---
-ALTER TABLE `projects`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
+CREATE TABLE IF NOT EXISTS `report`
+(
+    `id`         bigint   NOT NULL AUTO_INCREMENT,
+    `user_id`    bigint   NOT NULL,
+    `date`       datetime NOT NULL,
+    `link`       varchar(256) DEFAULT NULL,
+    `created_at` datetime DEFAULT NULL,
+    `updated_at` datetime     DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
 
---
--- AUTO_INCREMENT for table `reports`
---
-ALTER TABLE `reports`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT for table `tasks`
---
-ALTER TABLE `tasks`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `timeentry`
---
-ALTER TABLE `timeentry`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `projects`
---
-ALTER TABLE `projects`
-  ADD CONSTRAINT `fk_projects_users` FOREIGN KEY (`id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `reports`
---
-ALTER TABLE `reports`
-  ADD CONSTRAINT `fk_reports_users` FOREIGN KEY (`userId`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `tasks`
---
-ALTER TABLE `tasks`
-  ADD CONSTRAINT `fk_tasks_users` FOREIGN KEY (`id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `timeentry`
---
-ALTER TABLE `timeentry`
-  ADD CONSTRAINT `fk_time_tasks` FOREIGN KEY (`id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -1,20 +1,43 @@
 package de.vfh.workhourstracker.usermanagement.application.services;
 
-import de.vfh.workhourstracker.usermanagement.domain.model.User;
+import de.vfh.workhourstracker.usermanagement.domain.user.MailAddress;
+import de.vfh.workhourstracker.usermanagement.domain.user.User;
+import de.vfh.workhourstracker.usermanagement.domain.user.UserName;
+import de.vfh.workhourstracker.usermanagement.domain.user.events.UserCreated;
 import de.vfh.workhourstracker.usermanagement.infrastructure.repositories.UserRepository;
 import de.vfh.workhourstracker.shared.util.EventLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-
+    private final ApplicationEventPublisher eventPublisher;
     private final UserRepository userRepository;
     EventLogger eventLogger = new EventLogger();
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(ApplicationEventPublisher eventPublisher, UserRepository userRepository) {
+        this.eventPublisher = eventPublisher;
         this.userRepository = userRepository;
+    }
+
+    public User createUser(String name, String mailAddress) {
+        String validName = validateName(name);
+        String validMailAddress = validateMailAddress(mailAddress);
+
+        if (validName == null || validMailAddress == null) {
+            eventLogger.logError("User could not be created because of invalid input");
+            return null;
+        }
+
+        User user = new User(new UserName(validName), new MailAddress(validMailAddress));
+        user = userRepository.save(user);
+
+        UserCreated event = new UserCreated(this, user.getId(), user.getName(), user.getMailAddress());
+        eventPublisher.publishEvent(event);
+
+        return user;
     }
 
     public User findById(Long id) {
