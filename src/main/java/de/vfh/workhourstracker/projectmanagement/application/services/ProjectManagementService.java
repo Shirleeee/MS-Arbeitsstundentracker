@@ -2,7 +2,7 @@ package de.vfh.workhourstracker.projectmanagement.application.services;
 
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectDescription;
-import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
+
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectName;
 import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectCreated;
 import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectUpdated;
@@ -29,25 +29,30 @@ public class ProjectManagementService {
         this.projectRepository = projectRepository;
         this.eventPublisher = eventPublisher;
     }
-
-    public Project createProject(UserId userId, String name, String description, LocalDateTime deadline) {
+    
+    
+    public Project createProject( UserId userId, String name, String description, LocalDateTime deadline) {
         String validName = validateName(name);
         String validDescription = validateDescription(description);
         LocalDateTime validDeadline = validateDeadline(deadline);
+// Prüfen, ob die ID nach dem Speichern gesetzt ist
+        Project project = new Project( userId, new ProjectName(validName), new ProjectDescription(validDescription), new Deadline(validDeadline));
 
         if (validName == null || validDescription == null || validDeadline == null) {
             eventLogger.logError("Project could not be created because of invalid input.");
             return null;
         }
 
-        Project project = new Project(userId, new ProjectName(validName), new ProjectDescription(validDescription), new Deadline(validDeadline));
         project = projectRepository.save(project);
 
-        ProjectCreated event = new ProjectCreated(this, project.getId(),project.getUserId(), project.getName(), project.getDescription(), project.getDeadline());
+        ProjectCreated event = new ProjectCreated(this, project.getUserId(), project.getName(), project.getDescription(), project.getDeadline());
         eventPublisher.publishEvent(event);
 
         return project;
     }
+
+
+
 
     public Project saveProject(Project project) {
         return projectRepository.save(project);
@@ -60,7 +65,7 @@ public class ProjectManagementService {
     public List<Project> findAllProjects() {
         return projectRepository.findAll();
     }
-
+ 
     public Project updateProject(Long projectId, UserId userId, String name, String description, LocalDateTime deadline) {
         Project existingProject = projectRepository.findById(projectId).orElse(null);
         if (existingProject == null) {
@@ -83,7 +88,7 @@ public class ProjectManagementService {
 
         existingProject = projectRepository.save(existingProject);
 
-        ProjectUpdated event = new ProjectUpdated(this, existingProject.getId(), existingProject.getUserId(), existingProject.getName(), existingProject.getDescription(), existingProject.getDeadline());
+        ProjectUpdated event = new ProjectUpdated(this, existingProject.getUserId(), existingProject.getName(), existingProject.getDescription(), existingProject.getDeadline());
         eventPublisher.publishEvent(event);
 
         return existingProject;

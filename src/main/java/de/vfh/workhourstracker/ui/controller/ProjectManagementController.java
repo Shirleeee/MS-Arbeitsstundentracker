@@ -39,7 +39,8 @@ public class ProjectManagementController {
     public Project submitProjectData(@RequestBody Project project) {
 
         try {
-            return  projectManagementService.createProject(
+            return projectManagementService.createProject(
+
                     project.getUserId(),
                     project.getName().getProjectName(),
                     project.getDescription().getProjectDescription(),
@@ -52,20 +53,31 @@ public class ProjectManagementController {
             return null;
         }
     }
-//TODO: in eigenen ...Ex Handler auslagern
+
+    //TODO: in eigenen ...Ex Handler auslagern
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
 
-
     @PostMapping("/submitTaskData")
     public Task submitTaskData(@RequestBody Task task) {
 
-//      this.projectManagementService.createTask(task.getProjectId(), task.getName(), task.getDescription(), String.valueOf(task.getDeadline()));
-        taskManagementService.saveTask(task);
-     //TODO
-        return  task;
+        try {
+            return taskManagementService.createTask(
+                    task.getProjectId(),
+                    task.getName().getTaskName(),
+                    task.getDescription().getTaskDescription(),
+                    task.getDeadline().getDeadline()
+            );
+
+        } catch (Exception e) {
+
+            handleException(e);
+            return null;
+        }
+
+
     }
 }

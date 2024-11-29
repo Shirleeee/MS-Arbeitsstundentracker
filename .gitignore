@@ -63,3 +63,7 @@ src/main/frontend/package-lock.json
 src/main/frontend/yarn.lock
 
 
+/src/main/frontend/node_modules
+/src/main/frontend/resources/static/assets
+/src/main/frontend/resources/static
+/src/main/frontend/resources/static
