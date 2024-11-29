@@ -12,20 +12,20 @@ import java.time.LocalDateTime;
 
 @Getter
 public class ProjectCreated extends ApplicationEvent {
-    private final ProjectId projectId;
+    private final Long projectId;
     private final UserId userId;
     private final ProjectName projectName;
     private final ProjectDescription projectDescription;
     private final Deadline deadline;
-    private final LocalDateTime occurredAt;
+    private final LocalDateTime created_at;
 
-    public ProjectCreated(Object source, ProjectId projectId, UserId userId, ProjectName projectName, ProjectDescription projectDescription, Deadline deadline) {
+    public ProjectCreated(Object source, Long projectId, UserId userId, ProjectName projectName, ProjectDescription projectDescription, Deadline deadline) {
         super(source);
         this.projectId = projectId;
         this.userId = userId;
         this.projectName = projectName;
         this.projectDescription = projectDescription;
         this.deadline = deadline;
-        this.occurredAt = LocalDateTime.now();
+        this.created_at = LocalDateTime.now();
     }
 }

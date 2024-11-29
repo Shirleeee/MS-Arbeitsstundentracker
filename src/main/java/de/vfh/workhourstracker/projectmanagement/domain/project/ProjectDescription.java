@@ -1,5 +1,6 @@
 package de.vfh.workhourstracker.projectmanagement.domain.project;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,9 +9,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ProjectDescription {
-    private String projectName;
 
-    public ProjectDescription(String projectName) {
-        this.projectName = projectName;
+    private String projectDescription;
+
+    public ProjectDescription(String projectDescription) {
+        this.projectDescription = projectDescription;
     }
 }

@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 
 @Getter
 public class TimeTrackingStarted extends ApplicationEvent {
-    private final TimeEntryId timeEntryId;
+    private final Long id;
     private final TaskId taskId;
     private final StartTime startTime;
     private final LocalDateTime occurredAt;
 
-    public TimeTrackingStarted(Object source, TimeEntryId timeEntryId, TaskId taskId, StartTime startTime) {
+    public TimeTrackingStarted(Object source, Long id, TaskId taskId, StartTime startTime) {
         super(source);
-        this.timeEntryId = timeEntryId;
+        this.id = id;
         this.taskId = taskId;
         this.startTime = startTime;
         this.occurredAt = LocalDateTime.now();

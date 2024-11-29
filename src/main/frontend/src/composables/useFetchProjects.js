@@ -11,7 +11,7 @@ export function useFetchProjects() {
         try {
             const [projectsRes, tasksRes, timeEntriesRes] = await Promise.all([
                 fetch(`http://localhost:8081/api/project`).then(res => {
-                    //console.log(res);
+                console.log(res);
                     return res.text();  // Lese die Antwort als Text
                 }),
                 fetch(`http://localhost:8081/api/task`).then(res => {
@@ -24,9 +24,9 @@ export function useFetchProjects() {
                 }),
             ]);
 
-            // console.log("Projects response:", projectsRes);
-            // console.log("Tasks response:", tasksRes);
-            // console.log("Time Entries response:", timeEntriesRes);
+             // console.log("Projects response:", projectsRes);
+             // console.log("Tasks response:", tasksRes);
+             // console.log("Time Entries response:", timeEntriesRes);
 
 
             const projectsData = JSON.parse(projectsRes);
@@ -47,38 +47,44 @@ export function useFetchProjects() {
     const mapProjects = (projects, tasks, timeEntries) => {
         return projects.map(project => {
 
+            // console.log(project);
+            const projectTasks = tasks.filter(task => {
 
-            const projectTasks = tasks.filter(task => task.projectId.toString() === project.id.toString());
+              console.log(task);
+              return  task.projectId.value.toString() === project.id.toString()
+            });
 
             const mappedTasks = projectTasks.map(task => {
-                const taskTimeEntries = timeEntries.filter(entry => entry.taskId.toString() === task.id.toString());
-
+                const taskTimeEntries = timeEntries.filter(entry => entry.taskId.taskId.toString() === task.id.toString());
+                console.log("taskTimeEntries");
+                console.log(taskTimeEntries);
 
                 taskTimer.value.push({
-                    taskId: task.id,
+                    taskId: task.taskId,
                     projectId: project.id,
                     timer: null,
                     isPlaying: false,
-                    trackedTime: taskTimeEntries.reduce((sum, entry) => sum + parseDuration(entry.duration), 0),
+                    trackedTime: taskTimeEntries.reduce((sum, entry) => sum + parseDuration(entry.timePeriod.timePeriod), 0),
                 });
-
+//                 console.log("taskTimer");
+// console.log(taskTimer);
                 return {
                     ...task,
                     timeEntries: taskTimeEntries,
-                    deadlineDate: formatDate(task.deadline),
-                    deadlineTime: formatTime(task.deadline),
+                    deadlineDate: formatDate(task.deadline.deadline),
+                    deadlineTime: formatTime(task.deadline.deadline),
                 };
             });
 
             const totalTrackedTime = mappedTasks.reduce((sum, task) => {
-                return sum + task.timeEntries.reduce((timeSum, entry) => timeSum + parseDuration(entry.duration), 0);
+                return sum + task.timeEntries.reduce((timeSum, entry) => timeSum + parseDuration(entry.timePeriod.timePeriod), 0);
             }, 0);
 
             return {
                 ...project,
                 tasks: mappedTasks,
-                deadlineDate: formatDate(project.deadline),
-                deadlineTime: formatTime(project.deadline),
+                deadlineDate: formatDate(project.deadline.deadline	),
+                deadlineTime: formatTime(project.deadline.deadline	),
                 total: totalTrackedTime,
             };
         });

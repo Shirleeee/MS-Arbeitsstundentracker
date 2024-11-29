@@ -52,19 +52,19 @@ public class TaskManagementService {
         return taskRepository.save(task);
     }
 
-    public Task findTask(Long taskId) {
-        return taskRepository.findById(taskId).orElse(null);
+    public Task findTask(TaskId taskId) {
+        return taskRepository.findById(taskId.getTaskId()).orElse(null);
     }
 
     public List<Task> findAllTasks() {
         return taskRepository.findAll();
     }
 
-    public Task updateTask(TaskId taskId, ProjectId projectId, String name, String description, LocalDateTime deadline) {
+    public Task updateTask(Long taskId, ProjectId projectId, String name, String description, LocalDateTime deadline) {
         //TODO: wie macht man das am besten mit der ID?
-        Task existingTask = taskRepository.findById(taskId.getTaskId()).orElse(null);
+        Task existingTask = taskRepository.findById(taskId).orElse(null);
         if (existingTask == null) {
-            eventLogger.logError("Task with ID " + taskId.getTaskId() + " does not exist in database.");
+            eventLogger.logError("Task with ID " + taskId + " does not exist in database.");
             return null;
         }
 

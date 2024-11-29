@@ -12,16 +12,16 @@ import java.time.LocalDateTime;
 
 @Getter
 public class TimeTrackingEndedAndTimeEntryCreated extends ApplicationEvent {
-    private final TimeEntryId timeEntryId;
+    private final Long id;
     private final TaskId taskId;
     private final StartTime startTime;
     private final EndTime endTime;
     private final TimePeriod timePeriod;
     private final LocalDateTime occurredAt;
 
-    public TimeTrackingEndedAndTimeEntryCreated(Object source, TimeEntryId timeEntryId, TaskId taskId, StartTime startTime, EndTime endTime, TimePeriod timePeriod) {
+    public TimeTrackingEndedAndTimeEntryCreated(Object source, Long id, TaskId taskId, StartTime startTime, EndTime endTime, TimePeriod timePeriod) {
         super(source);
-        this.timeEntryId = timeEntryId;
+        this.id = id;
         this.taskId = taskId;
         this.startTime = startTime;
         this.endTime = endTime;

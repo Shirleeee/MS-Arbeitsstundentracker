@@ -1,6 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 import axios from 'axios';
+import {formatDateForBackend} from "@/utils/timeUtils.js";
+
 const props = defineProps({
   formType: {
     type: String,
@@ -27,12 +29,24 @@ const deadline = ref('');
 
 const submit = async () => {
   try {
-    const data = {
-      name: title.value,
-      description: description.value,
-      deadline: new Date(deadline.value),
-    };
+    let data;
+    if (props.formType === 'Task') {
+      data = {
 
+        name: {taskName: title.value},
+        description: {taskDescription: description.value},
+        deadline: {deadline: formatDateForBackend(deadline.value)},
+      };
+    } else {
+      data = {
+        userId: 101,
+        name: {projectName: title.value},
+        description: {projectDescription: description.value},
+        deadline: {deadline: formatDateForBackend(deadline.value)},
+      };
+    }
+
+    console.log("data", data);
     if (props.additionalField) {
       data[props.additionalField] = props.additionalValue;
     }
@@ -42,7 +56,12 @@ const submit = async () => {
         'Content-Type': 'application/json',
       },
     });
-
+    console.log("response", response);
+    if (response.data) {
+      emit('submit-success', response.data);
+    } else {
+      console.error('Received empty response data');
+    }
 
     emit('submit-success', response.data);
   } catch (error) {
@@ -81,9 +100,11 @@ form {
     color: #181818;
   }
 }
+
 button {
   margin-top: 10px;
 }
+
 h3 {
   font-size: 1.2rem;
 }

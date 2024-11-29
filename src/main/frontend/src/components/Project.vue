@@ -1,7 +1,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { secondsToTimeFormat } from "@/utils/timeUtils";
+import {millisecondsToTimeFormat} from "@/utils/timeUtils";
 import Task from "./Task.vue";
 import Buttons from "@/components/Buttons.vue";
 
@@ -16,7 +16,13 @@ const props = defineProps({
 
 const text = ref('Task');
 
+console.log("project.total");
+console.log( props.project.total);
+
+
 const handleNewData = (data) => {
+
+  console.log("data Project Vue",data);
   if (!data) {
     console.error('Received undefined data',data);
     return;
@@ -34,11 +40,11 @@ const handleNewData = (data) => {
 <template>
   <div class="proj-wrapper">
     <div class="proj-head">
-      <h2 class="title"> {{ project.name }}</h2>
+      <h2 class="title"> {{ project.name.projectName	 }}</h2>
       <p class="deadline">Deadline Project: {{ project.deadlineDate }}</p>
-      <p class="total-time">Total: {{ secondsToTimeFormat(project.total) }}</p>
+      <p class="total-time">Total: {{ millisecondsToTimeFormat(project.total) }}</p>
     </div>
-    <Task v-for="task in project.tasks" :key="task.id" :task="task" />
+    <Task v-for="task in project.tasks" :key="task.id.taskId" :task="task" />
   </div>
   <Buttons :text="text" :additionalData="project" @submit-success="handleNewData" ></Buttons>
 </template>

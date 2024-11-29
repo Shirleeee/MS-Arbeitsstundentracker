@@ -12,7 +12,6 @@ fetchData();
 const reversedProjects = computed(() => {
   return projects.value.slice().reverse();
 });
-console.log(reversedProjects);
 const updateProjects = (newProject) => {
 
   if (!newProject.tasks) {
