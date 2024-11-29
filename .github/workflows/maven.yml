@@ -44,7 +44,7 @@ jobs:
 
     - name: Install dependencies
       working-directory: src/main/frontend
-      run: npm install
+      run: yarn install
     - name: Set permissions for working directory
       working-directory: src/main/frontend
       run: chmod -R 755 .
