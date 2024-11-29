@@ -5,7 +5,8 @@ import { ref } from 'vue';
 
 const props = defineProps({
   text: String,
-  additionalData: Object
+  additionalData: Object,
+  showModal:Boolean
 });
 
 
@@ -28,7 +29,7 @@ const handleSubmitSuccess = (data) => {
       <button>Export</button>
     </div>
     <div class="create-btn-wrapper">
-      <CreateModal v-if="isModalOpen" :text="text" :additionalData="additionalData"  @submit-success="handleSubmitSuccess" />
+      <CreateModal v-if="isModalOpen" :text="text" :additionalData="additionalData"  @close="toggleModal"  @submit-success="handleSubmitSuccess" />
       <button @click="toggleModal" >Create {{ text }} </button>
     </div>
   </div>

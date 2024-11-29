@@ -21,6 +21,8 @@ console.log( props.project.total);
 
 
 const handleNewData = (data) => {
+
+  console.log("data Project Vue",data);
   if (!data) {
     console.error('Received undefined data',data);
     return;

@@ -50,18 +50,18 @@ export function useFetchProjects() {
             // console.log(project);
             const projectTasks = tasks.filter(task => {
 
-                // console.log(task);
-              return  task.projectId.value.toString() === project.id.value.toString()
+              console.log(task);
+              return  task.projectId.value.toString() === project.id.toString()
             });
 
             const mappedTasks = projectTasks.map(task => {
-                const taskTimeEntries = timeEntries.filter(entry => entry.taskId.taskId.toString() === task.id.taskId.toString());
+                const taskTimeEntries = timeEntries.filter(entry => entry.taskId.taskId.toString() === task.id.toString());
                 console.log("taskTimeEntries");
                 console.log(taskTimeEntries);
 
                 taskTimer.value.push({
-                    taskId: task.id.taskId,
-                    projectId: project.id.value,
+                    taskId: task.taskId,
+                    projectId: project.id,
                     timer: null,
                     isPlaying: false,
                     trackedTime: taskTimeEntries.reduce((sum, entry) => sum + parseDuration(entry.timePeriod.timePeriod), 0),

@@ -17,21 +17,26 @@ import java.time.LocalDateTime;
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private ProjectId id;
+    @Column(name = "id", insertable = false, updatable = false)
+    private Long id;
 
     @Column(name = "user_id")
     private UserId userId;
 
-    //    @Embedded
-//    @AttributeOverride(name = "projectName", column = @Column(name = "name"))
+//    @Embedded
+//    @AttributeOverride(name = "value", column = @Column(name = "project_name"))
     @Column(name = "project_name")
     private ProjectName name;
 
-    @Column(name = "project_description")
+//    @Embedded
+//    @AttributeOverride(name = "value", column = @Column(name = "project_description"))
+@Column(name = "project_description")
+
     private ProjectDescription description;
 
-    @Column(name = "deadline")
+//    @Embedded
+//    @AttributeOverride(name = "value", column = @Column(name = "deadline"))
+@Column(name = "deadline")
     private Deadline deadline;
 
     @CreatedDate

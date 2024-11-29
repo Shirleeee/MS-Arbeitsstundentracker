@@ -1,5 +1,6 @@
 package de.vfh.workhourstracker.timemanagement.domain.timeentry;
 
+import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
 import de.vfh.workhourstracker.projectmanagement.domain.task.TaskId;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -16,10 +17,12 @@ import java.time.LocalDateTime;
 public class TimeEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "time_entry_id")
-    private TimeEntryId id;
+    @Column(name = "id", insertable = false, updatable = false)
+    private Long id;
 
-    @Column(name = "task_id")
+
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "task_id"))
     private TaskId taskId;
 
     @Column(name = "start_time")

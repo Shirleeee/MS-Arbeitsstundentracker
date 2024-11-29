@@ -5,12 +5,14 @@ import { ref } from 'vue';
 import Buttons from "@/components/Buttons.vue";
 
 const props = defineProps({
-  projects: Array
+  projects: Array,
+
 });
 
 const text = ref('Project');
 const emit = defineEmits(['update-projects']);
 const handleNewData = (data) => {
+  console.log("data Header Vue",data);
   if (!data) {
     console.error('Received undefined data',data);
     return;

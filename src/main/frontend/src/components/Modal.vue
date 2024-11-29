@@ -1,13 +1,12 @@
 <script setup>
 
-import { ref, computed } from 'vue';
+import {ref, computed} from 'vue';
 import SubmitForm from './SubmitForm.vue';
 
 const props = defineProps({
   text: String,
   additionalData: Object
 });
-
 
 
 const userId = ref('101');
@@ -21,15 +20,20 @@ const emit = defineEmits(['submit-success', 'close']);
 
 const handleSubmitSuccess = (data) => {
 
-  emit('submit-success',data);
+  emit('submit-success', data);
   // Emit the 'close' event to close the modal
   emit('close');
 };
 
+const methods = {
+  closeModal() {
+    emit('close');
+  }
+};
 </script>
 
 <template>
-  <div class="backdrop greetings" @click.self="emit('close')">
+  <div class="backdrop greetings" @click.self="methods.closeModal">
     <div class="modal">
 
       <h1 class="green">{{ text }}</h1>
@@ -92,6 +96,7 @@ h1 {
 h3 {
   font-size: 1.2rem;
 }
+
 .greetings h1,
 .greetings h3 {
   text-align: center;

@@ -34,3 +34,9 @@ export const parseDuration = (durationStr) => {
         return 0; // Standardwert bei Fehlern
     }
 };
+
+
+export const formatDateForBackend = (date) => {
+    const d = new Date(date);
+    return d.toISOString().split('T')[0] + 'T00:00:00';
+};

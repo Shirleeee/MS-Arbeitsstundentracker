@@ -43,7 +43,7 @@ public class ProjectManagementService {
         Project project = new Project(userId, new ProjectName(validName), new ProjectDescription(validDescription), new Deadline(validDeadline));
         project = projectRepository.save(project);
 
-        ProjectCreated event = new ProjectCreated(this, project.getId(), project.getUserId(), project.getName(), project.getDescription(), project.getDeadline());
+        ProjectCreated event = new ProjectCreated(this, project.getId(),project.getUserId(), project.getName(), project.getDescription(), project.getDeadline());
         eventPublisher.publishEvent(event);
 
         return project;
@@ -61,10 +61,10 @@ public class ProjectManagementService {
         return projectRepository.findAll();
     }
 
-    public Project updateProject(ProjectId projectId, UserId userId, String name, String description, LocalDateTime deadline) {
-        Project existingProject = projectRepository.findById(projectId.getValue()).orElse(null);
+    public Project updateProject(Long projectId, UserId userId, String name, String description, LocalDateTime deadline) {
+        Project existingProject = projectRepository.findById(projectId).orElse(null);
         if (existingProject == null) {
-            eventLogger.logError("Project with ID " + projectId.getValue() + " does not exist in database.");
+            eventLogger.logError("Project with ID " + projectId + " does not exist in database.");
             return null;
         }
 

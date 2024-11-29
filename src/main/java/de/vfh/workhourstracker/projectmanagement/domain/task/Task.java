@@ -17,10 +17,13 @@ import java.time.LocalDateTime;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id")
-    private TaskId id;
+    @Column(name = "id", insertable = false, updatable = false)
+    private Long id;
 
-    @Column(name = "project_id")
+
+
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "project_id"))
     private ProjectId projectId;
 
     @Column(name = "task_name")
