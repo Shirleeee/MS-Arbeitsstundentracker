@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationEvent;
 import java.time.LocalDateTime;
 
 @Getter
-public class TimeEntryCreated extends ApplicationEvent {
+public class TimeTrackingEndedAndTimeEntryCreated extends ApplicationEvent {
     private final TimeEntryId timeEntryId;
     private final TaskId taskId;
     private final StartTime startTime;
@@ -19,7 +19,7 @@ public class TimeEntryCreated extends ApplicationEvent {
     private final TimePeriod timePeriod;
     private final LocalDateTime occurredAt;
 
-    public TimeEntryCreated(Object source, TimeEntryId timeEntryId, TaskId taskId, StartTime startTime, EndTime endTime, TimePeriod timePeriod) {
+    public TimeTrackingEndedAndTimeEntryCreated(Object source, TimeEntryId timeEntryId, TaskId taskId, StartTime startTime, EndTime endTime, TimePeriod timePeriod) {
         super(source);
         this.timeEntryId = timeEntryId;
         this.taskId = taskId;

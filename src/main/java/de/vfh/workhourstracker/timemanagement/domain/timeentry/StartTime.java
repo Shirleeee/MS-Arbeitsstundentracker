@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class StartTime {
-    private LocalDateTime endTime;
+    private LocalDateTime startTime;
 
-    public StartTime(LocalDateTime endTime) {
-        this.endTime = endTime;
+    public StartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 }
