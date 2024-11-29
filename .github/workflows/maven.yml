@@ -42,6 +42,12 @@ jobs:
       with:
         node-version: '18'
 
+    - name: Clear npm cache (to avoid issues)
+      run: npm cache clean --force
+    - name: Remove node_modules and package-lock.json (if exists)
+      working-directory: src/main/frontend
+      run: |
+          rm -rf node_modules package-lock.json
     - name: Install dependencies
       working-directory: src/main/frontend
       run: npm install
