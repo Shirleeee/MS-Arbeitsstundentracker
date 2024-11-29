@@ -38,8 +38,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-
+      - name: Remove node_modules and package-lock.json
+        run: |
+          rm -rf node_modules
+          rm -f package-lock.json
       - name: Clear Node.js cache
+        working-directory: src/main/frontend
         run: npm cache clean --force
 
       - name: Set up Node.js
@@ -52,7 +56,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: src/main/frontend
-        run: npm install
+        run: yarn install
 
 
       - name: Set permissions for working directory
