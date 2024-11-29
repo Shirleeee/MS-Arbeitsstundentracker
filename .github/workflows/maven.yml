@@ -48,9 +48,12 @@ jobs:
       working-directory: src/main/frontend
       run: |
           rm -rf node_modules package-lock.json
-    - name: Install Rollup binary
+    - name: install npm dependencies
+
       working-directory: src/main/frontend
-      run: npm install @rollup/rollup-linux-x64-gnu
+      run:
+        npm i
+
     - name: Install dependencies
       working-directory: src/main/frontend
       run: npm install
