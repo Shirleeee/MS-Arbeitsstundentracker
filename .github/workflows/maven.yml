@@ -1,20 +1,13 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Java CI with Maven
 
 on:
   pull_request:
     branches: [ "main" ]
+  push:
+    branches: [ "update-value-objects" ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -27,8 +20,8 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=3
-        
-      steps:
+
+    steps:
       - uses: actions/checkout@v4
 
       - name: Set up JDK 21
@@ -38,46 +31,37 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Clear Node.js cache
+        run: npm cache clean --force
+
       - name: Remove node_modules and package-lock.json
         run: |
           rm -rf node_modules
           rm -f package-lock.json
-      - name: Clear Node.js cache
-        working-directory: src/main/frontend
-        run: npm cache clean --force
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      - name: Check Node.js version
-        run: node --version
-
-      - name: Install dependencies
+      - name: Install dependencies with npm i
         working-directory: src/main/frontend
-        run: yarn install
-
-
-      - name: Set permissions for working directory
-        working-directory: src/main/frontend
-        run: chmod -R 755 .
+        run: npm i
 
       - name: Build project
         working-directory: src/main/frontend
         run: npm run build
 
-
       - name: Wait for MySQL to start
         run: |
-            for i in {1..10}; do
-              if mysqladmin ping -h"127.0.0.1" --silent; then
-                echo "MySQL is up and running"
-                break
-              fi
-              echo "Waiting for MySQL..."
-              sleep 3
-            done
+          for i in {1..10}; do
+            if mysqladmin ping -h"127.0.0.1" --silent; then
+              echo "MySQL is up and running"
+              break
+            fi
+            echo "Waiting for MySQL..."
+            sleep 3
+          done
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
