@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class TimeEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "time_entry_id")
     private TimeEntryId id;
 
     @Column(name = "task_id")

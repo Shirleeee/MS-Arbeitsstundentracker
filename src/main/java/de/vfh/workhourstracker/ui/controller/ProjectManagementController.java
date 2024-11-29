@@ -42,7 +42,7 @@ public class ProjectManagementController {
     @PostMapping("/submitTaskData")
     public Task submitTaskData(@RequestBody Task task) {
 
-//        this.projectManagementService.createTask(task.getProjectId(), task.getName(), task.getDescription(), String.valueOf(task.getDeadline()));
+//      this.projectManagementService.createTask(task.getProjectId(), task.getName(), task.getDescription(), String.valueOf(task.getDeadline()));
         taskManagementService.saveTask(task);
      //TODO
         return  task;

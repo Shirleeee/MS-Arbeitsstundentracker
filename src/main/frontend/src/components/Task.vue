@@ -10,14 +10,14 @@ const props = defineProps({
 });
 
 const { projects, taskTimer, fetchData, error } = useFetchProjects();
-
+console.log(props.task);
 fetchData();
 </script>
 
 <template>
   <ul class="task">
     <li>
-      <p>Task: {{ task.name }}</p>
+      <p>Task: {{ task.name.taskName }}</p>
       <p>Deadline: {{ task.deadlineDate }} {{ task.deadlineTime }}</p>
       <div v-if="taskTimer && taskTimer.length">
         <Timer v-for="timer in taskTimer.filter(taskTime => task.id.toString() === taskTime.taskId.toString())" :key="timer.id" :timer="timer" />

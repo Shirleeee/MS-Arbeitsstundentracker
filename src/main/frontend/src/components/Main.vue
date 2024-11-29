@@ -14,7 +14,7 @@ console.log(props.projects);
 <template>
   <div>
 
-    <Project v-for="project in props.projects" :key="project.id" :project="project" />
+    <Project v-for="project in props.projects" :key="project.id.value" :project="project" />
   </div>
 </template>
 

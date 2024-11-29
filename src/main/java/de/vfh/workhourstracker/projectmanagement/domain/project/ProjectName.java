@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ProjectName {
-    @Column(insertable = false, updatable = false)
+
     private String projectName;
 
     public ProjectName(String projectName) {

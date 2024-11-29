@@ -25,10 +25,10 @@ public class Project {
 
     //    @Embedded
 //    @AttributeOverride(name = "projectName", column = @Column(name = "name"))
-    @Column(name = "name")
+    @Column(name = "project_name")
     private ProjectName name;
 
-    @Column(name = "description")
+    @Column(name = "project_description")
     private ProjectDescription description;
 
     @Column(name = "deadline")

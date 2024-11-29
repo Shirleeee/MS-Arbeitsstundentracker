@@ -17,16 +17,16 @@ import java.time.LocalDateTime;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "task_id")
     private TaskId id;
 
     @Column(name = "project_id")
     private ProjectId projectId;
 
-    @Column(name = "name")
+    @Column(name = "task_name")
     private TaskName name;
 
-    @Column(name = "description")
+    @Column(name = "task_description")
     private TaskDescription description;
 
     @Column(name = "deadline")
