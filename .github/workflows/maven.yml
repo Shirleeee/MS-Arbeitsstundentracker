@@ -40,7 +40,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18'
+        node-version: '20'
 
     - name: Clear npm cache (to avoid issues)
       run: npm cache clean --force
@@ -48,6 +48,9 @@ jobs:
       working-directory: src/main/frontend
       run: |
           rm -rf node_modules package-lock.json
+    - name: Install Rollup binary
+      working-directory: src/main/frontend
+      run: npm install @rollup/rollup-linux-x64-gnu
     - name: Install dependencies
       working-directory: src/main/frontend
       run: npm install
