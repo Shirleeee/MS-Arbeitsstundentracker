@@ -40,11 +40,11 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18'
+        node-version: '21'
 
     - name: Install dependencies
       working-directory: src/main/frontend
-      run: yarn install
+      run: npm install
     - name: Set permissions for working directory
       working-directory: src/main/frontend
       run: chmod -R 755 .
