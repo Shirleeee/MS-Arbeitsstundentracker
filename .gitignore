@@ -61,3 +61,4 @@ build/
 
 /src/main/frontend/node_modules/.bin
 /src/main/frontend/node_modules
+src/main/frontend/package-lock.json
