@@ -30,46 +30,52 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=3
         
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-
-    - name: Install dependencies
-      working-directory: src/main/frontend
-      run: npm install
-    - name: Set permissions for working directory
-      working-directory: src/main/frontend
-      run: chmod -R 755 .
-
-    - name: Build project
-      working-directory: src/main/frontend
-      run: npm run build
+        steps:
+          - uses: actions/checkout@v4
+  
+          - name: Set up JDK 21
+            uses: actions/setup-java@v4
+            with:
+              java-version: '21'
+              distribution: 'temurin'
+              cache: maven
 
 
+  
+          - name: Clear Node.js cache
+            run: npm cache clean --force
+  
+          - name: Remove node_modules and package-lock.json
+            run: |
+              rm -rf node_modules
+              rm -f package-lock.json
+  
+          - name: Set up Node.js
+            uses: actions/setup-node@v3
+            with:
+              node-version: '20'  
+      
+          - name: Install dependencies with npm i
+            working-directory: src/main/frontend
+            run: npm i
+  
+          - name: Build project
+            working-directory: src/main/frontend
+            run: npm run build
+  
+          - name: Wait for MySQL to start
+            run: |
+                for i in {1..10}; do
+                  if mysqladmin ping -h"127.0.0.1" --silent; then
+                    echo "MySQL is up and running"
+                    break
+                  fi
+                  echo "Waiting for MySQL..."
+                  sleep 3
+                done
+  
+          - name: Build with Maven
+            run: mvn -B package --file pom.xml
 
-    - name: Wait for MySQL to start
-      run: |
-          for i in {1..10}; do
-            if mysqladmin ping -h"127.0.0.1" --silent; then
-              echo "MySQL is up and running"
-              break
-            fi
-            echo "Waiting for MySQL..."
-            sleep 3
-          done
-
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-
-    - name: Run Tests
-      run: mvn -B test -X
+        - name: Run Tests
+          run: mvn -B test -X
