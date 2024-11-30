@@ -4,7 +4,7 @@ import axios from 'axios';
 import {formatDateForBackend} from "@/utils/timeUtils.js";
 import {useForm} from "@/composables/useForm.js";
 import {useFormData, useFormType} from "@/composables/useFormData.js";
-
+//definiert Props die von der Elternkomponente übergeben werden
 const props = defineProps({
   formType: String,
   submitUrl: String,
@@ -14,6 +14,8 @@ const props = defineProps({
   },
   showModal: Boolean,
 });
+// emit = ausstrahlen, abgeben
+//ermöglicht es der Komponente, mit ihrer übergeordneten Komponente zu kommunizieren, indem sie diese Ereignisse aussendet.
 const emit = defineEmits(['submit-success', 'close']);
 
 const {title, description, deadline} = useFormType(props.formType);
@@ -38,6 +40,7 @@ const submit = async (event) => {
       deadline: ''
     };
    emit('submit-success', response.data);
+    emit('close');
   } catch (error) {
 
     if (error.response && error.response.data) {

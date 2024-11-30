@@ -1,19 +1,27 @@
-/**
- * Konvertiert Sekunden in ein Zeitformat (HH:MM:SS).
- * @param {number} milliseconds - Die Anzahl der Sekunden.
- * @returns {string} - Formatierte Zeit als HH:MM:SS.
- */
-export function millisecondsToTimeFormat(milliseconds) {
-    // Berechne die Stunden, Minuten, Sekunden und verbleibenden Millisekunden
-    const hours = Math.floor(milliseconds / 3600000); // 1 Stunde = 3600000 Millisekunden
-    const minutes = Math.floor((milliseconds % 3600000) / 60000); // 1 Minute = 60000 Millisekunden
-    const seconds = Math.floor((milliseconds % 60000) / 1000); // 1 Sekunde = 1000 Millisekunden
-    const millisecondsLeft = milliseconds % 1000; // Die verbleibenden Millisekunden
+export function convertDurationToDHMS(durationStr) {
+    if (!durationStr) {
+        return '00:00:00';
+    }
 
-    // Rückgabe im Format hh:mm:ss:SSS
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(millisecondsLeft).padStart(3, '0')}`;
+    // Extract milliseconds from the duration string
+    const durationInSeconds = parseFloat(durationStr.replace('00PT', '').replace('S', ''));
+    const milliseconds = durationInSeconds * 1000;
+
+    // Calculate days, hours, and minutes
+    const days = Math.floor(milliseconds / (24 * 60 * 60 * 1000));
+    const hours = Math.floor((milliseconds % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    const minutes = Math.floor((milliseconds % (60 * 60 * 1000)) / (60 * 1000));
+
+    // Format the result as `dd:hh:mm`
+    return `${String(days).padStart(2, '0')}:${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
-
+export function formatDateToDDMMYYYY(datetimeStr) {
+    const date = new Date(datetimeStr);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+}
 export const parseDuration = (durationStr) => {
 
 

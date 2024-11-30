@@ -32,8 +32,8 @@ export function useFormType(formType) {
         description.value = 'create form in vueJs';
         deadline.value = '';
     } else if (formType === 'Project') {
-        title.value = 'PROJECT create form in vueJs'.repeat(200);
-        description.value = 'create form in vueJs'.repeat(200);
+        title.value = 'PROJECT create form in vueJs'//.repeat(200);
+        description.value = 'create form in vueJs'//.repeat(200);
         deadline.value = '';
     }
 

@@ -1,6 +1,6 @@
 <script setup>
 import {ref} from 'vue';
-import {millisecondsToTimeFormat} from "@/utils/timeUtils.js";
+import {convertDurationToDHMS} from "@/utils/timeUtils.js";
 import PlayButtonSVG from "@/components/icons/PlayButtonSVG.vue";
 import IconSupport from "@/components/icons/IconSupport.vue";
 
@@ -23,7 +23,7 @@ const stopTimer = (timer) => {
 
 <template>
   <div class="icons">
-    <p>Time Elapsed: {{ millisecondsToTimeFormat(timer.trackedTime) }}</p>
+    <p>Time Elapsed: {{ convertDurationToDHMS(timer.trackedTime) }}</p>
     <i class="play-btn" @click="startTimer(timer)">
       <PlayButtonSVG/>
     </i>

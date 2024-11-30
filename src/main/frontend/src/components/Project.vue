@@ -1,7 +1,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import {millisecondsToTimeFormat} from "@/utils/timeUtils";
+import {convertDurationToDHMS, formatDateToDDMMYYYY} from "@/utils/timeUtils";
 import Task from "./Task.vue";
 import Buttons from "@/components/Buttons.vue";
 
@@ -26,7 +26,7 @@ const handleNewData = (data) => {
   if (data.projectId) {
     props.project.tasks.push(data);
   }
-
+console.log("project.total",project);
 };
 </script>
 
@@ -34,8 +34,8 @@ const handleNewData = (data) => {
   <div class="proj-wrapper">
     <div class="proj-head">
       <h2 class="title"> {{ project.name.projectName	 }}</h2>
-      <p class="deadline">Deadline Project: {{ project.deadlineDate }}</p>
-      <p class="total-time">Total: {{ millisecondsToTimeFormat(project.total) }}</p>
+      <p class="deadline">Deadline Project: {{ formatDateToDDMMYYYY(project.deadline.deadline )}}</p>
+      <p class="total-time">Total: {{ convertDurationToDHMS(project.total) }}</p>
     </div>
     <Task v-for="task in project.tasks" :key="task.task_id" :task="task" />
   </div>
