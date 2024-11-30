@@ -5,7 +5,8 @@ import SubmitForm from './SubmitForm.vue';
 
 const props = defineProps({
   text: String,
-  additionalData: Object
+  additionalData: Object,
+    showModal:Boolean
 });
 
 
@@ -21,7 +22,7 @@ const emit = defineEmits(['submit-success', 'close']);
 const handleSubmitSuccess = (data) => {
 
   emit('submit-success', data);
-  // Emit the 'close' event to close the modal
+
   emit('close');
 };
 
@@ -50,6 +51,8 @@ const methods = {
       <SubmitForm
           v-if="text === 'Task'"
           formType="Task"
+          @close="toggleModal"
+          :showModal="showModal"
           submitUrl="http://localhost:8081/api/submitTaskData"
           additionalField="projectId"
           :additionalValue="props.additionalData.id"

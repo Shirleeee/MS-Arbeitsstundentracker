@@ -1,5 +1,6 @@
-import { ref } from "vue";
+import {ref} from "vue";
 import {parseDuration} from "./../utils/timeUtils.js"
+
 // Custom Hook für Projekte, Tasks und Time Entries
 export function useFetchProjects() {
     const projects = ref([]);
@@ -11,7 +12,7 @@ export function useFetchProjects() {
         try {
             const [projectsRes, tasksRes, timeEntriesRes] = await Promise.all([
                 fetch(`http://localhost:8081/api/project`).then(res => {
-                console.log(res);
+                    // console.log(res);
                     return res.text();  // Lese die Antwort als Text
                 }),
                 fetch(`http://localhost:8081/api/task`).then(res => {
@@ -24,9 +25,9 @@ export function useFetchProjects() {
                 }),
             ]);
 
-             // console.log("Projects response:", projectsRes);
-             // console.log("Tasks response:", tasksRes);
-             // console.log("Time Entries response:", timeEntriesRes);
+            // console.log("Projects response:", projectsRes);
+            // console.log("Tasks response:", tasksRes);
+            // console.log("Time Entries response:", timeEntriesRes);
 
 
             const projectsData = JSON.parse(projectsRes);
@@ -50,24 +51,25 @@ export function useFetchProjects() {
             // console.log(project);
             const projectTasks = tasks.filter(task => {
 
-              console.log(task);
-              return  task.projectId.value.toString() === project.id.toString()
+                // console.log(task);
+                return task.projectId.value.toString() === project.id.toString()
             });
 
             const mappedTasks = projectTasks.map(task => {
-                const taskTimeEntries = timeEntries.filter(entry => entry.taskId.taskId.toString() === task.id.toString());
-                console.log("taskTimeEntries");
-                console.log(taskTimeEntries);
+
+                const taskTimeEntries = timeEntries.filter(entry => {
+
+                    return entry.taskId.taskId.toString() === task.task_id.toString();
+                });
 
                 taskTimer.value.push({
-                    taskId: task.taskId,
+                    taskId: task.task_id,
                     projectId: project.id,
                     timer: null,
                     isPlaying: false,
-                    trackedTime: taskTimeEntries.reduce((sum, entry) => sum + parseDuration(entry.timePeriod.timePeriod), 0),
+                    trackedTime: taskTimeEntries.reduce((sum, entry) => sum + parseDuration(entry.trackedTime), 0),
                 });
-//                 console.log("taskTimer");
-// console.log(taskTimer);
+
                 return {
                     ...task,
                     timeEntries: taskTimeEntries,
@@ -77,14 +79,14 @@ export function useFetchProjects() {
             });
 
             const totalTrackedTime = mappedTasks.reduce((sum, task) => {
-                return sum + task.timeEntries.reduce((timeSum, entry) => timeSum + parseDuration(entry.timePeriod.timePeriod), 0);
+                return sum + task.timeEntries.reduce((timeSum, entry) => timeSum + entry.timePeriod.timePeriod, 0);
             }, 0);
 
             return {
                 ...project,
                 tasks: mappedTasks,
-                deadlineDate: formatDate(project.deadline.deadline	),
-                deadlineTime: formatTime(project.deadline.deadline	),
+                deadlineDate: formatDate(project.deadline.deadline),
+                deadlineTime: formatTime(project.deadline.deadline),
                 total: totalTrackedTime,
             };
         });
@@ -105,5 +107,5 @@ export function useFetchProjects() {
             hour12: false,
         });
 
-    return { projects, taskTimer,fetchData, error };
+    return {projects, taskTimer, fetchData, error};
 }
