@@ -13,9 +13,13 @@ import de.vfh.workhourstracker.shared.util.EventLogger;
 import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,26 +33,37 @@ public class ProjectManagementService {
         this.projectRepository = projectRepository;
         this.eventPublisher = eventPublisher;
     }
-    
-    
-    public Project createProject( UserId userId, String name, String description, LocalDateTime deadline) {
+
+
+    public ResponseEntity<?> createProject(UserId userId, String name, String description, LocalDateTime deadline) {
         String validName = validateName(name);
         String validDescription = validateDescription(description);
         LocalDateTime validDeadline = validateDeadline(deadline);
-// Prüfen, ob die ID nach dem Speichern gesetzt ist
-        Project project = new Project( userId, new ProjectName(validName), new ProjectDescription(validDescription), new Deadline(validDeadline));
 
         if (validName == null || validDescription == null || validDeadline == null) {
-            eventLogger.logError("Project could not be created because of invalid input.");
-            return null;
+            // Erstelle eine Liste von Fehlern
+            List<ErrorResponse> errors = new ArrayList<>();
+            if (validName == null) {
+                errors.add(new ErrorResponse("Invalid name", "name", "INVALID"));
+            }
+            if (validDescription == null) {
+                errors.add(new ErrorResponse("Invalid description", "description", "INVALID"));
+            }
+            if (validDeadline == null) {
+                errors.add(new ErrorResponse("Invalid deadline", "deadline", "INVALID"));
+            }
+            // Rückgabe der Fehlerantwort
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
         }
 
+        Project project = new Project(userId, new ProjectName(validName), new ProjectDescription(validDescription), new Deadline(validDeadline));
         project = projectRepository.save(project);
+
 
         ProjectCreated event = new ProjectCreated(this, project.getUserId(), project.getName(), project.getDescription(), project.getDeadline());
         eventPublisher.publishEvent(event);
 
-        return project;
+        return ResponseEntity.ok(project);
     }
 
 
@@ -131,7 +146,7 @@ public class ProjectManagementService {
             return null;
         }
         if (!LocalDateTime.now().isBefore(deadline)) {
-            eventLogger.logWarning("Deadline liegt in der Vergangenheit");
+            eventLogger.logWarning("Deadline darf nicht leer sein.");
             return null;
         }
         return deadline;

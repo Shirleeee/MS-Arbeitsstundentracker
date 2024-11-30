@@ -1,6 +1,6 @@
 
 <script setup>
-import { ref, computed } from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import Timer from "./Timer.vue";
 import { useFetchProjects } from "@/composables/useFetchProjects.js";
 
@@ -10,8 +10,12 @@ const props = defineProps({
 });
 
 const { projects, taskTimer, fetchData, error } = useFetchProjects();
-console.log(props.task);
-fetchData();
+
+// Lade Daten bei der Initialisierung
+onMounted(async () => {
+  await fetchData();
+});
+
 </script>
 
 <template>
@@ -19,9 +23,10 @@ fetchData();
     <li>
       <p>Task: {{ task.name.taskName }}</p>
       <p>Deadline: {{ task.deadlineDate }} {{ task.deadlineTime }}</p>
-      <div v-if="taskTimer && taskTimer.length">
-        <Timer v-for="timer in taskTimer.filter(taskTime => task.id.toString() === taskTime.id.toString())" :key="timer.id" :timer="timer" />
+      <div v-if="taskTimer.value && taskTimer.value.length">
+        <Timer v-for="timer in taskTimer.value.filter(taskTime => task.task_id.toString() === taskTime.taskId.toString())" :key="timer.id" :timer="timer" />
       </div>
+
     </li>
   </ul>
 </template>

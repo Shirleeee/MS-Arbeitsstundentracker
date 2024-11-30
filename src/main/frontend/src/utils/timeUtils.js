@@ -16,18 +16,18 @@ export function millisecondsToTimeFormat(milliseconds) {
 
 export const parseDuration = (durationStr) => {
 
+
+    if (!durationStr) {
+        return 0;
+    }
     try {
-        // Prüfen, ob das Format mit "PT" beginnt
         if (durationStr.startsWith("PT")) {
 
-                const durationInSeconds = parseFloat(durationStr.replace('PT', '').replace('S', ''));
-                const miliseconds = durationInSeconds * 1000;
-                console.log("miliseconds", miliseconds);
-                return miliseconds;
-
+            const durationInSeconds = parseFloat(durationStr.replace('PT', '').replace('S', ''));
+            const miliseconds = durationInSeconds * 1000;
+            console.log("miliseconds", miliseconds);
+            return miliseconds;
         }
-
-        // Falls kein "PT"-Format, einfach versuchen, die Zahl zu parsen
         return parseInt(durationStr);
     } catch (err) {
         console.error("Fehler beim Parsen der Duration:", err);

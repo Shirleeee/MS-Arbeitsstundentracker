@@ -17,8 +17,8 @@ import java.time.LocalDateTime;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", insertable = false, updatable = false)
-    private Long id;
+    @Column(name = "task_id", insertable = false, updatable = false)
+    private Long task_id;
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "project_id"))

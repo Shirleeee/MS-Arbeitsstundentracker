@@ -4,12 +4,14 @@ import de.vfh.workhourstracker.projectmanagement.application.services.ProjectMan
 import de.vfh.workhourstracker.projectmanagement.application.services.TaskManagementService;
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
+import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,21 +38,29 @@ public class ProjectManagementController {
     }
 
     @PostMapping("/submitProjectData")
-    public Project submitProjectData(@RequestBody Project project) {
+    public ResponseEntity<?> submitProjectData(@RequestBody Project project) {
 
         try {
-            return projectManagementService.createProject(
-
+            ResponseEntity<?> response = projectManagementService.createProject(
                     project.getUserId(),
                     project.getName().getProjectName(),
                     project.getDescription().getProjectDescription(),
                     project.getDeadline().getDeadline()
             );
-
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return response;
+            } else {
+                // Fehlerbehandlung basierend auf der Antwort
+                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+            }
         } catch (Exception e) {
+            e.fillInStackTrace();
+            List<ErrorResponse> errors = new ArrayList<>();
 
-            handleException(e);
-            return null;
+            errors.add(new ErrorResponse("Unexpected error", "general", "INTERNAL_SERVER_ERROR"));
+
+            // Exception weiterverarbeiten und in eine ResponseEntity mit Fehlern zurückgeben
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
         }
     }
 

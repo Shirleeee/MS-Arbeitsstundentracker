@@ -16,10 +16,6 @@ const props = defineProps({
 
 const text = ref('Task');
 
-console.log("project.total");
-console.log( props.project.total);
-
-
 const handleNewData = (data) => {
 
   console.log("data Project Vue",data);
@@ -27,9 +23,6 @@ const handleNewData = (data) => {
     console.error('Received undefined data',data);
     return;
   }
-
-
-
   if (data.projectId) {
     props.project.tasks.push(data);
   }
@@ -44,7 +37,7 @@ const handleNewData = (data) => {
       <p class="deadline">Deadline Project: {{ project.deadlineDate }}</p>
       <p class="total-time">Total: {{ millisecondsToTimeFormat(project.total) }}</p>
     </div>
-    <Task v-for="task in project.tasks" :key="task.id.taskId" :task="task" />
+    <Task v-for="task in project.tasks" :key="task.task_id" :task="task" />
   </div>
   <Buttons :text="text" :additionalData="project" @submit-success="handleNewData" ></Buttons>
 </template>

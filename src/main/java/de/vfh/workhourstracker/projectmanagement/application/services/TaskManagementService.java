@@ -42,7 +42,7 @@ public class TaskManagementService {
         Task task = new Task(projectId, new TaskName(name), new TaskDescription(description), new Deadline(validDeadline));
         task = taskRepository.save(task);
 
-        TaskCreated event = new TaskCreated(this, task.getId(), task.getProjectId(), task.getName(), task.getDescription(), task.getDeadline());
+        TaskCreated event = new TaskCreated(this, task.getTask_id(), task.getProjectId(), task.getName(), task.getDescription(), task.getDeadline());
         eventPublisher.publishEvent(event);
 
         return task;
@@ -83,7 +83,7 @@ public class TaskManagementService {
 
         existingTask = taskRepository.save(existingTask);
 
-        TaskUpdated event = new TaskUpdated(this, existingTask.getId(), existingTask.getProjectId(), existingTask.getName(), existingTask.getDescription(), existingTask.getDeadline());
+        TaskUpdated event = new TaskUpdated(this, existingTask.getTask_id(), existingTask.getProjectId(), existingTask.getName(), existingTask.getDescription(), existingTask.getDeadline());
         eventPublisher.publishEvent(event);
 
         return existingTask;

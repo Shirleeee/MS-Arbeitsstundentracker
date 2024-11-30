@@ -8,7 +8,6 @@ const props = defineProps({
 
   }
 });
-console.log(props.projects);
 
 </script>
 <template>
