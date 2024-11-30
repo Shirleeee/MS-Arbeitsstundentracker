@@ -3,12 +3,19 @@ package de.vfh.workhourstracker.projectmanagement.domain.project;
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import jakarta.persistence.*;
+import jakarta.persistence.metamodel.SingularAttribute;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Entity
 @Table(name = "project")
@@ -17,26 +24,28 @@ import java.time.LocalDateTime;
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", insertable = false, updatable = false)
+    @Basic(optional = false)
+    @Column(name = "proj_id")
+    @NotNull
     private Long id;
 
     @Column(name = "user_id")
     private UserId userId;
 
-//    @Embedded
+    //    @Embedded
 //    @AttributeOverride(name = "value", column = @Column(name = "project_name"))
     @Column(name = "project_name")
     private ProjectName name;
 
-//    @Embedded
+    //    @Embedded
 //    @AttributeOverride(name = "value", column = @Column(name = "project_description"))
-@Column(name = "project_description")
+    @Column(name = "project_description")
 
     private ProjectDescription description;
 
-//    @Embedded
+    //    @Embedded
 //    @AttributeOverride(name = "value", column = @Column(name = "deadline"))
-@Column(name = "deadline")
+    @Column(name = "deadline")
     private Deadline deadline;
 
     @CreatedDate
@@ -47,7 +56,8 @@ public class Project {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Project(UserId userId, ProjectName name, ProjectDescription description, Deadline deadline) {
+    public Project( UserId userId, ProjectName name, ProjectDescription description, Deadline deadline) {
+
         this.userId = userId;
         this.name = name;
         this.description = description;

@@ -20,7 +20,7 @@ fetchData();
       <p>Task: {{ task.name.taskName }}</p>
       <p>Deadline: {{ task.deadlineDate }} {{ task.deadlineTime }}</p>
       <div v-if="taskTimer && taskTimer.length">
-        <Timer v-for="timer in taskTimer.filter(taskTime => task.id.toString() === taskTime.taskId.toString())" :key="timer.id" :timer="timer" />
+        <Timer v-for="timer in taskTimer.filter(taskTime => task.id.toString() === taskTime.id.toString())" :key="timer.id" :timer="timer" />
       </div>
     </li>
   </ul>

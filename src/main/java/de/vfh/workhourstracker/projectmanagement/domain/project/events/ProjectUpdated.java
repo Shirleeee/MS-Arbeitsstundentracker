@@ -13,16 +13,16 @@ import java.time.LocalDateTime;
 
 @Getter
 public class ProjectUpdated extends ApplicationEvent {
-    private final Long projectId;
+
     private final UserId userId;
     private final ProjectName projectName;
     private final ProjectDescription projectDescription;
     private final Deadline deadline;
     private final LocalDateTime occurredAt;
 
-    public ProjectUpdated(Object source, Long projectId, UserId userId, ProjectName projectName, ProjectDescription projectDescription, Deadline deadline) {
+    public ProjectUpdated(Object source,  UserId userId, ProjectName projectName, ProjectDescription projectDescription, Deadline deadline) {
         super(source);
-        this.projectId = projectId;
+
         this.userId = userId;
         this.projectName = projectName;
         this.projectDescription = projectDescription;
