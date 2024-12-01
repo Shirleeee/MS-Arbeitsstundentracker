@@ -1,5 +1,5 @@
 import {ref} from "vue";
-import {parseDuration} from "./../utils/timeUtils.js"
+import {parseDuration,formatDate,formatTime} from "./../utils/timeUtils.js"
 
 // Custom Hook für Projekte, Tasks und Time Entries
 export function useFetchProjects() {
@@ -92,20 +92,6 @@ export function useFetchProjects() {
         });
     };
 
-    // Hilfsfunktionen für Formatierungen
-    const formatDate = dateStr =>
-        new Date(dateStr).toLocaleDateString("de-DE", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-        });
-
-    const formatTime = dateStr =>
-        new Date(dateStr).toLocaleTimeString("de-DE", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-        });
 
     return {projects, taskTimer, fetchData, error};
 }

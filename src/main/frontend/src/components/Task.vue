@@ -9,12 +9,14 @@ const props = defineProps({
   taskTimer: Array
 });
 
-const { projects, taskTimer, fetchData, error } = useFetchProjects();
 
-// Lade Daten bei der Initialisierung
-onMounted(async () => {
-  await fetchData();
-});
+console.log("TASK TIMER", props.taskTimer);
+// const { projects, taskTimer, fetchData, error } = useFetchProjects();
+//
+// // Lade Daten bei der Initialisierung
+// onMounted(async () => {
+//   await fetchData();
+// });
 
 </script>
 
@@ -23,8 +25,8 @@ onMounted(async () => {
     <li>
       <p>Task: {{ task.name.taskName }}</p>
       <p>Deadline: {{ task.deadlineDate }} {{ task.deadlineTime }}</p>
-      <div v-if="taskTimer.value && taskTimer.value.length">
-        <Timer v-for="timer in taskTimer.value.filter(taskTime => task.task_id.toString() === taskTime.taskId.toString())" :key="timer.id" :timer="timer" />
+      <div v-if="props.taskTimer && props.taskTimer.length">
+        <Timer v-for="timer in props.taskTimer.filter(taskTime => task.task_id.toString() === taskTime.taskId.toString())" :key="timer.id" :timer="timer" />
       </div>
 
     </li>

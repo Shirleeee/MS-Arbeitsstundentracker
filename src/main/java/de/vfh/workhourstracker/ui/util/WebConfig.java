@@ -1,4 +1,4 @@
-package de.vfh.workhourstracker.ui.controller.util;
+package de.vfh.workhourstracker.ui.util;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

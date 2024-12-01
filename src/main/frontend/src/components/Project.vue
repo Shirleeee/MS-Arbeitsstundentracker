@@ -1,15 +1,15 @@
-
 <script setup>
-import { ref } from 'vue';
-import {convertDurationToDHMS, formatDateToDDMMYYYY} from "@/utils/timeUtils";
+import {ref} from 'vue';
+import {convertDurationToDHMS} from "@/utils/timeUtils";
 import Task from "./Task.vue";
 import Buttons from "@/components/Buttons.vue";
+import {handleNewDateTime} from "@/composables/handleNewDate.js";
 
 const props = defineProps({
   project: {
     type: Object,
     required: true,
-    default: () => ({ tasks: [] })
+    default: () => ({tasks: []})
   },
   taskTimer: Array
 });
@@ -18,31 +18,28 @@ const text = ref('Task');
 
 const handleNewData = (data) => {
 
-  console.log("data Project Vue",data);
   if (!data) {
-    console.error('Received undefined data',data);
+    console.error('Received undefined data', data);
     return;
   }
   if (data.projectId) {
+    data = handleNewDateTime(data);
     props.project.tasks.push(data);
   }
-console.log("project.total",project);
 };
 </script>
 
 <template>
   <div class="proj-wrapper">
     <div class="proj-head">
-      <h2 class="title"> {{ project.name.projectName	 }}</h2>
-      <p class="deadline">Deadline Project: {{ formatDateToDDMMYYYY(project.deadline.deadline )}}</p>
+      <h2 class="title"> {{ project.name.projectName }}</h2>
+      <p class="deadline">Deadline Project: {{ project.deadlineDate }} {{ project.deadlineTime }} </p>
       <p class="total-time">Total: {{ convertDurationToDHMS(project.total) }}</p>
     </div>
-    <Task v-for="task in project.tasks" :key="task.task_id" :task="task" />
+    <Task v-for="task in project.tasks" :key="task.task_id" :task="task" :taskTimer="taskTimer"/>
   </div>
-  <Buttons :text="text" :additionalData="project" @submit-success="handleNewData" ></Buttons>
+  <Buttons :text="text" :additionalData="project" @submit-success="handleNewData"></Buttons>
 </template>
-
-
 
 
 <style scoped>
@@ -51,6 +48,7 @@ console.log("project.total",project);
   padding: 40px 20px;
   border-radius: 10px;
   margin-bottom: 1rem;
+
   & > .proj-head {
     width: 100%;
     display: flex;

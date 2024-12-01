@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 export function convertDurationToDHMS(durationStr) {
     if (!durationStr) {
         return '00:00:00';
@@ -15,13 +22,43 @@ export function convertDurationToDHMS(durationStr) {
     // Format the result as `dd:hh:mm`
     return `${String(days).padStart(2, '0')}:${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
-export function formatDateToDDMMYYYY(datetimeStr) {
-    const date = new Date(datetimeStr);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const year = date.getFullYear();
-    return `${day}.${month}.${year}`;
-}
+
+export const parseDateTimeLocal = (dateStr) => {
+    const [datePart, timePart] = dateStr.split('T');
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hour, minute] = timePart.split(':').map(Number);
+
+    // Erstelle ein Datum ohne Zeitzonen-Offset
+    return new Date(year, month - 1, day, hour, minute);
+};
+
+// Hilfsfunktionen für Formatierungen
+export   const formatDate = dateStr =>
+    new Date(dateStr).toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
+
+export const formatTime = (dateStr) => {
+    const localDate = parseDateTimeLocal(dateStr);
+    return localDate.toLocaleTimeString("de-DE", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    });
+};
+
+
+
+
+
+
+
+
+
+
+
 export const parseDuration = (durationStr) => {
 
 
@@ -44,7 +81,3 @@ export const parseDuration = (durationStr) => {
 };
 
 
-export const formatDateForBackend = (date) => {
-    const d = new Date(date);
-    return d.toISOString().split('T')[0] + 'T00:00:00';
-};

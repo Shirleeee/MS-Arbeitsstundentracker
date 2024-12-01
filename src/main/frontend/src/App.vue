@@ -7,7 +7,7 @@ import Header from "@/components/Header.vue";
 import Main from "@/components/Main.vue";
 import { ref,computed } from "vue";
 
-const { projects, fetchData, error } = useFetchProjects();
+const { projects,taskTimer, fetchData, error } = useFetchProjects();
 fetchData();
 const reversedProjects = computed(() => {
   return projects.value.slice().reverse();
@@ -26,7 +26,7 @@ const updateProjects = (newProject) => {
   <Header :projects="reversedProjects" @update-projects="updateProjects" />
   <main>
     <div v-if="error" class="error">{{ error }}</div>
-    <Main :projects="reversedProjects" />
+    <Main :projects="reversedProjects" :taskTimer="taskTimer" />
   </main>
 </template>
 

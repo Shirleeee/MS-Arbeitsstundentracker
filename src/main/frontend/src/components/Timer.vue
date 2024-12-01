@@ -7,7 +7,7 @@ import IconSupport from "@/components/icons/IconSupport.vue";
 const props = defineProps({
   timer: Object,
 });
-
+console.log("TIMER !!!!", props.timer);
 const startTimer = (timer) => {
   timer.timer = setInterval(() => {
     timer.trackedTime += 1;
