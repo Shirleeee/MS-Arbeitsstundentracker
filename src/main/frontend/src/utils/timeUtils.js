@@ -1,8 +1,16 @@
+export function secondsToTimeFormat(seconds) {
 
 
+    if (isNaN(seconds)) {
+        return '00:00:00';
+    }
+    const hours = Math.floor(seconds / 3600); // 1 Stunde = 3600 Sekunden
+    const minutes = Math.floor((seconds % 3600) / 60); // 1 Minute = 60 Sekunden
+    const remainingSeconds = seconds % 60; // Verbleibende Sekunden
 
-
-
+    // Rückgabe im Format hh:mm:ss
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+}
 
 
 export function convertDurationToDHMS(durationStr) {
@@ -23,6 +31,7 @@ export function convertDurationToDHMS(durationStr) {
     return `${String(days).padStart(2, '0')}:${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
+
 export const parseDateTimeLocal = (dateStr) => {
     const [datePart, timePart] = dateStr.split('T');
     const [year, month, day] = datePart.split('-').map(Number);
@@ -32,8 +41,8 @@ export const parseDateTimeLocal = (dateStr) => {
     return new Date(year, month - 1, day, hour, minute);
 };
 
-// Hilfsfunktionen für Formatierungen
-export   const formatDate = dateStr =>
+
+export const formatDate = dateStr =>
     new Date(dateStr).toLocaleDateString("de-DE", {
         day: "2-digit",
         month: "2-digit",
@@ -49,35 +58,19 @@ export const formatTime = (dateStr) => {
     });
 };
 
+export const parseDurationToSeconds = (duration) => {
 
-
-
-
-
-
-
-
-
-
-export const parseDuration = (durationStr) => {
-
-
-    if (!durationStr) {
+    if (!duration) {
         return 0;
     }
-    try {
-        if (durationStr.startsWith("PT")) {
+    const regex = /PT(\d+(\.\d+)?)S/;
+    const match = duration.match(regex);
 
-            const durationInSeconds = parseFloat(durationStr.replace('PT', '').replace('S', ''));
-            const miliseconds = durationInSeconds * 1000;
-            console.log("miliseconds", miliseconds);
-            return miliseconds;
-        }
-        return parseInt(durationStr);
-    } catch (err) {
-        console.error("Fehler beim Parsen der Duration:", err);
-        return 0; // Standardwert bei Fehlern
+    if (match) {
+        return Math.round(parseFloat(match[1])); // Gibt die Sekunden als Fließkommazahl zurück
+    } else {
+        throw new Error('Ungültiges Format der Dauer');
     }
-};
+}
 
 

@@ -1,5 +1,11 @@
 import {ref} from "vue";
-import {parseDuration,formatDate,formatTime} from "./../utils/timeUtils.js"
+import {
+
+    formatDate,
+    formatTime,
+    parseDurationToSeconds,
+    convertDurationToDHMS
+} from "./../utils/timeUtils.js";
 
 // Custom Hook für Projekte, Tasks und Time Entries
 export function useFetchProjects() {
@@ -58,16 +64,22 @@ export function useFetchProjects() {
             const mappedTasks = projectTasks.map(task => {
 
                 const taskTimeEntries = timeEntries.filter(entry => {
-
+                    console.log("timeEntries entry.", entry);
                     return entry.taskId.taskId.toString() === task.task_id.toString();
                 });
+
+                console.log("parseDurationToSeconds.parseDurationToSeconds", parseDurationToSeconds(taskTimeEntries.trackedTime));
 
                 taskTimer.value.push({
                     taskId: task.task_id,
                     projectId: project.id,
                     timer: null,
                     isPlaying: false,
-                    trackedTime: taskTimeEntries.reduce((sum, entry) => sum + parseDuration(entry.trackedTime), 0),
+                    trackedTime: taskTimeEntries.reduce((sum, entry) => {
+
+                        return sum + parseDurationToSeconds(entry.timePeriod.timePeriod);
+
+                    }, 0),
                 });
 
                 return {
@@ -79,6 +91,7 @@ export function useFetchProjects() {
             });
 
             const totalTrackedTime = mappedTasks.reduce((sum, task) => {
+
                 return sum + task.timeEntries.reduce((timeSum, entry) => timeSum + entry.timePeriod.timePeriod, 0);
             }, 0);
 
