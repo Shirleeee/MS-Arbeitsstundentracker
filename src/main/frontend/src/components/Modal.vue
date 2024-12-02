@@ -13,16 +13,11 @@ const props = defineProps({
 const userId = ref('101');
 const projectId = ref('');
 
-const getCurrentDay = computed(() => {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
-});
+
 const emit = defineEmits(['submit-success', 'close']);
 
 const handleSubmitSuccess = (data) => {
-
   emit('submit-success', data);
-
   emit('close');
 };
 

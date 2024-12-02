@@ -1,10 +1,10 @@
 <script setup>
 import {ref} from 'vue';
 import axios from 'axios';
-import {formatDateForBackend} from "@/utils/timeUtils.js";
+
 import {useForm} from "@/composables/useForm.js";
 import {useFormData, useFormType} from "@/composables/useFormData.js";
-
+//definiert Props die von der Elternkomponente übergeben werden
 const props = defineProps({
   formType: String,
   submitUrl: String,
@@ -14,17 +14,20 @@ const props = defineProps({
   },
   showModal: Boolean,
 });
+// emit = ausstrahlen, abgeben
+//ermöglicht es der Komponente, mit ihrer übergeordneten Komponente zu kommunizieren, indem sie diese Ereignisse aussendet.
 const emit = defineEmits(['submit-success', 'close']);
 
 const {title, description, deadline} = useFormType(props.formType);
 
 const {errors} = useForm();
 
-
+const currentDateTimeLocal = new Date().toISOString().slice(0, 16);
+console.log("currentDateTimeLocal", currentDateTimeLocal);
 const submit = async (event) => {
   try {
-
-    deadline.value = deadline.value ? formatDateForBackend(deadline.value) : null;
+console.log("Submit form  deadline.value",  deadline.value);
+    deadline.value = deadline.value ? deadline.value : null;
     const data = useFormData(props, title.value, description.value, deadline.value);
 
     const response = await axios.post(props.submitUrl, data, {
@@ -37,7 +40,8 @@ const submit = async (event) => {
       description: '',
       deadline: ''
     };
-   emit('submit-success', response.data);
+    emit('submit-success', response.data);
+    emit('close');
   } catch (error) {
 
     if (error.response && error.response.data) {
@@ -67,8 +71,10 @@ const submit = async (event) => {
     <textarea id="description" v-model="description"></textarea>
     <span v-if="errors.description" class="error-message">{{ errors.description }}</span>
     <label for="deadline">Deadline date:</label>
-    <input type="date" id="deadline" v-model="deadline"/>
+
+    <input type="datetime-local" value={{currentDateTimeLocal}}  id="deadline" v-model="deadline"/>
     <span v-if="errors.deadline" class="error-message">{{ errors.deadline }}</span>
+
     <input type="hidden" v-if="additionalField" :value="additionalValue" :name="additionalField"/>
 
 

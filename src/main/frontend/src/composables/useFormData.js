@@ -1,4 +1,4 @@
-import { formatDateForBackend } from "@/utils/timeUtils.js";
+
 import {ref} from "vue";
 
 export function useFormData(props, title, description, deadline) {
@@ -9,14 +9,14 @@ export function useFormData(props, title, description, deadline) {
             projectId: { value: props.additionalValue },
             name: { taskName: title },
             description: { taskDescription: description },
-            deadline: { deadline: formatDateForBackend(deadline) },
+            deadline: { deadline: deadline },
         };
     } else if (props.formType === 'Project') {
         data = {
             userId: props.additionalValue,
             name: { projectName: title },
             description: { projectDescription: description },
-            deadline: { deadline: formatDateForBackend(deadline) },
+            deadline: { deadline: deadline },
         };
     }
 
@@ -32,8 +32,8 @@ export function useFormType(formType) {
         description.value = 'create form in vueJs';
         deadline.value = '';
     } else if (formType === 'Project') {
-        title.value = 'PROJECT create form in vueJs'.repeat(200);
-        description.value = 'create form in vueJs'.repeat(200);
+        title.value = 'PROJECT create form in vueJs'//.repeat(200);
+        description.value = 'create form in vueJs'//.repeat(200);
         deadline.value = '';
     }
 

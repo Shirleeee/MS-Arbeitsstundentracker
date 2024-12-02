@@ -19,7 +19,8 @@ npm install
 ### Compile and Hot-Reload for Development
 
 ```sh
-npm run dev
+../src/main/frontend
+npm start
 ```
 
 ### Compile and Minify for Production
