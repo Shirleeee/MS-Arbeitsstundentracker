@@ -2,6 +2,7 @@ package de.vfh.workhourstracker.service;
 
 import de.vfh.workhourstracker.WorkHoursTrackerApplication;
 import de.vfh.workhourstracker.usermanagement.application.services.UserService;
+import de.vfh.workhourstracker.usermanagement.domain.user.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class UserServiceTest {
     @Autowired
     private UserService userService;
+
+    //region Test createUser
+    @Test
+    public void createUser_validInput_ReturnUser() {
+        User user = userService.createUser("John Doe", "john.doe@mail.de");
+        Assertions.assertNotNull(user);
+    }
+    //endregion
+
 
     //region Test validateName
     @Test

@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 @Getter
 public class TimeTrackingStarted extends ApplicationEvent {
     private final Long id;
-    private final TaskId taskId;
+    private final Long taskId;
     private final StartTime startTime;
     private final LocalDateTime occurredAt;
 
-    public TimeTrackingStarted(Object source, Long id, TaskId taskId, StartTime startTime) {
+    public TimeTrackingStarted(Object source, Long id, Long taskId, StartTime startTime) {
         super(source);
         this.id = id;
         this.taskId = taskId;

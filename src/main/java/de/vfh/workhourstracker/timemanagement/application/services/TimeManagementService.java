@@ -2,7 +2,7 @@ package de.vfh.workhourstracker.timemanagement.application.services;
 
 import de.vfh.workhourstracker.projectmanagement.domain.task.TaskId;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.*;
-import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeTrackingEndedAndTimeEntryCreated;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeTrackingEnded;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeTrackingStarted;
 import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
 import de.vfh.workhourstracker.shared.util.EventLogger;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -27,7 +26,7 @@ public class TimeManagementService {
         this.timeEntryRepository = timeEntryRepository;
     }
 
-    public TimeEntry createTimeEntry(TaskId taskId, LocalDateTime startTime, LocalDateTime endTime) {
+    public TimeEntry createTimeEntry(Long taskId, LocalDateTime startTime, LocalDateTime endTime) {
         LocalDateTime validStartTime = validateStartTime(startTime);
         LocalDateTime validEndTime = validateEndTime(endTime, startTime);
         Duration validTimePeriod = validateDuration(calculateDuration(startTime, endTime));
@@ -40,13 +39,13 @@ public class TimeManagementService {
         TimeEntry timeEntry = new TimeEntry(taskId, new StartTime(validStartTime), new EndTime(validEndTime), new TimePeriod(validTimePeriod));
         timeEntry = timeEntryRepository.save(timeEntry);
 
-        TimeTrackingEndedAndTimeEntryCreated event = new TimeTrackingEndedAndTimeEntryCreated(this, timeEntry.getId(), timeEntry.getTaskId(), timeEntry.getStartTime(), timeEntry.getEndTime(), timeEntry.getTimePeriod());
+        TimeTrackingEnded event = new TimeTrackingEnded(this, timeEntry.getId(), timeEntry.getTaskId(), timeEntry.getStartTime(), timeEntry.getEndTime(), timeEntry.getTimePeriod());
         eventPublisher.publishEvent(event);
 
         return timeEntry;
     }
 
-    public TimeEntry startTimeTracking(TaskId taskId, LocalDateTime startTime) {
+    public TimeEntry startTimeTracking(Long taskId, LocalDateTime startTime) {
         LocalDateTime validStartTime = validateStartTime(startTime);
 
         if (validStartTime == null) {
@@ -63,10 +62,10 @@ public class TimeManagementService {
         return timeEntry;
     }
 
-    public TimeEntry endTimeTrackingAndCreateTimeEntry(TimeEntryId timeEntryId, LocalDateTime endTime) {
-        TimeEntry existingTimeEntry = timeEntryRepository.findById(timeEntryId.getTimeEntryId()).orElse(null);
+    public TimeEntry endTimeTracking(Long timeEntryId, LocalDateTime endTime) {
+        TimeEntry existingTimeEntry = timeEntryRepository.findById(timeEntryId).orElse(null);
         if (existingTimeEntry == null) {
-            eventLogger.logError("Time entry with ID " + timeEntryId.getTimeEntryId() + " could not be found in database.");
+            eventLogger.logError("Time entry with ID " + timeEntryId + " could not be found in database.");
             return null;
         }
         LocalDateTime startTime = existingTimeEntry.getStartTime().getStartTime();
@@ -84,23 +83,15 @@ public class TimeManagementService {
 
         existingTimeEntry = timeEntryRepository.save(existingTimeEntry);
 
-        TimeTrackingEndedAndTimeEntryCreated event = new TimeTrackingEndedAndTimeEntryCreated(this, existingTimeEntry.getId(), existingTimeEntry.getTaskId(), existingTimeEntry.getStartTime(), existingTimeEntry.getEndTime(), existingTimeEntry.getTimePeriod());
+        TimeTrackingEnded event = new TimeTrackingEnded(this, existingTimeEntry.getId(), existingTimeEntry.getTaskId(), existingTimeEntry.getStartTime(), existingTimeEntry.getEndTime(), existingTimeEntry.getTimePeriod());
         eventPublisher.publishEvent(event);
 
         return existingTimeEntry;
 
     }
 
-    public TimeEntry findTimeEntryById(Long id) {
-        return timeEntryRepository.findById(id).orElse(null);
-    }
-
     public List<TimeEntry> findAllTimeEntries() {
         return timeEntryRepository.findAll();
-    }
-
-    public void save(TimeEntry timeEntry) {
-        timeEntryRepository.save(timeEntry);
     }
 
     public void deleteById(Long id) {

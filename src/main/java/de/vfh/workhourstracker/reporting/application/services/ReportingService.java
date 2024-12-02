@@ -35,32 +35,6 @@ public class ReportingService {
         return report;
     }
 
-    public Report findReportById(Long id) {
-        return reportRepository.findById(id).orElse(null);
-    }
-
-    //das sollte besser in ProjectManagementService
-    public Project findProjectUserById(Long userId) {
-        //TODO
-        return null;
-    }
-
-    //das sollte besser in ProjectManagementService
-    public Task findTaskByUserId(Long userId) {
-        //TODO
-        return null;
-    }
-
-    // das sollte besser in TimeEntryService
-    public TimeEntry findTimeEntryByUserId(Long userId) {
-        //TODO
-        return null;
-    }
-
-    public void save(Report report) {
-        reportRepository.save(report);
-    }
-
     public void delete(Report report) {
         reportRepository.delete(report);
     }

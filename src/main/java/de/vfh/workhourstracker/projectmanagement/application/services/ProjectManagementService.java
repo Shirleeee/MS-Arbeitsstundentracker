@@ -8,7 +8,6 @@ import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectCr
 import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectUpdated;
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
-import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.TaskRepository;
 import de.vfh.workhourstracker.shared.util.EventLogger;
 import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +28,12 @@ public class ProjectManagementService {
     EventLogger eventLogger = new EventLogger();
 
     @Autowired
-    public ProjectManagementService(ProjectRepository projectRepository, TaskRepository taskRepository, ApplicationEventPublisher eventPublisher) {
+    public ProjectManagementService(ProjectRepository projectRepository, ApplicationEventPublisher eventPublisher) {
         this.projectRepository = projectRepository;
         this.eventPublisher = eventPublisher;
     }
 
-
-    public ResponseEntity<?> createProject(UserId userId, String name, String description, LocalDateTime deadline) {
+    public ResponseEntity<?> createProject(Long userId, String name, String description, LocalDateTime deadline) {
         String validName = validateName(name);
         String validDescription = validateDescription(description);
         LocalDateTime validDeadline = validateDeadline(deadline);
@@ -66,22 +64,12 @@ public class ProjectManagementService {
         return ResponseEntity.ok(project);
     }
 
-
-
-
-    public Project saveProject(Project project) {
-        return projectRepository.save(project);
-    }
-
-    public Project findProject(Long projectId) {
-        return projectRepository.findById(projectId).orElse(null);
-    }
-
     public List<Project> findAllProjects() {
         return projectRepository.findAll();
     }
- 
-    public Project updateProject(Long projectId, UserId userId, String name, String description, LocalDateTime deadline) {
+
+    //TODO: connect with frontend
+    public Project updateProject(Long projectId, String name, String description, LocalDateTime deadline) {
         Project existingProject = projectRepository.findById(projectId).orElse(null);
         if (existingProject == null) {
             eventLogger.logError("Project with ID " + projectId + " does not exist in database.");

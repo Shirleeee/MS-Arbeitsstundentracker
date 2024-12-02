@@ -10,12 +10,12 @@ import java.time.LocalDateTime;
 
 @Getter
 public class UserCreated extends ApplicationEvent {
-    private final UserId userId;
+    private final Long userId;
     private final UserName userName;
     private final MailAddress mailAddress;
     private final LocalDateTime occurredAt;
 
-    public UserCreated(Object source, UserId userId, UserName userName, MailAddress mailAddress) {
+    public UserCreated(Object source, Long userId, UserName userName, MailAddress mailAddress) {
         super(source);
         this.userId = userId;
         this.userName = userName;

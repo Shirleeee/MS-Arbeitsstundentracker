@@ -1,6 +1,11 @@
 package de.vfh.workhourstracker.service;
 
+import de.vfh.workhourstracker.projectmanagement.application.services.ProjectManagementService;
 import de.vfh.workhourstracker.projectmanagement.application.services.TaskManagementService;
+import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
+import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
+import de.vfh.workhourstracker.usermanagement.application.services.UserService;
+import de.vfh.workhourstracker.usermanagement.domain.user.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +18,42 @@ public class TaskManagementServiceTest {
 
     @Autowired
     private TaskManagementService taskManagementService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ProjectManagementService projectManagementService;
+
+    //region Test createTask
+    @Test
+    public void createTask_ValidInput_ReturnTask() {
+        User user = userService.createUser("John Doe", "john.doe@mail.de");
+        Assertions.assertNotNull(user);
+
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+
+        Task task = taskManagementService.createTask(project.getId(), "Fenster putzen", "Die Fenster müssen dringend geputzt werden.", LocalDateTime.of(2025, 1, 30, 19, 0, 0));
+        Assertions.assertNotNull(task);
+    }
+    //endregion
+
+    //region Test updateTask
+    public void updateTask_ValidInput_ReturnTask() {
+        User user = userService.createUser("John Doe", "john.doe@mail.de");
+        Assertions.assertNotNull(user);
+
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+
+        Task task = taskManagementService.createTask(project.getId(), "Fenster putzen", "Die Fenster müssen dringend geputzt werden.", LocalDateTime.of(2025, 1, 30, 19, 0, 0));
+        Assertions.assertNotNull(task);
+
+        task = taskManagementService.updateTask(task.getTask_id(), "Fenster putzen", "Die Fenster müssen wirklich dringend geputzt werden.", LocalDateTime.of(2025, 1, 30, 19, 0, 0));
+        Assertions.assertNotNull(task);
+    }
+    //endregion
 
     //region Test validateName
     @Test
