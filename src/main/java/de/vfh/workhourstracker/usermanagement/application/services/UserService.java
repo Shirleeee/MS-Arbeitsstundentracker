@@ -40,14 +40,6 @@ public class UserService {
         return user;
     }
 
-    public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
-    }
-
-    public void save(User user) {
-        userRepository.save(user);
-    }
-
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
@@ -72,7 +64,6 @@ public class UserService {
     }
 
     public String validateMailAddress(String mailAddress) {
-        //TODO
         if (mailAddress == null || mailAddress.isEmpty()) {
             eventLogger.logError("E-Mail-Addresse darf nicht leer sein.");
             return null;

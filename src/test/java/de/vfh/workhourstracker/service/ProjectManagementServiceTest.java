@@ -1,6 +1,9 @@
 package de.vfh.workhourstracker.service;
 
 import de.vfh.workhourstracker.projectmanagement.application.services.ProjectManagementService;
+import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
+import de.vfh.workhourstracker.usermanagement.application.services.UserService;
+import de.vfh.workhourstracker.usermanagement.domain.user.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,34 @@ public class ProjectManagementServiceTest {
 
     @Autowired
     private ProjectManagementService projectManagementService;
+
+    @Autowired
+    private UserService userService;
+
+    //region Test createProject
+    @Test
+    public void createProject_ValidInput_ReturnProject() {
+        User user = userService.createUser("John Doe", "john.doe@mail.de");
+        Assertions.assertNotNull(user);
+
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+    }
+    //endregion
+
+    //region Test updatedProject
+    @Test
+    public void updateProject_ValidInput_ReturnProject() {
+        User user = userService.createUser("John Doe", "john.doe@mail.de");
+        Assertions.assertNotNull(user);
+
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+
+        project = projectManagementService.updateProject(project.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 1, 15, 19, 0, 0));
+        Assertions.assertNotNull(project);
+    }
+    //endregion
 
     //region Test validateName
     @Test

@@ -20,10 +20,8 @@ public class TimeEntry {
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 
-
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "task_id"))
-    private TaskId taskId;
+    @Column(name = "task_id")
+    private Long taskId;
 
     @Column(name = "start_time")
     private StartTime startTime;
@@ -42,7 +40,7 @@ public class TimeEntry {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public TimeEntry(TaskId taskId, StartTime startTime, EndTime endTime, TimePeriod timePeriod) {
+    public TimeEntry(Long taskId, StartTime startTime, EndTime endTime, TimePeriod timePeriod) {
         this.taskId = taskId;
         this.startTime = startTime;
         this.endTime = endTime;

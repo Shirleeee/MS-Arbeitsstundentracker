@@ -20,9 +20,8 @@ public class Task {
     @Column(name = "task_id", insertable = false, updatable = false)
     private Long task_id;
 
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "project_id"))
-    private ProjectId projectId;
+    @Column(name = "project_id")
+    private Long projectId;
 
     @Column(name = "task_name")
     private TaskName name;
@@ -41,7 +40,7 @@ public class Task {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Task(ProjectId projectId, TaskName name, TaskDescription description, Deadline deadline) {
+    public Task(Long projectId, TaskName name, TaskDescription description, Deadline deadline) {
 
         this.projectId = projectId;
         this.name = name;

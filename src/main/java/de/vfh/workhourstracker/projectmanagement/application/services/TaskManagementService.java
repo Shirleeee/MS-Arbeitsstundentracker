@@ -29,7 +29,7 @@ public class TaskManagementService {
         this.taskRepository = taskRepository;
     }
 
-    public Task createTask(ProjectId projectId, String name, String description, LocalDateTime deadline) {
+    public Task createTask(Long projectId, String name, String description, LocalDateTime deadline) {
         String validName = validateName(name);
         String validDescription = validateDescription(description);
         LocalDateTime validDeadline = validateDeadline(deadline);
@@ -48,20 +48,11 @@ public class TaskManagementService {
         return task;
     }
 
-    public Task saveTask(Task task) {
-        return taskRepository.save(task);
-    }
-
-    public Task findTask(TaskId taskId) {
-        return taskRepository.findById(taskId.getTaskId()).orElse(null);
-    }
-
     public List<Task> findAllTasks() {
         return taskRepository.findAll();
     }
 
-    public Task updateTask(Long taskId, ProjectId projectId, String name, String description, LocalDateTime deadline) {
-        //TODO: wie macht man das am besten mit der ID?
+    public Task updateTask(Long taskId, String name, String description, LocalDateTime deadline) {
         Task existingTask = taskRepository.findById(taskId).orElse(null);
         if (existingTask == null) {
             eventLogger.logError("Task with ID " + taskId + " does not exist in database.");

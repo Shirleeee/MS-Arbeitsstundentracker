@@ -3,19 +3,13 @@ package de.vfh.workhourstracker.projectmanagement.domain.project;
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import jakarta.persistence.*;
-import jakarta.persistence.metamodel.SingularAttribute;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.misc.NotNull;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Entity
 @Table(name = "project")
@@ -30,7 +24,7 @@ public class Project {
     private Long id;
 
     @Column(name = "user_id")
-    private UserId userId;
+    private Long userId;
 
     //    @Embedded
 //    @AttributeOverride(name = "value", column = @Column(name = "project_name"))
@@ -56,8 +50,7 @@ public class Project {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Project( UserId userId, ProjectName name, ProjectDescription description, Deadline deadline) {
-
+    public Project(Long userId, ProjectName name, ProjectDescription description, Deadline deadline) {
         this.userId = userId;
         this.name = name;
         this.description = description;

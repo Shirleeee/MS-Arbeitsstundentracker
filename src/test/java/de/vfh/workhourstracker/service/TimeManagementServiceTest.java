@@ -1,6 +1,14 @@
 package de.vfh.workhourstracker.service;
 
+import de.vfh.workhourstracker.projectmanagement.application.services.ProjectManagementService;
+import de.vfh.workhourstracker.projectmanagement.application.services.TaskManagementService;
+import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
+import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
+import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.timemanagement.application.services.TimeManagementService;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
+import de.vfh.workhourstracker.usermanagement.application.services.UserService;
+import de.vfh.workhourstracker.usermanagement.domain.user.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +23,52 @@ class TimeManagementServiceTest {
 
     @Autowired
     private TimeManagementService timeManagementService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ProjectManagementService projectManagementService;
+
+    @Autowired
+    private TaskManagementService taskManagementService;
+
+    //region Test startTimeTracking
+    @Test
+    public void startTimeTracking_ValidInput_ReturnTimeEntry() {
+        User user = userService.createUser("John Doe", "john.doe@mail.de");
+        Assertions.assertNotNull(user);
+
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+
+        Task task = taskManagementService.createTask(project.getId(), "Fenster putzen", "Die Fenster müssen dringend geputzt werden.", LocalDateTime.of(2025, 1, 30, 19, 0, 0));
+        Assertions.assertNotNull(task);
+
+        TimeEntry timeEntry = timeManagementService.startTimeTracking(task.getTask_id(), LocalDateTime.of(2024, 12, 1, 8, 0, 0));
+        Assertions.assertNotNull(timeEntry);
+    }
+    //endregion
+
+    //region Test endTimeTracking
+    public void endTimeTracking_ValidInput_ReturnTimeEntry() {
+        User user = userService.createUser("John Doe", "john.doe@mail.de");
+        Assertions.assertNotNull(user);
+
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+
+        Task task = taskManagementService.createTask(project.getId(), "Fenster putzen", "Die Fenster müssen dringend geputzt werden.", LocalDateTime.of(2025, 1, 30, 19, 0, 0));
+        Assertions.assertNotNull(task);
+
+        TimeEntry timeEntry = timeManagementService.startTimeTracking(task.getTask_id(), LocalDateTime.of(2024, 12, 1, 8, 0, 0));
+        Assertions.assertNotNull(timeEntry);
+
+        timeEntry = timeManagementService.endTimeTracking(timeEntry.getId(), LocalDateTime.of(2024, 12, 1, 9, 0, 0));
+        Assertions.assertNotNull(timeEntry);
+    }
+    //endregion
+
 
     //region Test validateStartTime
     @Test
