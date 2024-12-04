@@ -8,24 +8,16 @@ const props = defineProps({
   additionalData: Object,
   showModal:Boolean,
   actionType: String,
-  currentProjectData: Object,
-  projectId: String,
+  currentData: Object,
 });
-console.log("MDOAlcurrent",props.currentProjectData);
 
-console.log('MODAL props.actiontype', props.actionType);
 const userId = ref('101');
 const projectId = ref('');
-// const actionType = ref(props.actionType);
-const emit = defineEmits(['submit-success', 'close', 'update-success']);
-const handleUpdateSuccess = (data) => {
-  console.log('MODAL handleUpdateSuccess', data);
-  emit('close');
-  emit('update-success', data);
-};
+
+const emit = defineEmits(['submit-success', 'close']);
+
 const handleSubmitSuccess = (data) => {
   console.log('MODAL handleSubmitSuccess', data);
-
   emit('submit-success', data);
   emit('close');
 };
@@ -60,21 +52,19 @@ const methods = {
           :submitUrl="getSubmitUrl(text)"
           additionalField="userId"
           :additionalValue="userId"
-          :projectId="props.projectId"
           :text="text"
-          :currentProjectData=props.currentProjectData
-          @update-success="handleUpdateSuccess"
+          :currentData=props.currentData
           @submit-success="handleSubmitSuccess"
       />
 
       <SubmitForm
           v-if="text === 'Task'"
-          formType="Task"
-          @close="toggleModal"
-          :showModal="showModal"
-          submitUrl="http://localhost:8081/api/submitTaskData"
+          :actionType="actionType"
+          :text="text"
+          :submitUrl="getSubmitUrl(text)"
           additionalField="projectId"
-          :additionalValue="props.additionalData.id"
+          :additionalValue="props.currentData.projectId"
+          :currentData=props.currentData
           @submit-success="handleSubmitSuccess"
       />
     </div>

@@ -28,31 +28,51 @@ const handleNewData = (data) => {
     props.project.tasks.push(data);
     console.log("data", data);
     props.taskTimer.push({
-      task_id: data.task_id, projectId: data.projectId, timer: null,
-      isPlaying: false, trackedTime: 0
+      task_id: data.task_id,
+      projectId: data.projectId,
+      timer: null,
+      isPlaying: false,
+      trackedTime: 0
     });
   }
 };
 
-const currentProjectData = (name, description, deadline) => {
+const currentData = (id,name, description, deadline) => {
   return {
+    id:id,
     name: name,
     description: description,
     deadline: deadline
   }
 };
 
-const handleUpdatedData = (data) => {
+const handleUpdateSuccess = (data) => {
   if (!data) {
     console.error('Received undefined data', data);
     return;
   }
-  const index = props.project.tasks.findIndex(task => task.task_id === data.task_id);
-  if (index !== -1) {
-    props.project.tasks[index] = data;
-  }
+  console.log("data", data);
+  console.log("props.project", props.project);
+  // const index = props.project.findIndex(project => project.id === updatedProject.id);
+  // console.log("index", index);
+  // if (index !== -1) {
+  //   projects.value[index] = updatedProject;
+  // }
+  // title.value = data.projectName;
+  // description.value = data.projectDescription;
+  // deadline.value = data.deadline;
 };
+const isModalOpen = ref(false);
 
+
+const emit = defineEmits(['submit-success']);
+const handleSubmitSuccess = (data) => {
+  isModalOpen.value = false;
+  emit('submit-success', data);
+};
+const handleClose = () => {
+  isModalOpen.value = false;
+};
 </script>
 
 <template>
@@ -60,8 +80,8 @@ const handleUpdatedData = (data) => {
     <div class="proj-head">
 
       <div class="title-container">
-        <PencilUpdate :projectId="project.id" text="Project" @update-success="handleUpdatedData"
-                      :currentProjectData="currentProjectData(project.name.projectName,project.description.projectDescription,project.deadline.deadline)"/>
+        <PencilUpdate text="Project" @submit-success="handleUpdateSuccess"
+                      :currentData="currentData(project.id,project.name.projectName,project.description.projectDescription,project.deadline.deadline)"/>
 
         <h2 class="title"> {{ project.id }}-{{ project.name.projectName }}</h2>
 
@@ -71,9 +91,9 @@ const handleUpdatedData = (data) => {
       <p class="deadline">Deadline Project: {{ project.deadlineDate }} {{ project.deadlineTime }} </p>
       <p class="total-time">Total: {{ convertDurationToDHMS(project.total) }}</p>
     </div>
-    <Task v-for="task in project.tasks" :key="task.task_id" :task="task" :taskTimer="taskTimer"/>
+    <Task v-for="task in project.tasks" :key="task.task_id" :task="task" :additionalData="project" :taskTimer="taskTimer" :text="text"/>
   </div>
-  <Buttons :text="text" :additionalData="project" @submit-success="handleNewData"></Buttons>
+  <Buttons :text="text" :additionalData="project" @submit-success="handleSubmitSuccess" :key="project.id"></Buttons>
 </template>
 
 
@@ -86,10 +106,13 @@ const handleUpdatedData = (data) => {
 
   & > .proj-head {
 
-    padding-bottom: 20px;
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;justify-items: flex-end;
+    border: 1px solid aliceblue;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border-radius: 10px;
   }
 }
 
@@ -97,7 +120,7 @@ const handleUpdatedData = (data) => {
   display: flex;
   flex-direction: row;
   align-items: center;
-
+  justify-self: baseline;
   > * {
     padding-right: 5px;
   }
