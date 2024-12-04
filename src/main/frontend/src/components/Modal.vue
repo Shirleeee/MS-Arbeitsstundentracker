@@ -8,28 +8,36 @@ const props = defineProps({
   additionalData: Object,
   showModal:Boolean,
   actionType: String,
-  currentData: Object,
+  currentProjectData: Object,
+  projectId: String,
 });
+console.log("MDOAlcurrent",props.currentProjectData);
 
+console.log('MODAL props.actiontype', props.actionType);
 const userId = ref('101');
 const projectId = ref('');
-
-const emit = defineEmits(['submit-success', 'close']);
-
+// const actionType = ref(props.actionType);
+const emit = defineEmits(['submit-success', 'close', 'update-success']);
+const handleUpdateSuccess = (data) => {
+  console.log('MODAL handleUpdateSuccess', data);
+  emit('close');
+  emit('update-success', data);
+};
 const handleSubmitSuccess = (data) => {
   console.log('MODAL handleSubmitSuccess', data);
+
   emit('submit-success', data);
   emit('close');
 };
 const getSubmitUrl = (type) => {
   if (type === 'Project') {
     return props.actionType === 'Create'
-        ? import.meta.env.VITE_SUBMIT_PROJECT_URL
-        : import.meta.env.VITE_UPDATE_PROJECT_URL;
+        ? `http://localhost:8081/api/submitProjectData`
+        : `http://localhost:8081/api/updateProjectData`;
   }else if (type === 'Task') {
     return props.actionType === 'Create'
-        ? import.meta.env.VITE_SUBMIT_TASK_URL
-        : import.meta.env.VITE_UPDATE_TASK_URL;
+        ? `http://localhost:8081/api/submitTaskData`
+        : `http://localhost:8081/api/updateTaskData`;
   }
   return '';
 };
@@ -38,8 +46,6 @@ const methods = {
     emit('close');
   }
 };
-
-
 </script>
 
 <template>
@@ -54,19 +60,21 @@ const methods = {
           :submitUrl="getSubmitUrl(text)"
           additionalField="userId"
           :additionalValue="userId"
+          :projectId="props.projectId"
           :text="text"
-          :currentData=props.currentData
+          :currentProjectData=props.currentProjectData
+          @update-success="handleUpdateSuccess"
           @submit-success="handleSubmitSuccess"
       />
 
       <SubmitForm
           v-if="text === 'Task'"
-          :actionType="actionType"
-          :text="text"
-          :submitUrl="getSubmitUrl(text)"
+          formType="Task"
+          @close="toggleModal"
+          :showModal="showModal"
+          submitUrl="http://localhost:8081/api/submitTaskData"
           additionalField="projectId"
           :additionalValue="props.additionalData.id"
-          :currentData=props.currentData
           @submit-success="handleSubmitSuccess"
       />
     </div>

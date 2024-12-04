@@ -34,20 +34,20 @@ public class TimeManagementService {
         String validStartTime = validateStartTime(startTime);
         String validEndTime = validateEndTime(endTime, startTime);
         String validTimePeriod = validateDuration(calculateDuration(startTime, endTime));
-        Duration timePeriod = calculateDuration(startTime, endTime);
+Duration timePeriod = calculateDuration(startTime, endTime);
 
         if (!validStartTime.isEmpty() || !validEndTime.isEmpty() || !validTimePeriod.isEmpty()) {
             eventLogger.logError("Time entry could not be created because of invalid input.");
 
             List<ErrorResponse> errors = new ArrayList<>();
             if (!validStartTime.isEmpty()) {
-                errors.add(new ErrorResponse(validStartTime, "startTime", "INVALID"));
+                errors.add(new ErrorResponse(validStartTime, "name", "INVALID"));
             }
             if (!validEndTime.isEmpty()) {
-                errors.add(new ErrorResponse(validEndTime, "endTime", "INVALID"));
+                errors.add(new ErrorResponse(validEndTime, "description", "INVALID"));
             }
             if (!validTimePeriod.isEmpty()) {
-                errors.add(new ErrorResponse(validTimePeriod, "timePeriod", "INVALID"));
+                errors.add(new ErrorResponse(validTimePeriod, "deadline", "INVALID"));
             }
             // Rückgabe der Fehlerantwort
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
@@ -68,7 +68,7 @@ public class TimeManagementService {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(validStartTime, "startTime", "INVALID"));
         }
 
-        TimeEntry timeEntry = new TimeEntry(taskId, new StartTime(startTime), null, new TimePeriod(Duration.ZERO));
+        TimeEntry timeEntry = new TimeEntry(taskId, new StartTime(startTime), null, null);
         timeEntry = timeEntryRepository.save(timeEntry);
 
         TimeTrackingStarted event = new TimeTrackingStarted(this, timeEntry.getId(), timeEntry.getTaskId(), timeEntry.getStartTime());
@@ -96,7 +96,7 @@ public class TimeManagementService {
         if (!validEndTime.isEmpty() || !validDuration.isEmpty()) {
             List<ErrorResponse> errors = new ArrayList<>();
             if (!validEndTime.isEmpty())
-                errors.add(new ErrorResponse(validEndTime, "endtime", "INVALID"));
+                errors.add( new ErrorResponse(validEndTime, "endtime", "INVALID"));
             if (!validDuration.isEmpty())
                 errors.add(new ErrorResponse(validDuration, "duration", "INVALID"));
 
