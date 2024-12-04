@@ -57,31 +57,11 @@ public class ProjectManagementController {
         }
     }
 
-    @PostMapping("/updateProjectData")
-    public ResponseEntity<?> updateProjectData(@RequestBody Project project) {
-
-        try {
-            ResponseEntity<?> response = projectManagementService.updateProject(
-                    project.getUserId(),
-                    project.getName().getProjectName(),
-                    project.getDescription().getProjectDescription(),
-                    project.getDeadline().getDeadline()
-            );
-            if (response.getStatusCode().is2xxSuccessful()) {
-                return response;
-            } else {
-                // Fehlerbehandlung basierend auf der Antwort
-                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
-            }
-        } catch (Exception e) {
-            e.fillInStackTrace();
-            List<ErrorResponse> errors = new ArrayList<>();
-
-            errors.add(new ErrorResponse("Unexpected error", "general", "INTERNAL_SERVER_ERROR"));
-
-            // Exception weiterverarbeiten und in eine ResponseEntity mit Fehlern zurückgeben
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
-        }
+    //TODO: in eigenen ...Ex Handler auslagern
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
+
 
 }

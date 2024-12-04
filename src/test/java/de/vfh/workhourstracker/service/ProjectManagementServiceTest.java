@@ -25,9 +25,9 @@ public class ProjectManagementServiceTest {
     public void createProject_ValidInput_ReturnProject() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
-//
-//        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
-//        Assertions.assertNotNull(project);
+
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
     }
     //endregion
 
@@ -37,11 +37,11 @@ public class ProjectManagementServiceTest {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
-//        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
-//        Assertions.assertNotNull(project);
-//
-//        project = projectManagementService.updateProject(project.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 1, 15, 19, 0, 0));
-//        Assertions.assertNotNull(project);
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+
+        project = projectManagementService.updateProject(project.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 1, 15, 19, 0, 0));
+        Assertions.assertNotNull(project);
     }
     //endregion
 
@@ -50,8 +50,8 @@ public class ProjectManagementServiceTest {
     public void validateName_ValidName_ReturnString() {
         String testName = "Test Name";
         String validName = projectManagementService.validateName(testName);
-        Assertions.assertEquals( 0,validName.length());
-
+        Assertions.assertNotNull(validName);
+        Assertions.assertEquals(validName, testName);
     }
 
     @Test
@@ -60,8 +60,7 @@ public class ProjectManagementServiceTest {
                 "invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores " +
                 "et ea rebum. Stet clita kasd gubergren, no sea takimata ";
         String invalidName = projectManagementService.validateName(testName);
-        Assertions.assertNotEquals( 0,invalidName.length());
-
+        Assertions.assertNull(invalidName);
     }
     //endregion
 
@@ -70,8 +69,8 @@ public class ProjectManagementServiceTest {
     public void validateDescription_ValidDescription_ReturnString() {
         String testDescription = "This is a test description";
         String validDescription = projectManagementService.validateDescription(testDescription);
-        Assertions.assertEquals( 0,validDescription.length());
-
+        Assertions.assertNotNull(validDescription);
+        Assertions.assertEquals(testDescription, validDescription);
     }
 
     @Test
@@ -87,7 +86,7 @@ public class ProjectManagementServiceTest {
                 "Lorem ipsum dolor sit amet. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, " +
                 "vel illum dolore eu feugiat nulla facilisis a";
         String invalidDescription = projectManagementService.validateDescription(testDescription);
-        Assertions.assertNotEquals( 0,invalidDescription.length());
+        Assertions.assertNull(invalidDescription);
     }
     //endregion
 
@@ -97,14 +96,16 @@ public class ProjectManagementServiceTest {
         LocalDateTime testDeadline = LocalDateTime.of(2025, 12, 10, 23, 59, 59);
         String validDeadline = projectManagementService.validateDeadline(testDeadline);
 
-        Assertions.assertEquals( 0,validDeadline.length());
+        Assertions.assertNotEquals( 0,validDeadline.length());
+
+        Assertions.assertEquals(testDeadline, validDeadline);
     }
 
     @Test
     public void validateDeadline_DeadlineInThePast_ReturnNull() {
         LocalDateTime testDeadline = LocalDateTime.of(2024, 3, 10, 23, 59, 59);
         String invalidDeadline = projectManagementService.validateDeadline(testDeadline);
-        Assertions.assertNotEquals( 0,invalidDeadline.length());
+        Assertions.assertEquals( 0,invalidDeadline.length());
     }
     //endregion
 }

@@ -18,10 +18,10 @@ import java.util.List;
 @RequestMapping("/api")
 public class TaskManagementController {
     //TODO
-    private final TaskManagementService taskManagementService;
+    private final TaskManagementService taskManagementService; //TODO: in eigenen Controller auslagern
 
     @Autowired
-    public TaskManagementController( TaskManagementService taskManagementService) {
+    public TaskManagementController(ProjectManagementService projectManagementService, TaskManagementService taskManagementService) {
         this.taskManagementService = taskManagementService;
     }
 
@@ -57,31 +57,10 @@ public class TaskManagementController {
 
     }
 
-    @PostMapping("/updateTaskData")
-    public ResponseEntity<?> updateTaskData(@RequestBody Task task ) {
-
-        try {
-            ResponseEntity<?> response = taskManagementService.updateTask(
-                    task.getTask_id(),
-                    task.getName().getTaskName(),
-                    task.getDescription().getTaskDescription(),
-                    task.getDeadline().getDeadline()
-            );
-            if (response.getStatusCode().is2xxSuccessful()) {
-                return response;
-            } else {
-                // Fehlerbehandlung basierend auf der Antwort
-                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
-            }
-        } catch (Exception e) {
-            e.fillInStackTrace();
-            List<ErrorResponse> errors = new ArrayList<>();
-
-            errors.add(new ErrorResponse("Unexpected error", "general", "INTERNAL_SERVER_ERROR"));
-
-            // Exception weiterverarbeiten und in eine ResponseEntity mit Fehlern zurückgeben
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
-        }
+    //TODO: in eigenen ...Ex Handler auslagern
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
 

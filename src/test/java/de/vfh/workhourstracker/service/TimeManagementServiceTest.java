@@ -57,17 +57,17 @@ class TimeManagementServiceTest {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
-//        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
-//        Assertions.assertNotNull(project);
-//
-//        ResponseEntity<?> task = taskManagementService.createTask(project.getId(), "Fenster putzen", "Die Fenster müssen dringend geputzt werden.", LocalDateTime.of(2025, 1, 30, 19, 0, 0));
-//        Assertions.assertNotEquals(HttpStatus.UNPROCESSABLE_ENTITY, task.getStatusCode());
-//        Task task1 = (Task) task.getBody();
-//        TimeEntry timeEntry = timeManagementService.startTimeTracking(task1.getTask_id(), LocalDateTime.of(2024, 12, 1, 8, 0, 0));
-//        Assertions.assertNotNull(timeEntry);
-//
-//        timeEntry = timeManagementService.endTimeTracking(timeEntry.getId(), LocalDateTime.of(2024, 12, 1, 9, 0, 0));
-//        Assertions.assertNotNull(timeEntry);
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+
+        ResponseEntity<?> task = taskManagementService.createTask(project.getId(), "Fenster putzen", "Die Fenster müssen dringend geputzt werden.", LocalDateTime.of(2025, 1, 30, 19, 0, 0));
+        Assertions.assertNotEquals(HttpStatus.UNPROCESSABLE_ENTITY, task.getStatusCode());
+        Task task1 = (Task) task.getBody();
+        TimeEntry timeEntry = timeManagementService.startTimeTracking(task1.getTask_id(), LocalDateTime.of(2024, 12, 1, 8, 0, 0));
+        Assertions.assertNotNull(timeEntry);
+
+        timeEntry = timeManagementService.endTimeTracking(timeEntry.getId(), LocalDateTime.of(2024, 12, 1, 9, 0, 0));
+        Assertions.assertNotNull(timeEntry);
     }
     //endregion
 
@@ -76,20 +76,20 @@ class TimeManagementServiceTest {
     @Test
     public void validateStartTime_ValidFormat_ReturnLocalDateTime() {
         LocalDateTime testStartTime = LocalDateTime.of(2024, 11, 11, 8, 0, 0);
-        String localDateTime = timeManagementService.validateStartTime(testStartTime);
-        Assertions.assertEquals(0,localDateTime.length());
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-//        String formattedDateTime = localDateTime.format(formatter);
-//        Assertions.assertNotNull(formattedDateTime);
-//        Assertions.assertEquals(LocalDateTime.of(2024, 11, 11, 8, 0, 0), localDateTime);
+        LocalDateTime localDateTime = timeManagementService.validateStartTime(testStartTime);
+        Assertions.assertNotNull(localDateTime);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        String formattedDateTime = localDateTime.format(formatter);
+        Assertions.assertNotNull(formattedDateTime);
+        Assertions.assertEquals(LocalDateTime.of(2024, 11, 11, 8, 0, 0), localDateTime);
     }
 
     @Test
     public void validateStartTime_StartTimeInFuture_ReturnNull() {
         LocalDateTime testStartTime = LocalDateTime.of(2025, 11, 10, 8, 0, 0);
-        String localDateTime = timeManagementService.validateStartTime(testStartTime);
-        Assertions.assertEquals("Startzeitpunkt liegt in der Zukunft.",localDateTime);
-}
+        LocalDateTime localDateTime = timeManagementService.validateStartTime(testStartTime);
+        Assertions.assertNull(localDateTime);
+    }
     //endregion
 
     //region Test validateEndTime
@@ -97,31 +97,28 @@ class TimeManagementServiceTest {
     public void validateEndTime_ValidFormat_ReturnLocalDateTime() {
         LocalDateTime testEndTime = LocalDateTime.of(2024, 11, 11, 9, 0, 0);
         LocalDateTime testStartTime = LocalDateTime.of(2024, 11, 11, 8, 0, 0);
-        String localDateTime = timeManagementService.validateEndTime(testEndTime,testStartTime);
-        Assertions.assertEquals(0,localDateTime.length());
-
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-//        String formattedDateTime = localDateTime.format(formatter);
-//        Assertions.assertNotNull(formattedDateTime);
-//        Assertions.assertEquals(LocalDateTime.of(2024, 11, 11, 9, 0, 0), localDateTime);
+        LocalDateTime localDateTime = timeManagementService.validateEndTime(testEndTime,testStartTime);
+        Assertions.assertNotNull(localDateTime);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        String formattedDateTime = localDateTime.format(formatter);
+        Assertions.assertNotNull(formattedDateTime);
+        Assertions.assertEquals(LocalDateTime.of(2024, 11, 11, 9, 0, 0), localDateTime);
     }
 
     @Test
     public void validateEndTime_EndTimeEqualsStartTime_ReturnNull() {
         LocalDateTime testStartTime = LocalDateTime.of(2024,11, 11, 8, 0, 0);
         LocalDateTime testEndTime = LocalDateTime.of(2024, 11, 11, 8, 0, 0);
-        String result = timeManagementService.validateEndTime(testStartTime, testEndTime);
-        Assertions.assertEquals("Endzeitpunkt liegt vor Startzeitpunkt.",result);
-
+        LocalDateTime result = timeManagementService.validateEndTime(testStartTime, testEndTime);
+        Assertions.assertNull(result, "Die Endzeit darf nicht gleich der Startzeit sein und sollte null zurückgeben.");
     }
 
     @Test
     public void validateEndTime_EndTimeInFuture_ReturnNull() {
         LocalDateTime testEndTime = LocalDateTime.of(2025, 11 ,10, 8, 0, 0);
         LocalDateTime testStartTime = LocalDateTime.of(2024, 11, 11, 8, 0, 0);
-        String localDateTime = timeManagementService.validateEndTime(testEndTime,testStartTime);
-        Assertions.assertNotEquals(0,localDateTime.length());
-
+        LocalDateTime localDateTime = timeManagementService.validateEndTime(testEndTime,testStartTime);
+        Assertions.assertNull(localDateTime);
     }
     //endregion
 
@@ -129,15 +126,16 @@ class TimeManagementServiceTest {
     @Test
     public void validateDuration_ValidFormat_ReturnDuration() {
         Duration testDuration = Duration.parse("PT2H30M30S");
-        String duration = timeManagementService.validateDuration(testDuration);
-        Assertions.assertEquals(0,duration.length());
+        Duration duration = timeManagementService.validateDuration(testDuration);
+        Assertions.assertNotNull(duration);
+        Assertions.assertEquals(9030L, duration.toSeconds());
     }
 
     @Test
     public void validateDuration_DurationTooLong_ReturnNull() {
         Duration testDuration = Duration.parse("PT48H30M30S");
-        String duration = timeManagementService.validateDuration(testDuration);
-        Assertions.assertNotEquals(0,duration.length());
+        Duration duration = timeManagementService.validateDuration(testDuration);
+        Assertions.assertNull(duration);
     }
     //endregion
 }

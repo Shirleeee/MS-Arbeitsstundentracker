@@ -70,36 +70,24 @@ public class ProjectManagementService {
     }
 
     //TODO: connect with frontend
-    public ResponseEntity<?> updateProject(Long projectId, String name, String description, LocalDateTime deadline) {
+    public Project updateProject(Long projectId, String name, String description, LocalDateTime deadline) {
         Project existingProject = projectRepository.findById(projectId).orElse(null);
         if (existingProject == null) {
             eventLogger.logError("Project with ID " + projectId + " does not exist in database.");
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse("Project with ID " + projectId + " does not exist in database.", "projectId", "INVALID"));
+            return null;
         }
 
         String validName = validateName(name);
         String validDescription = validateDescription(description);
         String validDeadline = validateDeadline(deadline);
 
-        if (!validName.isEmpty() || !validDescription.isEmpty() || !validDeadline.isEmpty()) {
-            // Erstelle eine Liste von Fehlern
-            List<ErrorResponse> errors = new ArrayList<>();
-            if (!validName.isEmpty()) {
-
-                errors.add(new ErrorResponse(validName, "name", "INVALID"));
-            }
-            if (!validDescription.isEmpty()) {
-                errors.add(new ErrorResponse(validDescription, "description", "INVALID"));
-            }
-            if (!validDeadline.isEmpty()) {
-                errors.add(new ErrorResponse(validDeadline, "deadline", "INVALID"));
-            }
-            // Rückgabe der Fehlerantwort
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
+        if (validName == null || validDescription == null || validDeadline == null) {
+            eventLogger.logError("Project could not be updated because of invalid input.");
+            return null;
         }
 
-        existingProject.setName(new ProjectName(name));
-        existingProject.setDescription(new ProjectDescription(description));
+        existingProject.setName(new ProjectName(validName));
+        existingProject.setDescription(new ProjectDescription(validDescription));
         existingProject.setDeadline(new Deadline(deadline));
 
         existingProject = projectRepository.save(existingProject);
@@ -107,7 +95,7 @@ public class ProjectManagementService {
         ProjectUpdated event = new ProjectUpdated(this, existingProject.getUserId(), existingProject.getName(), existingProject.getDescription(), existingProject.getDeadline());
         eventPublisher.publishEvent(event);
 
-        return ResponseEntity.ok(existingProject);
+        return existingProject;
     }
 
     public void deleteProject(Long projectId) {
