@@ -1,6 +1,5 @@
 import {ref} from "vue";
 import {
-
     formatDate,
     formatTime,
     parseDurationToSeconds,
@@ -31,9 +30,9 @@ export function useFetchProjects() {
                 }),
             ]);
 
-            // console.log("Projects response:", projectsRes);
-            // console.log("Tasks response:", tasksRes);
-            // console.log("Time Entries response:", timeEntriesRes);
+             // console.log("Projects response:", projectsRes);
+             // console.log("Tasks response:", tasksRes);
+             // console.log("Time Entries response:", timeEntriesRes);
 
 
             const projectsData = JSON.parse(projectsRes);
@@ -57,8 +56,8 @@ export function useFetchProjects() {
             // console.log(project);
             const projectTasks = tasks.filter(task => {
 
-                // console.log(task);
-                return task.projectId.value.toString() === project.id.toString()
+              console.log(task);
+                return task.projectId.toString() === project.id.toString()
             });
 
             const mappedTasks = projectTasks.map(task => {

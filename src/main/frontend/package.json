@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 5174",
     "start": "concurrently \"(cd ../../.. && mvn spring-boot:run)\" \"npm run dev\"",
     "build": "vite build",
     "preview": "vite preview"
