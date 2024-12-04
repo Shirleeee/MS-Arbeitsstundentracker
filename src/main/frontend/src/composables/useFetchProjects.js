@@ -55,25 +55,29 @@ export function useFetchProjects() {
 
             // console.log(project);
             const projectTasks = tasks.filter(task => {
-              // console.log(task);
+
+              console.log(task);
                 return task.projectId.toString() === project.id.toString()
             });
 
             const mappedTasks = projectTasks.map(task => {
 
                 const taskTimeEntries = timeEntries.filter(entry => {
-                    // console.log("timeEntries entry.", entry);
-                    return entry.taskId.toString() === task.task_id.toString();
+                    console.log("timeEntries entry.", entry);
+                    return entry.taskId.taskId.toString() === task.task_id.toString();
                 });
 
-              console.log("parseDurationToSeconds.parseDurationToSeconds", parseDurationToSeconds(taskTimeEntries.trackedTime));
+                console.log("parseDurationToSeconds.parseDurationToSeconds", parseDurationToSeconds(taskTimeEntries.trackedTime));
+
                 taskTimer.value.push({
-                    task_id: task.task_id,
+                    taskId: task.task_id,
                     projectId: project.id,
                     timer: null,
                     isPlaying: false,
                     trackedTime: taskTimeEntries.reduce((sum, entry) => {
+
                         return sum + parseDurationToSeconds(entry.timePeriod.timePeriod);
+
                     }, 0),
                 });
 
@@ -87,7 +91,7 @@ export function useFetchProjects() {
 
             const totalTrackedTime = mappedTasks.reduce((sum, task) => {
 
-                return sum + task.timeEntries.reduce((timeSum, entry) => timeSum + parseDurationToSeconds(entry.timePeriod.timePeriod), 0);
+                return sum + task.timeEntries.reduce((timeSum, entry) => timeSum + entry.timePeriod.timePeriod, 0);
             }, 0);
 
             return {
