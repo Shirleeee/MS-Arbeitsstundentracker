@@ -1,24 +1,37 @@
 <script setup>
 
 import Timer from "./Timer.vue";
+import PencilUpdate from "@/components/icons/PencilButtonSVG.vue";
 
 
 const props = defineProps({
-  task: Object,
+  task: {
+    type: Object,
+    required: true,
+    default: () => ({timeEntries: []})
+  },
   taskTimer: Array
 });
 
+// console.log("taskTimer",props.taskTimer && props.taskTimer.length);
+// console.log("taskTimer.length", props.taskTimer.length);
 
 </script>
 
 <template>
   <ul class="task">
     <li>
-      <p>Task: {{ task.name.taskName }}</p>
-      <p>Deadline: {{ task.deadlineDate }} {{ task.deadlineTime }}</p>
+      <div class="title-container">
+      <PencilUpdate/>
+      <p> Task: {{ task.name.taskName }}</p>
+      </div>
+      <div>
+        <p>Deadline: {{ task.deadlineDate }} {{ task.deadlineTime }}</p>
+
+      </div>
       <div v-if="props.taskTimer && props.taskTimer.length">
         <Timer
-            v-for="timer in props.taskTimer.filter(taskTime => task.task_id.toString() === taskTime.taskId.toString())"
+            v-for="timer in props.taskTimer.filter(taskTime => task.task_id.toString() === taskTime.task_id.toString())"
             :key="timer.id" :timer="timer"/>
       </div>
 
@@ -36,15 +49,27 @@ ul.task {
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
+   &> .title-container{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      > * {
+        padding-right: 5px;
 
+      }
+   }
     & > .icons-container .icons {
       & > * {
         padding-right: 5px;
         cursor: pointer;
       }
     }
+
+
   }
 }
+
+
 </style>
 
 
@@ -59,9 +84,10 @@ ul.task {
 
   & > li {
     width: 100%;
-
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    display: flex;
+    padding-bottom: 20px;
+    flex-direction: row;
+    justify-content: space-between;
 
     & > .icons-container .icons {
       & > * {

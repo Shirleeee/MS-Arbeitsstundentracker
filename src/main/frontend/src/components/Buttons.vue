@@ -9,7 +9,6 @@ const props = defineProps({
   showModal: Boolean
 });
 
-
 const isModalOpen = ref(false);
 
 const toggleModal = () => {
@@ -31,7 +30,7 @@ const handleClose = () => {
       <button>Export</button>
     </div>
     <div class="create-btn-wrapper">
-      <CreateModal v-if="isModalOpen" :text="text" :additionalData="additionalData" @close="handleClose"
+      <CreateModal v-if="isModalOpen" actionType="Create" :text="text" :additionalData="additionalData" @close="handleClose"
                    @submit-success="handleSubmitSuccess"/>
       <button @click="toggleModal">Create {{ text }}</button>
     </div>

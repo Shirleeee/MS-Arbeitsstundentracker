@@ -18,10 +18,10 @@ import java.util.List;
 @RequestMapping("/api")
 public class TaskManagementController {
     //TODO
-    private final TaskManagementService taskManagementService; //TODO: in eigenen Controller auslagern
+    private final TaskManagementService taskManagementService;
 
     @Autowired
-    public TaskManagementController(ProjectManagementService projectManagementService, TaskManagementService taskManagementService) {
+    public TaskManagementController( TaskManagementService taskManagementService) {
         this.taskManagementService = taskManagementService;
     }
 

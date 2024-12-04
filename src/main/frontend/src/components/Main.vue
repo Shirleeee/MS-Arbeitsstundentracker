@@ -11,7 +11,7 @@ const props = defineProps({
   }
 
 });
-const currentDateTimeLocal = new Date().toISOString().slice(0, 16);
+// const currentDateTimeLocal = new Date().toISOString().slice(0, 16);
 
 </script>
 <template>
