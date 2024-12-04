@@ -19,22 +19,15 @@ import java.util.List;
 public class ProjectManagementController {
 
     private final ProjectManagementService projectManagementService;
-    private final TaskManagementService taskManagementService; //TODO: in eigenen Controller auslagern
 
     @Autowired
     public ProjectManagementController(ProjectManagementService projectManagementService, TaskManagementService taskManagementService) {
         this.projectManagementService = projectManagementService;
-        this.taskManagementService = taskManagementService;
     }
 
     @GetMapping("/project")
     public List<Project> getAllProjects() {
         return projectManagementService.findAllProjects();
-    }
-
-    @GetMapping("/task")
-    public List<Task> getAllTasks() {
-        return taskManagementService.findAllTasks();
     }
 
     @PostMapping("/submitProjectData")
@@ -71,23 +64,4 @@ public class ProjectManagementController {
     }
 
 
-    @PostMapping("/submitTaskData")
-    public Task submitTaskData(@RequestBody Task task) {
-
-        try {
-            return taskManagementService.createTask(
-                    task.getProjectId(),
-                    task.getName().getTaskName(),
-                    task.getDescription().getTaskDescription(),
-                    task.getDeadline().getDeadline()
-            );
-
-        } catch (Exception e) {
-
-            handleException(e);
-            return null;
-        }
-
-
-    }
 }

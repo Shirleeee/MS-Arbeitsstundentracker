@@ -6,7 +6,7 @@ export function useFormData(props, title, description, deadline) {
 
     if (props.formType === 'Task') {
         data = {
-            projectId: { value: props.additionalValue },
+            projectId: props.additionalValue,
             name: { taskName: title },
             description: { taskDescription: description },
             deadline: { deadline: deadline },

@@ -36,25 +36,26 @@ public class ProjectManagementService {
     public ResponseEntity<?> createProject(Long userId, String name, String description, LocalDateTime deadline) {
         String validName = validateName(name);
         String validDescription = validateDescription(description);
-        LocalDateTime validDeadline = validateDeadline(deadline);
+        String validDeadline = validateDeadline(deadline);
 
-        if (validName == null || validDescription == null || validDeadline == null) {
+        if (!validName.isEmpty() || !validDescription.isEmpty() || !validDeadline.isEmpty()) {
             // Erstelle eine Liste von Fehlern
             List<ErrorResponse> errors = new ArrayList<>();
-            if (validName == null) {
-                errors.add(new ErrorResponse("Invalid name", "name", "INVALID"));
+            if (!validName.isEmpty()) {
+
+                errors.add(new ErrorResponse(validName, "name", "INVALID"));
             }
-            if (validDescription == null) {
-                errors.add(new ErrorResponse("Invalid description", "description", "INVALID"));
+            if (!validDescription.isEmpty()) {
+                errors.add(new ErrorResponse(validDescription, "description", "INVALID"));
             }
-            if (validDeadline == null) {
-                errors.add(new ErrorResponse("Invalid deadline", "deadline", "INVALID"));
+            if (!validDeadline.isEmpty()) {
+                errors.add(new ErrorResponse(validDeadline, "deadline", "INVALID"));
             }
             // Rückgabe der Fehlerantwort
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
         }
 
-        Project project = new Project(userId, new ProjectName(validName), new ProjectDescription(validDescription), new Deadline(validDeadline));
+        Project project = new Project(userId, new ProjectName(name), new ProjectDescription(description), new Deadline(deadline));
         project = projectRepository.save(project);
 
 
@@ -78,7 +79,7 @@ public class ProjectManagementService {
 
         String validName = validateName(name);
         String validDescription = validateDescription(description);
-        LocalDateTime validDeadline = validateDeadline(deadline);
+        String validDeadline = validateDeadline(deadline);
 
         if (validName == null || validDescription == null || validDeadline == null) {
             eventLogger.logError("Project could not be updated because of invalid input.");
@@ -87,7 +88,7 @@ public class ProjectManagementService {
 
         existingProject.setName(new ProjectName(validName));
         existingProject.setDescription(new ProjectDescription(validDescription));
-        existingProject.setDeadline(new Deadline(validDeadline));
+        existingProject.setDeadline(new Deadline(deadline));
 
         existingProject = projectRepository.save(existingProject);
 
@@ -105,39 +106,39 @@ public class ProjectManagementService {
     public String validateName(String name) {
         if (name == null || name.isEmpty()) {
             eventLogger.logWarning("Name darf nicht leer sein.");
-            return null;
+            return "Name darf nicht leer sein.";
         }
         if (name.length() > 256) {
             eventLogger.logWarning("Name ist zu lang");
-            return null;
+            return "Name ist zu lang";
         }
-        return name;
+        return "";
     }
 
 
     public String validateDescription(String description) {
         if (description == null || description.isEmpty()) {
             eventLogger.logWarning("Beschreibung darf nicht leer sein.");
-            return null;
+            return "Beschreibung darf nicht leer sein.";
         }
         if (description.length() > 1024) {
             eventLogger.logWarning("Beschreibung ist zu lang.");
-            return null;
+            return "Beschreibung ist zu lang.";
         }
-        return description;
+        return "";
     }
 
 
-    public LocalDateTime validateDeadline(LocalDateTime deadline) {
+    public String validateDeadline(LocalDateTime deadline) {
         if (deadline == null) {
             eventLogger.logWarning("Deadline darf nicht leer sein.");
-            return null;
+            return "Deadline darf nicht leer sein.";
         }
         if (!LocalDateTime.now().isBefore(deadline)) {
             eventLogger.logWarning("Deadline darf nicht leer sein.");
-            return null;
+            return "Deadline darf nicht leer sein.";
         }
-        return deadline;
+        return "";
     }
     //endregion
 }

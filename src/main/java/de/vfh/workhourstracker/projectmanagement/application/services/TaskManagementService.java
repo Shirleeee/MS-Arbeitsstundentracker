@@ -9,12 +9,16 @@ import de.vfh.workhourstracker.projectmanagement.domain.task.events.TaskCreated;
 import de.vfh.workhourstracker.projectmanagement.domain.task.events.TaskUpdated;
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.TaskRepository;
+import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import de.vfh.workhourstracker.shared.util.EventLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,23 +33,36 @@ public class TaskManagementService {
         this.taskRepository = taskRepository;
     }
 
-    public Task createTask(Long projectId, String name, String description, LocalDateTime deadline) {
+    public ResponseEntity<?> createTask(Long projectId, String name, String description, LocalDateTime deadline) {
         String validName = validateName(name);
         String validDescription = validateDescription(description);
-        LocalDateTime validDeadline = validateDeadline(deadline);
+        String validDeadline = validateDeadline(deadline);
 
-        if (validName == null || validDescription == null || validDeadline == null) {
-            eventLogger.logError("Project could not be created because of invalid input.");
-            return null;
+
+        if (!validName.isEmpty() || !validDescription.isEmpty() || !validDeadline.isEmpty()) {
+
+            List<ErrorResponse> errors = new ArrayList<>();
+            if (!validName.isEmpty()) {
+                errors.add(new ErrorResponse(validName, "name", "INVALID"));
+            }
+            if (!validDescription.isEmpty()) {
+                errors.add(new ErrorResponse(validDescription, "description", "INVALID"));
+            }
+            if (!validDeadline.isEmpty()) {
+                errors.add(new ErrorResponse(validDeadline, "deadline", "INVALID"));
+            }
+            // Rückgabe der Fehlerantwort
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
         }
 
-        Task task = new Task(projectId, new TaskName(name), new TaskDescription(description), new Deadline(validDeadline));
+        Task task = new Task(projectId, new TaskName(name), new TaskDescription(description), new Deadline(deadline));
         task = taskRepository.save(task);
 
         TaskCreated event = new TaskCreated(this, task.getTask_id(), task.getProjectId(), task.getName(), task.getDescription(), task.getDeadline());
         eventPublisher.publishEvent(event);
 
-        return task;
+        return ResponseEntity.ok(task);
+
     }
 
     public List<Task> findAllTasks() {
@@ -61,7 +78,7 @@ public class TaskManagementService {
 
         String validName = validateName(name);
         String validDescription = validateDescription(description);
-        LocalDateTime validDeadline = validateDeadline(deadline);
+        String validDeadline = validateDeadline(deadline);
 
         if (validName == null || validDescription == null || validDeadline == null) {
             eventLogger.logError("Task could not be updated because of invalid input.");
@@ -70,7 +87,7 @@ public class TaskManagementService {
 
         existingTask.setName(new TaskName(name));
         existingTask.setDescription(new TaskDescription(description));
-        existingTask.setDeadline(new Deadline(validDeadline));
+        existingTask.setDeadline(new Deadline(deadline));
 
         existingTask = taskRepository.save(existingTask);
 
@@ -88,37 +105,37 @@ public class TaskManagementService {
     public String validateName(String name) {
         if (name == null || name.isEmpty()) {
             eventLogger.logWarning("Name darf nicht leer sein.");
-            return null;
+            return "Name darf nicht leer sein.";
         }
         if (name.length() > 256) {
             eventLogger.logWarning("Name ist zu lang");
-            return null;
+            return "Name ist zu lang";
         }
-        return name;
+        return "";
     }
 
     public String validateDescription(String description) {
         if (description == null || description.isEmpty()) {
             eventLogger.logWarning("Beschreibung darf nicht leer sein.");
-            return null;
+            return "Beschreibung darf nicht leer sein.";
         }
         if (description.length() > 1024) {
             eventLogger.logWarning("Beschreibung ist zu lang.");
-            return null;
+            return "Beschreibung ist zu lang.";
         }
-        return description;
+        return "";
     }
 
-    public LocalDateTime validateDeadline(LocalDateTime deadline) {
+    public String validateDeadline(LocalDateTime deadline) {
         if (deadline == null) {
             eventLogger.logWarning("Deadline darf nicht leer sein.");
-            return null;
+            return "Deadline darf nicht leer sein.";
         }
         if (!LocalDateTime.now().isBefore(deadline)) {
             eventLogger.logWarning("Deadline liegt in der Vergangenheit");
-            return null;
+            return "Deadline liegt in der Vergangenheit";
         }
-        return deadline;
+        return "";
 
     }
     //endregion

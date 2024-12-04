@@ -45,6 +45,7 @@ console.log("Submit form  deadline.value",  deadline.value);
   } catch (error) {
 
     if (error.response && error.response.data) {
+      console.log("error.response.data", error.response.data);
       error.response.data.forEach(err => {
         if (err.field) {
           console.log("err", err);

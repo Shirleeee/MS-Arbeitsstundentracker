@@ -94,16 +94,18 @@ public class ProjectManagementServiceTest {
     @Test
     public void validateDeadline_ValidDeadline_ReturnLocalDateTime() {
         LocalDateTime testDeadline = LocalDateTime.of(2025, 12, 10, 23, 59, 59);
-        LocalDateTime validDeadline = projectManagementService.validateDeadline(testDeadline);
-        Assertions.assertNotNull(validDeadline);
+        String validDeadline = projectManagementService.validateDeadline(testDeadline);
+
+        Assertions.assertNotEquals( 0,validDeadline.length());
+
         Assertions.assertEquals(testDeadline, validDeadline);
     }
 
     @Test
     public void validateDeadline_DeadlineInThePast_ReturnNull() {
         LocalDateTime testDeadline = LocalDateTime.of(2024, 3, 10, 23, 59, 59);
-        LocalDateTime invalidDeadline = projectManagementService.validateDeadline(testDeadline);
-        Assertions.assertNull(invalidDeadline);
+        String invalidDeadline = projectManagementService.validateDeadline(testDeadline);
+        Assertions.assertEquals( 0,invalidDeadline.length());
     }
     //endregion
 }
