@@ -14,26 +14,24 @@ const props = defineProps({
     type: [String, Number],
   },
   actionType: String,
-  currentProjectData: Object,
+  currentData: Object,
   showModal: Boolean,
-  projectId: String,
 });
 // emit = ausstrahlen, abgeben
 //ermöglicht es der Komponente, mit ihrer übergeordneten Komponente zu kommunizieren, indem sie diese Ereignisse aussendet.
-const emit = defineEmits(['submit-success', 'close', 'update-success']);
-console.log("SUBMITFORM props.actiontype", props.actionType);
-const {title, description, deadline} = useFormType(props.text, props.currentProjectData);
+const emit = defineEmits(['submit-success', 'close']);
+
+const {title, description, deadline} = useFormType(props.text, props.currentData);
 
 const {errors} = useForm();
 
-const currentDateTimeLocal = new Date().toISOString().slice(0, 16);
-console.log("currentProjectData", props.currentProjectData);
+// const currentDateTimeLocal = new Date().toISOString().slice(0, 16);
+console.log("currentData", props.currentData);
 
 const submit = async (event) => {
 
- console.log("Submit for m  event",  event);
   try {
-    console.log("Submit form  deadline.value",  deadline.value);
+    // console.log("Submit form  deadline.value",  deadline.value);
     deadline.value = deadline.value ? deadline.value : null;
     const data = useFormData(props, title.value, description.value, deadline.value);
 
@@ -48,9 +46,12 @@ const submit = async (event) => {
       deadline: ''
     };
 
-    console.log("response.data", response.data);
+    // console.log("response.data", response.data);
     emit('submit-success', response.data);
-    emit('update-success', response.data);
+
+    // title.value = response.data.projectName;
+    // description.value = response.data.projectDescription;
+    // deadline.value = response.data.deadline;
     emit('close');
   } catch (error) {
 
@@ -87,9 +88,6 @@ const submit = async (event) => {
     <span v-if="errors.deadline" class="error-message">{{ errors.deadline }}</span>
 
     <input type="hidden" v-if="additionalField" :value="additionalValue" :name="additionalField"/>
-    <input type="hidden" v-if="additionalField" :value="additionalValue" :name="additionalField"/>
-
-
     <button v-if="text==='Project'" type="submit">{{ actionType === 'Create' ? 'Create Project' : 'Update Project' }}</button>
     <button v-if="text==='Task'" type="submit">{{ actionType === 'Create' ? 'Create Task' : 'Update Task' }}</button>
   </form>

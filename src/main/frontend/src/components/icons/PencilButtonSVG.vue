@@ -8,8 +8,7 @@ const props = defineProps({
   text: String,
   additionalData: Object,
   showModal: Boolean,
-  projectId: String,
-  currentProjectData: Object
+  currentData: Object
 });
 
 
@@ -17,13 +16,16 @@ const isModalOpen = ref(false);
 const handleClose = () => {
   isModalOpen.value = false;
 };
-const emit = defineEmits(['update-success']);
+const emit = defineEmits(['submit-success']);
 const toggleModal = () => {
   isModalOpen.value = !isModalOpen.value;
 };
 const handleUpdateSuccess = (data) => {
+  console.log('pencil BTNhandleUpdateSuccess', data);
   isModalOpen.value = false;
   emit('update-success', data);
+  location.reload();
+
 };
 </script>
 
@@ -31,11 +33,12 @@ const handleUpdateSuccess = (data) => {
 
 <template>
 <div class="svg-container">
-  <CreateModal v-if="isModalOpen" :projectId="props.projectId" :text="text" actionType="Update"
-               :currentProjectData=props.currentProjectData
+  <CreateModal v-if="isModalOpen" :text="text" actionType="Update"
+               :currentData=props.currentData
                :additionalData="additionalData"
                @close="handleClose"
-               @update-success="handleUpdateSuccess"/>
+               @submit-success="handleUpdateSuccess"/>
+
   <svg @click="toggleModal"
      aria-hidden="true"
      role="img"

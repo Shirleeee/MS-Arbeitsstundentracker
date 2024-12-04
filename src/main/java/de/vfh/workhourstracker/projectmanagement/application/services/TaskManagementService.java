@@ -69,7 +69,7 @@ public class TaskManagementService {
         return taskRepository.findAll();
     }
 
-    public Task updateTask(Long taskId, String name, String description, LocalDateTime deadline) {
+    public ResponseEntity<?> updateTask(Long taskId, String name, String description, LocalDateTime deadline) {
         Task existingTask = taskRepository.findById(taskId).orElse(null);
         if (existingTask == null) {
             eventLogger.logError("Task with ID " + taskId + " does not exist in database.");
@@ -80,11 +80,23 @@ public class TaskManagementService {
         String validDescription = validateDescription(description);
         String validDeadline = validateDeadline(deadline);
 
-        if (validName == null || validDescription == null || validDeadline == null) {
+        if (!validName.isEmpty() || !validDescription.isEmpty() || !validDeadline.isEmpty()) {
             eventLogger.logError("Task could not be updated because of invalid input.");
-            return null;
-        }
 
+            List<ErrorResponse> errors = new ArrayList<>();
+            if (!validName.isEmpty()) {
+
+                errors.add(new ErrorResponse(validName, "name", "INVALID"));
+            }
+            if (!validDescription.isEmpty()) {
+                errors.add(new ErrorResponse(validDescription, "description", "INVALID"));
+            }
+            if (!validDeadline.isEmpty()) {
+                errors.add(new ErrorResponse(validDeadline, "deadline", "INVALID"));
+            }
+            // Rückgabe der Fehlerantwort
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
+        }
         existingTask.setName(new TaskName(name));
         existingTask.setDescription(new TaskDescription(description));
         existingTask.setDeadline(new Deadline(deadline));
@@ -94,7 +106,8 @@ public class TaskManagementService {
         TaskUpdated event = new TaskUpdated(this, existingTask.getTask_id(), existingTask.getProjectId(), existingTask.getName(), existingTask.getDescription(), existingTask.getDeadline());
         eventPublisher.publishEvent(event);
 
-        return existingTask;
+        return ResponseEntity.ok(existingTask);
+
     }
 
     public void deleteTask(Long taskId) {

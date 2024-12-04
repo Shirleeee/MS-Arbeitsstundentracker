@@ -2,6 +2,7 @@
 
 import Timer from "./Timer.vue";
 import PencilUpdate from "@/components/icons/PencilButtonSVG.vue";
+import CreateModal from "@/components/Modal.vue";
 
 
 const props = defineProps({
@@ -10,20 +11,50 @@ const props = defineProps({
     required: true,
     default: () => ({timeEntries: []})
   },
+  additionalData: Object,
   taskTimer: Array
 });
 
+//TODO in Project vue auch vorhanden - seperate Datei auslagern
+const currentData = (id, projectId, name, description, deadline) => {
+  return {
+    task_id:id,
+    projectId:projectId,
+    name: name,
+    description: description,
+    deadline: deadline
+  }
+};
 // console.log("taskTimer",props.taskTimer && props.taskTimer.length);
 // console.log("taskTimer.length", props.taskTimer.length);
+const handleUpdateSuccess = (data) => {
+  console.log('Task BTNhandleUpdateSuccess', data);
+  if (!data) {
+    console.error('Received undefined data', data);
+    return;
+  }
 
+  console.log("dataTask", data);
+  console.log("props.Task", props.task);
+  // const index = props.task.findIndex(task => task.id === updatedTask.id);
+  // console.log("index", index);
+  // if (index !== -1) {
+  //   projects.value[index] = updatedProject;
+  // }
+  // title.value = data.projectName;
+  // description.value = data.projectDescription;
+  // deadline.value = data.deadline;
+};
 </script>
 
 <template>
   <ul class="task">
     <li>
       <div class="title-container">
-      <PencilUpdate/>
+      <PencilUpdate text="Task" @submit-success="handleUpdateSuccess" :additionalData="additionalData"
+                    :currentData="currentData(task.task_id,task.projectId,task.name.taskName,task.description.taskDescription	,task.deadline.deadline)"/>
       <p> Task: {{ task.name.taskName }}</p>
+
       </div>
       <div>
         <p>Deadline: {{ task.deadlineDate }} {{ task.deadlineTime }}</p>
