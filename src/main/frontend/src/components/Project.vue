@@ -15,7 +15,7 @@ const props = defineProps({
   },
   taskTimer: Array
 });
-
+console.log("props.project", props.project);
 const text = ref('Task');
 const handleNewData = (data) => {
 
@@ -46,13 +46,13 @@ const currentData = (id,name, description, deadline) => {
   }
 };
 
-const handleUpdateSuccess = (data) => {
-  if (!data) {
-    console.error('Received undefined data', data);
-    return;
-  }
-  console.log("data", data);
-  console.log("props.project", props.project);
+// const handleUpdateSuccess = (data) => {
+//   if (!data) {
+//     console.error('Received undefined data', data);
+//     return;
+//   }
+//   console.log("data", data);
+//   console.log("props.project", props.project);
   // const index = props.project.findIndex(project => project.id === updatedProject.id);
   // console.log("index", index);
   // if (index !== -1) {
@@ -61,18 +61,18 @@ const handleUpdateSuccess = (data) => {
   // title.value = data.projectName;
   // description.value = data.projectDescription;
   // deadline.value = data.deadline;
-};
-const isModalOpen = ref(false);
+// };
+// const isModalOpen = ref(false);
 
 
-const emit = defineEmits(['submit-success']);
-const handleSubmitSuccess = (data) => {
-  isModalOpen.value = false;
-  emit('submit-success', data);
-};
-const handleClose = () => {
-  isModalOpen.value = false;
-};
+// const emit = defineEmits(['submit-success']);
+// const handleSubmitSuccess = (data) => {
+//   isModalOpen.value = false;
+//   emit('submit-success', data);
+// };
+// const handleClose = () => {
+//   isModalOpen.value = false;
+// };
 </script>
 
 <template>
@@ -80,7 +80,7 @@ const handleClose = () => {
     <div class="proj-head">
 
       <div class="title-container">
-        <PencilUpdate text="Project" @submit-success="handleUpdateSuccess"
+        <PencilUpdate text="Project"
                       :currentData="currentData(project.id,project.name.projectName,project.description.projectDescription,project.deadline.deadline)"/>
 
         <h2 class="title"> {{ project.id }}-{{ project.name.projectName }}</h2>
@@ -93,7 +93,7 @@ const handleClose = () => {
     </div>
     <Task v-for="task in project.tasks" :key="task.task_id" :task="task" :additionalData="project" :taskTimer="taskTimer" :text="text"/>
   </div>
-  <Buttons :text="text" :additionalData="project" @submit-success="handleSubmitSuccess" :key="project.id"></Buttons>
+  <Buttons :text="text" :additionalData="project" @submit-success="handleNewData" :key="project.id"></Buttons>
 </template>
 
 
