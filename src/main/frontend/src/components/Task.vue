@@ -84,6 +84,7 @@ ul.task {
       display: flex;
       flex-direction: row;
       align-items: center;
+      width: 30%;
       > * {
         padding-right: 5px;
 

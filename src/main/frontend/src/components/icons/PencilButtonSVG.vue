@@ -23,8 +23,8 @@ const toggleModal = () => {
 const handleUpdateSuccess = (data) => {
   console.log('pencil BTNhandleUpdateSuccess', data);
   isModalOpen.value = false;
-  emit('update-success', data);
-  location.reload();
+  emit('submit-success', data);
+  // location.reload();
 
 };
 </script>

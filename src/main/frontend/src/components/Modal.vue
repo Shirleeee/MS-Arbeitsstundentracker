@@ -24,12 +24,12 @@ const handleSubmitSuccess = (data) => {
 const getSubmitUrl = (type) => {
   if (type === 'Project') {
     return props.actionType === 'Create'
-        ? `http://localhost:8081/api/submitProjectData`
-        : `http://localhost:8081/api/updateProjectData`;
+        ? import.meta.env.VITE_SUBMIT_PROJECT_URL
+        : import.meta.env.VITE_UPDATE_PROJECT_URL;
   }else if (type === 'Task') {
     return props.actionType === 'Create'
-        ? `http://localhost:8081/api/submitTaskData`
-        : `http://localhost:8081/api/updateTaskData`;
+        ? import.meta.env.VITE_SUBMIT_TASK_URL
+        : import.meta.env.VITE_UPDATE_TASK_URL;
   }
   return '';
 };
@@ -38,6 +38,8 @@ const methods = {
     emit('close');
   }
 };
+
+
 </script>
 
 <template>
@@ -63,7 +65,7 @@ const methods = {
           :text="text"
           :submitUrl="getSubmitUrl(text)"
           additionalField="projectId"
-          :additionalValue="props.currentData.projectId"
+          :additionalValue="props.additionalData.id"
           :currentData=props.currentData
           @submit-success="handleSubmitSuccess"
       />
