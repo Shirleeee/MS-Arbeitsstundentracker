@@ -1,41 +1,62 @@
-
 import {ref} from "vue";
 
-export function useFormData(props, title, description, deadline) {
+export function useFormData(props, title, description, deadline, additionalValue) {
     let data;
+    console.log('useFormData - props.currentData.id', props.currentData)
+    console.log('useFormData - props.actionType', props.actionType)
+    console.log('useFormData - props.additionalValue', additionalValue)
 
-    if (props.formType === 'Task') {
+    if (props.text === 'Task') {
         data = {
-            projectId: { value: props.additionalValue },
-            name: { taskName: title },
-            description: { taskDescription: description },
-            deadline: { deadline: deadline },
+            task_id: props.currentData.task_id,
+            projectId: props.actionType === 'Update' ? props.currentData.projectId : props.additionalValue,
+            name: {taskName: title},
+            description: {taskDescription: description},
+            deadline: {deadline: deadline},
         };
-    } else if (props.formType === 'Project') {
+    } else if (props.text === 'Project') {
         data = {
-            userId: props.additionalValue,
-            name: { projectName: title },
-            description: { projectDescription: description },
-            deadline: { deadline: deadline },
+            userId: props.actionType === 'Update' ? props.currentData.id : props.additionalValue,
+            name: {projectName: title},
+            description: {projectDescription: description},
+            deadline: {deadline: deadline},
         };
+
     }
-
+    console.log('useFormData - data', data)
     return data;
 }
-export function useFormType(formType) {
+
+export function useFormType(formType, currentData, addValue) {
+    console.log('useFormType currentData', currentData)
+    console.log('useFormType formType', formType)
     const title = ref('');
     const description = ref('');
     const deadline = ref('');
+    const additionalValue = ref('');
+    if (typeof currentData === 'object') {
+        console.log('useFormType currentData', currentData)
+        title.value = currentData.name;
+        description.value = currentData.description;
+        deadline.value = currentData.deadline;
 
-    if (formType === 'Task') {
-        title.value = 'TASK create form in vueJs ';
-        description.value = 'create form in vueJs';
-        deadline.value = '';
-    } else if (formType === 'Project') {
-        title.value = 'PROJECT create form in vueJs'//.repeat(200);
-        description.value = 'create form in vueJs'//.repeat(200);
-        deadline.value = '';
+    } else {
+
+        console.log('useFormType formType', formType)
+        if (formType === 'Task' && currentData === 'Create') {
+            title.value = 'TASK create form in vueJs ';
+            description.value = 'create form in vueJs';
+            deadline.value = '';
+            additionalValue.value = '';
+        } else if (formType === 'Project' && currentData === 'Create') {
+            title.value = 'PROJECT create form in vueJs'//.repeat(200);
+            description.value = 'create form in vueJs'//.repeat(200);
+            deadline.value = '';
+            additionalValue.value = addValue;
+        }
+
     }
 
-    return { title, description, deadline };
+
+    return {title, description, deadline, additionalValue};
 }

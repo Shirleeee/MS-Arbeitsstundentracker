@@ -1,5 +1,8 @@
 @import './base.css';
-
+.error-message {
+  color: red;
+  font-size: 0.875em;
+}
 button{
   border-radius: 25px;
   padding: 5px 10px;
