@@ -95,7 +95,7 @@ export function useFetchProjects() {
                 tasks: mappedTasks,
                 deadlineDate: formatDate(project.deadline.deadline),
                 deadlineTime: formatTime(project.deadline.deadline),
-                total: 0,
+                total: totalTrackedTime,
             };
         });
     };
