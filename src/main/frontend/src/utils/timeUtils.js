@@ -64,28 +64,39 @@ export const formatTime = (dateStr) => {
 };
 
 export const parseDurationToSeconds = (duration) => {
-    console.log("duration", duration);
     if (!duration) {
         return 0;
     }
+
     const regex = /^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/;
-
     const matches = duration.match(regex);
-console.log("matches", matches);
 
-    if (matches) {
-        const [_, years, months, days, hours, minutes, seconds] = matches;
-        console.log(`Years: ${years || 0}`);
-        console.log(`Months: ${months || 0}`);
-        console.log(`Days: ${days || 0}`);
-        console.log(`Hours: ${hours || 0}`);
-        console.log(`Minutes: ${minutes || 0}`);
-        console.log(`Seconds: ${seconds || 0}`);
-    } else {
-        console.log("Invalid duration format.");
+    if (!matches) {
+        console.error("Invalid duration format.");
+        return 0;
     }
 
-}
+    const [
+        _, // Vollständiger Match (ignoriert)
+        years = 0,
+        months = 0,
+        days = 0,
+        hours = 0,
+        minutes = 0,
+        seconds = 0,
+    ] = matches.map(value => parseInt(value || 0, 10));
+
+    // Konvertierung in Sekunden
+    const totalSeconds =
+        years * 365 * 24 * 60 * 60 + // 1 Jahr = 365 Tage
+        months * 30 * 24 * 60 * 60 + // 1 Monat ≈ 30 Tage
+        days * 24 * 60 * 60 + // Tage
+        hours * 60 * 60 + // Stunden
+        minutes * 60 + // Minuten
+        seconds; // Sekunden
+
+    return totalSeconds;
+};
 
 
 export const getBerlinDateTime = () => {
