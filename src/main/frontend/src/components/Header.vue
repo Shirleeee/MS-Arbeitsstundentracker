@@ -16,7 +16,6 @@ const handleNewData = (data) => {
     console.error('Received undefined data', data);
     return;
   }
-console.log("Header data", data);
   data = handleNewDateTime(data);
   if (data.userId) {
     emit('submit-success', data);

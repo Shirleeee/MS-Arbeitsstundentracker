@@ -33,7 +33,7 @@ let errors = ref({
 const submit = async (event) => {
 
   try {
-    // console.log("Submit form  deadline.value",  deadline.value);
+console.log("Submit form  deadline.value",  deadline.value);
     deadline.value = deadline.value ? deadline.value : null;
     const data = useFormData(props, title.value, description.value, deadline.value,additionalValue.value);
 

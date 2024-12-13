@@ -1,6 +1,6 @@
 <script setup>
-import {ref} from 'vue';
-import {secondsToTimeFormat,getBerlinDateTime} from "@/utils/timeUtils.js";
+import {ref, onMounted, onBeforeUnmount} from 'vue';
+import {secondsToTimeFormat, getBerlinDateTime} from "@/utils/timeUtils.js";
 import PlayButtonSVG from "@/components/icons/PlaySvg.vue";
 import StopSvg from "@/components/icons/StopSvg.vue";
 import axios from "axios";
@@ -8,74 +8,118 @@ import {handleErrorResponse} from "@/utils/errorResponse.js";
 
 const props = defineProps({
   timer: Object,
-
+  key: String
 });
+
 let errors = ref({
   startTime: '',
   endTime: '',
   Duration: '',
 });
+
 const timerId = ref();
 
-// const emit = defineEmits(['submitStartTime-success']);
-// console.log("TIMER !!!!", props.timer);
+const clearTimerState = (timer) => {
+  localStorage.removeItem(`timer_${timer.task_id}`);
+};
+
+const saveTimerState = (timer) => {
+  console.log("SAVETIMERSTATE props.timer.id", props.timer.id);
+  const timerState = {
+    id: props.timer.id,
+    trackedTime: timer.trackedTime,
+    isPlaying: timer.isPlaying,
+    startTime: timer.startTime || null,
+  };
+  localStorage.setItem(`timer_${props.timer.task_id}`, JSON.stringify(timerState));
+  console.log("Saved state:", localStorage.getItem(`timer_${props.timer.task_id}`));
+};
 
 const startTimer = (timer) => {
+
+  if (timer.timer) {
+    clearInterval(timer.timer);
+  }
+
   timer.timer = setInterval(() => {
     timer.trackedTime += 1;
+
   }, 1000);
   timer.isPlaying = true;
 };
+
 const stopTimer = (timer) => {
   clearInterval(timer.timer);
   timer.isPlaying = false;
 };
 
-///!
-const submitStartTime = async (timer) => {
+const restoreTimerState = (timer) => {
 
+
+  const savedState = localStorage.getItem(`timer_${props.timer.task_id}`);
+  console.log("savedState restoreTimerState", savedState);
+  if (savedState) {
+    const {id, trackedTime, isPlaying, startTime} = JSON.parse(savedState);
+    timer.trackedTime = trackedTime || 0;
+    timer.startTime = startTime;
+    timer.id = id;
+
+
+    if (isPlaying) {
+
+      timer.trackedTime = Math.floor((Date.now() - new Date(startTime).getTime()) / 1000);
+      startTimer(timer);
+    }
+  }
+};
+
+const submitStartTime = async (timer) => {
+  startTimer(timer);
   try {
-    startTimer(timer);
-    console.log("timer", timer);
+
     const currentDateTimeLocal = getBerlinDateTime();
-    console.log("currentData", currentDateTimeLocal);
-console.log("timer.task_id", props.timer.task_id);
     const data = {
       taskId: props.timer.task_id,
       startTime: {startTime: currentDateTimeLocal},
     };
+    timer.startTime = currentDateTimeLocal;
+
     const response = await axios.post(import.meta.env.VITE_SUBMIT_STARTTIME_URL, data, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    timerId.value = response.data.id;
-    errors.value = {
+    timer.id = response.data.id;
+    console.log("response submitStartTime timer", timer);
 
+    console.log("response submitStartTime", response);
+    timerId.value = response.data.id;
+    saveTimerState(timer);
+
+    errors.value = {
       startTime: '',
       endTime: ''
     };
 
-    console.log("TIMER response.data", response.data);
-    // emit('submitStartTime-success', response.data);
-
   } catch (error) {
-
-    errors = handleErrorResponse(error,errors);
+    errors.value = handleErrorResponse(error, errors);
   }
 };
 
 const submitStopTime = async (timer) => {
-
   try {
+    const timerItem = localStorage.getItem(`timer_${props.timer.task_id}`);
+    // const timerObject = JSON.parse(timerItem);
+    console.log("timerItem", timerItem);
+    clearTimerState(timer);
+
     stopTimer(timer);
-    console.log("timer", timer);
+    localStorage.clear();
     const currentDateTimeLocal = getBerlinDateTime();
-    console.log("currentDataStopp", currentDateTimeLocal);
-    console.log("timerId", timerId.value);
+
 
     const data = {
-      id: timerId.value,
+      id: props.timer.id,
       endTime: {endTime: currentDateTimeLocal},
     };
     const response = await axios.post(import.meta.env.VITE_SUBMIT_ENDTIME_URL, data, {
@@ -84,21 +128,23 @@ const submitStopTime = async (timer) => {
       },
     });
 
+    console.log("response", response);
+
     errors.value = {
       name: '',
       startTime: '',
       endTime: ''
     };
 
-    console.log("TIMER response.data", response.data);
-    // emit('submitStartTime-success', response.data);
-
     timerId.value = null;
   } catch (error) {
-    handleErrorResponse(error,errors);
+    handleErrorResponse(error, errors);
   }
 };
 
+onMounted(() => {
+  restoreTimerState(props.timer);
+});
 
 </script>
 
@@ -108,7 +154,6 @@ const submitStopTime = async (timer) => {
     <i class="play-btn" @click="submitStartTime(timer)">
       <PlayButtonSVG/>
       <span v-if="errors.startTime" class="error-message">{{ errors.startTime }}</span>
-
     </i>
     <i class="stop-btn" @click="submitStopTime(timer)">
       <StopSvg/>
@@ -117,9 +162,7 @@ const submitStopTime = async (timer) => {
   </div>
 </template>
 
-
 <style scoped>
-
 
 
 .icons {
