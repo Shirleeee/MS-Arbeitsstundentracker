@@ -10,16 +10,16 @@ const props = defineProps({
 });
 
 const text = ref('Project');
-const emit = defineEmits(['update-projects']);
+const emit = defineEmits(['submit-success']);
 const handleNewData = (data) => {
   if (!data) {
     console.error('Received undefined data', data);
     return;
   }
-
+console.log("Header data", data);
   data = handleNewDateTime(data);
   if (data.userId) {
-    emit('update-projects', data);
+    emit('submit-success', data);
   }
 
 };

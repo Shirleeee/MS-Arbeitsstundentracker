@@ -13,7 +13,29 @@ button{
   padding: 2rem;
   /*font-weight: normal;*/
 }
+svg {
 
+  fill: currentColor;
+
+  &:hover {
+    border: currentColor solid 1px;
+  }
+}
+
+.svg-container {
+
+  cursor: pointer;
+
+  margin-right: 1rem !important;
+  & > svg {
+    border: currentColor solid 1px;
+    -webkit-box-shadow: 0px 0px 1px 0px var(--vt-c-white);
+    -moz-box-shadow: 0px 0px 1px 0px var(--vt-c-white);
+    border-radius: 50%;
+    box-shadow: 0px 0px 1px 0px var(--vt-c-white);
+    padding: .2rem;
+  }
+}
 a,
 .green {
   text-decoration: none;
@@ -30,13 +52,30 @@ a,
 
 @media (min-width: 1024px) {
   body {
-    /*display: flex;*/
-    /*place-items: center;*/
+    display: flex;
+    place-items: center;
   }
 
   #app {
     /*display: grid;*/
     /*grid-template-columns: 1fr 1fr;*/
     /*padding: 0 2rem;*/
+  }
+}
+@media (max-width: 768px) {
+
+  .modal{
+    width: 100%!important;
+    padding: 1rem!important;
+    margin-top: 3rem !important;
+  }
+  .proj-head {
+    grid-template-columns: 1fr!important;
+    & > .title-container .title {
+     font-size: 17px;
+      font-weight: 600;
+      padding-bottom: 1rem;
+
+    }
   }
 }

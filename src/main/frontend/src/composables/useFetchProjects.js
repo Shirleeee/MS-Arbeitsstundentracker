@@ -66,7 +66,7 @@ export function useFetchProjects() {
                     return entry.taskId.toString() === task.task_id.toString();
                 });
 
-              console.log("parseDurationToSeconds.parseDurationToSeconds", parseDurationToSeconds(taskTimeEntries.trackedTime));
+              // console.log("parseDurationToSeconds.parseDurationToSeconds", parseDurationToSeconds(taskTimeEntries.trackedTime));
                 taskTimer.value.push({
                     task_id: task.task_id,
                     projectId: project.id,

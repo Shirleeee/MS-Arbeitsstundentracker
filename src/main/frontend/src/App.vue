@@ -19,14 +19,38 @@ const updateProjects = (newProject) => {
 }
   projects.value.push(newProject);
 };
+const handleDeleteSuccess = (id) => {
+  console.log('PROJECT handleDeleteSuccess ID', id);
+  if (!id) {
+    console.error('Received undefined data', id);
+    return;
+  }
+
+  // Entferne das Projekt direkt aus props.projects
+  const projectIndex = projects.value.findIndex(project => project.id === id);
+  if (projectIndex !== -1) {
+    projects.value.splice(projectIndex, 1); // Bearbeite direkt die Props-Liste
+    console.log(`Projekt mit ID ${id} entfernt.`);
+  } else {
+    console.error(`Projekt mit ID ${id} nicht gefunden.`);
+  }
+};
+const updateProjectData = (updatedProject) => {
+
+  console.log("updatedProject", updatedProject);
+  const index = projects.value.findIndex(project => project.id === updatedProject.id);
+  if (index !== -1) {
+    projects.value[index] = updatedProject;
+  }
+};
 </script>
 
 <template>
 
-  <Header :projects="reversedProjects"  />
+  <Header :projects="reversedProjects" @submit-success="updateProjects" />
   <main>
     <div v-if="error" class="error">{{ error }}</div>
-    <Main @update-projects="updateProjects" :projects="reversedProjects" :taskTimer="taskTimer" />
+    <Main :projects="reversedProjects" @delete-success="handleDeleteSuccess" @update-project-success="updateProjectData" :taskTimer="taskTimer" />
   </main>
 </template>
 

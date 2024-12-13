@@ -2,9 +2,9 @@ import {ref} from "vue";
 
 export function useFormData(props, title, description, deadline, additionalValue) {
     let data;
-    console.log('useFormData - props.currentData.id', props.currentData)
-    console.log('useFormData - props.actionType', props.actionType)
-    console.log('useFormData - props.additionalValue', additionalValue)
+    // console.log('useFormData - props.currentData.id', props.currentData)
+    // console.log('useFormData - props.actionType', props.actionType)
+    // console.log('useFormData - props.additionalValue', additionalValue)
 
     if (props.text === 'Task') {
         data = {
@@ -23,26 +23,23 @@ export function useFormData(props, title, description, deadline, additionalValue
         };
 
     }
-    console.log('useFormData - data', data)
+    // console.log('useFormData - data', data)
     return data;
 }
 
 export function useFormType(formType, currentData, addValue) {
-    console.log('useFormType currentData', currentData)
-    console.log('useFormType formType', formType)
+
     const title = ref('');
     const description = ref('');
     const deadline = ref('');
     const additionalValue = ref('');
     if (typeof currentData === 'object') {
-        console.log('useFormType currentData', currentData)
         title.value = currentData.name;
         description.value = currentData.description;
         deadline.value = currentData.deadline;
 
     } else {
 
-        console.log('useFormType formType', formType)
         if (formType === 'Task' && currentData === 'Create') {
             title.value = 'TASK create form in vueJs ';
             description.value = 'create form in vueJs';

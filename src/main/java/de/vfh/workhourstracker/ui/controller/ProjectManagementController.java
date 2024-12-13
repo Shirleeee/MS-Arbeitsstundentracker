@@ -30,6 +30,20 @@ public class ProjectManagementController {
         return projectManagementService.findAllProjects();
     }
 
+
+    @DeleteMapping("/deleteProject/{id}")
+    public ResponseEntity<?> deleteProject(@PathVariable Long id) {
+
+        ResponseEntity<?> response = projectManagementService.deleteProject(id);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return response;
+        } else {
+            // Fehlerbehandlung basierend auf der Antwort
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        }
+    }
+
     @PostMapping("/submitProjectData")
     public ResponseEntity<?> submitProjectData(@RequestBody Project project) {
 
