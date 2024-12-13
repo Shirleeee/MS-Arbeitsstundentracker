@@ -29,9 +29,6 @@ let errors = ref({
   description: '',
   deadline: '',
 });
-console.log(props.additionalValue)
-const currentDateTimeLocal = getBerlinDateTime();
-console.log("currentData", props.currentData);
 
 const submit = async (event) => {
 

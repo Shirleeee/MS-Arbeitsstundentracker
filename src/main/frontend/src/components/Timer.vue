@@ -1,8 +1,8 @@
 <script setup>
 import {ref} from 'vue';
 import {secondsToTimeFormat,getBerlinDateTime} from "@/utils/timeUtils.js";
-import PlayButtonSVG from "@/components/icons/PlayButtonSVG.vue";
-import IconSupport from "@/components/icons/IconSupport.vue";
+import PlayButtonSVG from "@/components/icons/PlaySvg.vue";
+import StopSvg from "@/components/icons/StopSvg.vue";
 import axios from "axios";
 import {handleErrorResponse} from "@/utils/errorResponse.js";
 
@@ -111,7 +111,7 @@ const submitStopTime = async (timer) => {
 
     </i>
     <i class="stop-btn" @click="submitStopTime(timer)">
-      <IconSupport/>
+      <StopSvg/>
       <span v-if="errors.endTime" class="error-message">{{ errors.endTime }}</span>
     </i>
   </div>
