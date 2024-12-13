@@ -22,12 +22,20 @@ const handleUpdateSuccess = (data) => {
   emit('update-project-success', data);
 };
 
+const handleUpdateTaskSuccess = (data) => {
+  console.log('PROJECT MAIN handleUpdateTaskSuccess', data);
+  emit('update-task-success', data);
+};
 
+const handleSubmitTaskSuccess = (data) => {
+  // isModalOpen.value = false;
+  emit('submit-task-success', data);
+};
 </script>
 <template>
   <div>
 
-    <Project @submit-success="updateProjectData" @update-project-success="handleUpdateSuccess" @delete-success="handleDeleteSuccess" v-for="project in props.projects" :key="project.id.value" :project="project" :taskTimer="taskTimer"/>
+    <Project @update-project-success="handleUpdateSuccess" @submit-task-success="handleSubmitTaskSuccess"  @update-task-success="handleUpdateTaskSuccess" @delete-success="handleDeleteSuccess" v-for="project in props.projects" :key="project.id.value" :project="project" :taskTimer="taskTimer"/>
   </div>
 </template>
 

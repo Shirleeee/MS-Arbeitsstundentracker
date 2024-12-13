@@ -25,25 +25,9 @@ const currentData = (id, projectId, name, description, deadline) => {
     deadline: deadline
   }
 };
-// console.log("taskTimer",props.taskTimer && props.taskTimer.length);
-// console.log("taskTimer.length", props.taskTimer.length);
+const emit = defineEmits(['submit-success', 'delete-success']);
 const handleUpdateSuccess = (data) => {
-  console.log('Task BTNhandleUpdateSuccess', data);
-  if (!data) {
-    console.error('Received undefined data', data);
-    return;
-  }
-
-  console.log("dataTask", data);
-  console.log("props.Task", props.task);
-  // const index = props.task.findIndex(task => task.id === updatedTask.id);
-  // console.log("index", index);
-  // if (index !== -1) {
-  //   projects.value[index] = updatedProject;
-  // }
-  // title.value = data.projectName;
-  // description.value = data.projectDescription;
-  // deadline.value = data.deadline;
+  emit('update-task-success', data);
 };
 </script>
 

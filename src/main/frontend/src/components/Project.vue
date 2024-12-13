@@ -35,12 +35,14 @@ const emit = defineEmits(['submit-success', 'delete-success']);
 
 const handleSubmitSuccess = (data) => {
   // isModalOpen.value = false;
-  emit('submit-success', data);
+  emit('submit-task-success', data);
 };
 const handleUpdateSuccess = (data) => {
   emit('update-project-success', data);
 };
-
+const handleUpdateTaskSuccess = (data) => {
+  emit('update-task-success', data);
+};
 const deleteProject = async (id) => {
 
   const url = import.meta.env.VITE_DELETE_PROJECT_URL + id;
@@ -81,7 +83,7 @@ const deleteProject = async (id) => {
 
 
     </div>
-    <Task v-for="task in project.tasks" :key="task.task_id" :task="task" :additionalData="project"
+    <Task @update-task-success="handleUpdateTaskSuccess"  v-for="task in project.tasks" :key="task.task_id" :task="task" :additionalData="project"
           :taskTimer="taskTimer" :text="text"/>
   </div>
   <Buttons :text="text" :additionalData="project" @submit-success="handleSubmitSuccess" :key="project.id"></Buttons>
