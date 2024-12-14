@@ -88,7 +88,7 @@ const handleSubmitTaskSuccess = (data) => {
     <div v-if="error" class="error">{{ error }}</div>
     <Main :projects="reversedProjects" @delete-success="handleDeleteSuccess"
           @submit-task-success="handleSubmitTaskSuccess" @update-task-success="handleUpdateTaskSuccess"
-          @update-project-success="updateProjectData" :taskTimer="taskTimer"/>
+          @update-project-success="updateProjectData" :taskTimer="taskTimer" @delete-task-success="updateProjects"/>
   </main>
 </template>
 

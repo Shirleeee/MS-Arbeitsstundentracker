@@ -31,11 +31,14 @@ const handleSubmitTaskSuccess = (data) => {
   // isModalOpen.value = false;
   emit('submit-task-success', data);
 };
+const handleDeleteTaskSuccess = (id) => {
+  emit('delete-task-success', id);
+};
 </script>
 <template>
   <div>
 
-    <Project @update-project-success="handleUpdateSuccess" @submit-task-success="handleSubmitTaskSuccess"  @update-task-success="handleUpdateTaskSuccess" @delete-success="handleDeleteSuccess" v-for="project in props.projects" :key="project.id.value" :project="project" :taskTimer="taskTimer"/>
+    <Project @delete-task-success="handleDeleteTaskSuccess" @update-project-success="handleUpdateSuccess" @submit-task-success="handleSubmitTaskSuccess"  @update-task-success="handleUpdateTaskSuccess" @delete-success="handleDeleteSuccess" v-for="project in props.projects" :key="project.id.value" :project="project" :taskTimer="taskTimer"/>
   </div>
 </template>
 
