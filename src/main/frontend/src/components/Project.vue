@@ -30,7 +30,7 @@ const currentData = (id, name, description, deadline) => {
 };
 
 
-const emit = defineEmits(['submit-success', 'delete-success']);
+const emit = defineEmits(['submit-success', 'delete-success', 'delete-task-success', 'update-project-success', 'update-task-success']);
 
 
 const handleSubmitSuccess = (data) => {
@@ -42,6 +42,10 @@ const handleUpdateSuccess = (data) => {
 };
 const handleUpdateTaskSuccess = (data) => {
   emit('update-task-success', data);
+};
+
+const handleDeleteTaskSuccess = (id) => {
+  emit('delete-task-success', id);
 };
 const deleteProject = async (id) => {
 
@@ -83,7 +87,7 @@ const deleteProject = async (id) => {
 
 
     </div>
-    <Task @update-task-success="handleUpdateTaskSuccess"  v-for="task in project.tasks" :key="task.task_id" :task="task" :additionalData="project"
+    <Task @update-task-success="handleUpdateTaskSuccess"  @delete-task-success="handleDeleteTaskSuccess"  v-for="task in project.tasks" :key="task.task_id" :task="task" :additionalData="project"
           :taskTimer="taskTimer" :text="text"/>
   </div>
   <Buttons :text="text" :additionalData="project" @submit-success="handleSubmitSuccess" :key="project.id"></Buttons>

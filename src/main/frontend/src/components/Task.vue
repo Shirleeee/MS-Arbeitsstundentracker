@@ -3,6 +3,8 @@
 import Timer from "./Timer.vue";
 import PencilUpdate from "@/components/icons/PencilButtonSVG.vue";
 import CreateModal from "@/components/Modal.vue";
+import TrashDelete from "@/components/icons/TrashSvg.vue";
+import axios from "axios";
 
 
 const props = defineProps({
@@ -29,6 +31,25 @@ const emit = defineEmits(['submit-success', 'delete-success']);
 const handleUpdateSuccess = (data) => {
   emit('update-task-success', data);
 };
+const deleteTask = async (id) => {
+
+  const url = import.meta.env.VITE_DELETE_TASK_URL + id;
+
+  try {
+    const response = await axios.delete(url);
+
+
+    if (response.status === 200) {
+      console.log("response", response);
+      alert("Task erfolgreich gelöscht!");
+      emit("delete-task-success", id);
+    }
+  } catch (error) {
+    console.error("Fehler beim Löschen:", error);
+    alert("Löschen fehlgeschlagen.");
+  }
+
+};
 </script>
 
 <template>
@@ -49,7 +70,7 @@ const handleUpdateSuccess = (data) => {
             v-for="timer in props.taskTimer.filter(taskTime => task.task_id.toString() === taskTime.task_id.toString())"
             :key="timer.id" :timer="timer"/>
       </div>
-
+      <TrashDelete @click="deleteTask(task.task_id)"/>
     </li>
   </ul>
 </template>

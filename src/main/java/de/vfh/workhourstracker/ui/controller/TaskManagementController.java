@@ -83,6 +83,17 @@ public class TaskManagementController {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
         }
     }
+    @DeleteMapping("/deleteTask/{id}")
+    public ResponseEntity<?> deleteProject(@PathVariable Long id) {
 
+        ResponseEntity<?> response = taskManagementService.deleteTask(id);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return response;
+        } else {
+            // Fehlerbehandlung basierend auf der Antwort
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        }
+    }
 
 }
