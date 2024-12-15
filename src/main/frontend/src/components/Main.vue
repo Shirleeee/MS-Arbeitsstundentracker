@@ -31,8 +31,8 @@ const handleSubmitTaskSuccess = (data) => {
   // isModalOpen.value = false;
   emit('submit-task-success', data);
 };
-const handleDeleteTaskSuccess = (id) => {
-  emit('delete-task-success', id);
+const handleDeleteTaskSuccess = (task) => {
+  emit('delete-task-success', task);
 };
 </script>
 <template>

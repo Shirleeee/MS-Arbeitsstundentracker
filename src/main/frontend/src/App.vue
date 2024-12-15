@@ -21,7 +21,7 @@ const updateProjects = (newProject) => {
   }
   projects.value.push(newProject);
 };
-const handleDeleteSuccess = (id) => {
+const handleDeleteProjectSuccess = (id) => {
   console.log('PROJECT handleDeleteSuccess ID', id);
   if (!id) {
     console.error('Received undefined data', id);
@@ -37,12 +37,38 @@ const handleDeleteSuccess = (id) => {
     console.error(`Projekt mit ID ${id} nicht gefunden.`);
   }
 };
-const updateProjectData = (updatedProject) => {
+const handleDeleteTaskSuccess = (task) => {
+  const projectIndex = projects.value.findIndex(project => project.id === task.projectId);
 
-  console.log("updatedProject", updatedProject);
-  const index = projects.value.findIndex(project => project.id === updatedProject.id);
+  if (!task) {
+    console.error('Received undefined data', task);
+    return;
+  }
+
+  if (projectIndex !== -1) {
+    const taskIndex = projects.value[projectIndex].tasks.findIndex(projectTask => projectTask.task_id === task.task_id);
+    if (taskIndex !== -1) {
+      projects.value[projectIndex].tasks.splice(taskIndex, 1);
+      console.log(`Projekt mit ID ${task} entfernt.`);
+    } else {
+      console.error(`Projekt mit ID ${task} nicht gefunden.`);
+    }
+  }
+};
+const updateProjectData = (updatedProjectData) => {
+
+  console.log("updatedProject", updatedProjectData);
+  const index = projects.value.findIndex(project => project.id === updatedProjectData.id);
   if (index !== -1) {
-    projects.value[index] = updatedProject;
+
+    projects.value[index].deadline.deadline = updatedProjectData.deadline.deadline;
+    projects.value[index].description.projectDescription = updatedProjectData.description.projectDescription;
+    projects.value[index].name.projectName = updatedProjectData.name.projectName;
+
+    projects.value[index].deadlineDate = formatDate(updatedProjectData.deadline.deadline);
+    projects.value[index].deadlineTime = formatTime(updatedProjectData.deadline.deadline);
+
+
   }
 };
 
@@ -86,9 +112,9 @@ const handleSubmitTaskSuccess = (data) => {
   <Header :projects="reversedProjects" @submit-success="updateProjects"/>
   <main>
     <div v-if="error" class="error">{{ error }}</div>
-    <Main :projects="reversedProjects" @delete-success="handleDeleteSuccess"
+    <Main :projects="reversedProjects" @delete-success="handleDeleteProjectSuccess"
           @submit-task-success="handleSubmitTaskSuccess" @update-task-success="handleUpdateTaskSuccess"
-          @update-project-success="updateProjectData" :taskTimer="taskTimer" @delete-task-success="updateProjects"/>
+          @update-project-success="updateProjectData" :taskTimer="taskTimer" @delete-task-success="handleDeleteTaskSuccess"/>
   </main>
 </template>
 

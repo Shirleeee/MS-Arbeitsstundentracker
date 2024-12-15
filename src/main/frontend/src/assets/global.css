@@ -1,81 +1,145 @@
 @import './base.css';
+
 .error-message {
-  color: red;
-  font-size: 0.875em;
+    color: red;
+    font-size: 0.875em;
 }
-button{
-  border-radius: 25px;
-  padding: 5px 10px;
+
+button {
+    border-radius: 25px;
+    padding: 5px 10px;
 }
+
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  /*font-weight: normal;*/
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    /*font-weight: normal;*/
 }
+
 svg {
 
-  fill: currentColor;
+    fill: currentColor;
 
-  &:hover {
-    border: currentColor solid 1px;
-  }
+    &:hover {
+        border: currentColor solid 1px;
+    }
 }
 
 .svg-container {
 
-  cursor: pointer;
+    cursor: pointer;
 
-  margin-right: 1rem !important;
-  & > svg {
-    border: currentColor solid 1px;
-    -webkit-box-shadow: 0px 0px 1px 0px var(--vt-c-white);
-    -moz-box-shadow: 0px 0px 1px 0px var(--vt-c-white);
-    border-radius: 50%;
-    box-shadow: 0px 0px 1px 0px var(--vt-c-white);
-    padding: .2rem;
-  }
+    margin-right: 1rem !important;
+
+    & > svg {
+        border: currentColor solid 1px;
+        -webkit-box-shadow: 0px 0px 1px 0px var(--vt-c-white);
+        -moz-box-shadow: 0px 0px 1px 0px var(--vt-c-white);
+        border-radius: 50%;
+        box-shadow: 0px 0px 1px 0px var(--vt-c-white);
+        padding: .2rem;
+    }
 }
+
 a,
 .green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+    text-decoration: none;
+    color: hsla(160, 100%, 37%, 1);
+    transition: 0.4s;
+    padding: 3px;
 }
 
 @media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+    a:hover {
+        background-color: hsla(160, 100%, 37%, 0.2);
+    }
 }
 
 @media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+    body {
+        display: flex;
+        place-items: center;
+    }
 
-  #app {
-    /*display: grid;*/
-    /*grid-template-columns: 1fr 1fr;*/
-    /*padding: 0 2rem;*/
-  }
+    #app {
+        /*display: grid;*/
+        /*grid-template-columns: 1fr 1fr;*/
+        /*padding: 0 2rem;*/
+    }
 }
+
 @media (max-width: 768px) {
 
-  .modal{
-    width: 100%!important;
-    padding: 1rem!important;
-    margin-top: 3rem !important;
-  }
-  .proj-head {
-    grid-template-columns: 1fr!important;
-    & > .title-container .title {
-     font-size: 17px;
-      font-weight: 600;
-      padding-bottom: 1rem;
+    .modal {
+        width: 100% !important;
+        padding: 1rem !important;
+        margin-top: 3rem !important;
+    }
+
+    .proj-head {
+        grid-template-columns: 1fr !important;
+        justify-items: center !important;
+        align-items: center;
+
+        & > .title-container {
+            display: flex !important;
+            flex-direction: column !important;
+
+            & > .title {
+                font-size: 17px;
+                font-weight: 600;
+                padding-bottom: 1rem;
+                text-align: center;
+
+
+            }
+
+
+        }
+        & > .svg-container .trash {
+            margin-top: 1rem !important;
+        }
+    }
+
+    ul.task {
+        width: 100%;
+        /*display: flex;*/
+        /*flex-direction: column;*/
+padding: 0;
+        & > li {
+            width: 100%;
+            flex-direction: column !important;
+            grid-template-columns: 1fr !important;
+padding: 0!important;
+            & > div {
+                width: 100% !important;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                /*padding: 1rem;*/
+                /*margin: 1rem 0;*/
+text-align: center;
+                margin: 0!important;
+                /*padding: 0!important;*/
+                /*background-color: var(--vt-c-white);*/
+
+            }
+
+            & > .title-container {
+                display: flex;
+                width: 100%;
+                flex-direction: column !important;
+                align-items: center;
+
+                > * {
+                    /*padding-right: 5px;*/
+
+                }
+            }
+        }
+
 
     }
-  }
 }
