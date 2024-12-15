@@ -43,7 +43,6 @@ public class ProjectManagementService {
             // Erstelle eine Liste von Fehlern
             List<ErrorResponse> errors = new ArrayList<>();
             if (!validName.isEmpty()) {
-
                 errors.add(new ErrorResponse(validName, "name", "INVALID"));
             }
             if (!validDescription.isEmpty()) {

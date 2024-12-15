@@ -20,8 +20,8 @@ const props = defineProps({
 //TODO in Project vue auch vorhanden - seperate Datei auslagern
 const currentData = (id, projectId, name, description, deadline) => {
   return {
-    task_id:id,
-    projectId:projectId,
+    task_id: id,
+    projectId: projectId,
     name: name,
     description: description,
     deadline: deadline
@@ -31,18 +31,18 @@ const emit = defineEmits(['submit-success', 'delete-success']);
 const handleUpdateSuccess = (data) => {
   emit('update-task-success', data);
 };
-const deleteTask = async (id) => {
-
+const deleteTask = async (task) => {
+console.log("task", task);
+  const id = task.task_id;
   const url = import.meta.env.VITE_DELETE_TASK_URL + id;
 
   try {
     const response = await axios.delete(url);
 
-
     if (response.status === 200) {
       console.log("response", response);
       alert("Task erfolgreich gelöscht!");
-      emit("delete-task-success", id);
+      emit("delete-task-success", task);
     }
   } catch (error) {
     console.error("Fehler beim Löschen:", error);
@@ -54,11 +54,11 @@ const deleteTask = async (id) => {
 
 <template>
   <ul class="task">
-    <li>
+    <li class="task-list">
       <div class="title-container">
-      <PencilUpdate text="Task" @submit-success="handleUpdateSuccess" :additionalData="additionalData"
-                    :currentData="currentData(task.task_id,task.projectId,task.name.taskName,task.description.taskDescription	,task.deadline.deadline)"/>
-      <p> Task: {{ task.name.taskName }}</p>
+        <PencilUpdate text="Task" @submit-success="handleUpdateSuccess" :additionalData="additionalData"
+                      :currentData="currentData(task.task_id,task.projectId,task.name.taskName,task.description.taskDescription	,task.deadline.deadline)"/>
+        <p> Task: {{ task.name.taskName }}</p>
 
       </div>
       <div>
@@ -70,7 +70,7 @@ const deleteTask = async (id) => {
             v-for="timer in props.taskTimer.filter(taskTime => task.task_id.toString() === taskTime.task_id.toString())"
             :key="timer.id" :timer="timer"/>
       </div>
-      <TrashDelete @click="deleteTask(task.task_id)"/>
+      <TrashDelete @click="deleteTask(task)"/>
     </li>
   </ul>
 </template>
@@ -81,20 +81,25 @@ ul.task {
   display: flex;
   flex-direction: column;
 
-  & > li {
+  border-radius: 10px;
+  margin: 1rem 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+  & > .task-list {
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-   &> .title-container{
+
+    & > div {
       display: flex;
-      flex-direction: row;
       align-items: center;
-      width: 30%;
+      padding: 1rem;
       > * {
         padding-right: 5px;
 
       }
-   }
+    }
+
     & > .icons-container .icons {
       & > * {
         padding-right: 5px;

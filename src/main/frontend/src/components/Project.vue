@@ -44,8 +44,8 @@ const handleUpdateTaskSuccess = (data) => {
   emit('update-task-success', data);
 };
 
-const handleDeleteTaskSuccess = (id) => {
-  emit('delete-task-success', id);
+const handleDeleteTaskSuccess = (task) => {
+  emit('delete-task-success', task);
 };
 const deleteProject = async (id) => {
 
@@ -108,10 +108,16 @@ const deleteProject = async (id) => {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     justify-items: end;
+    align-items: center;
     margin-bottom: 2rem;
     padding: 1rem;
     border-radius: 10px;
+    & > .total-time{
+
+      font-weight: 700;
+    }
   }
+
 }
 
 .title-container {
