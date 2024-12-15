@@ -4,6 +4,7 @@ import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -14,10 +15,14 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class Report {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private ReportId id;
+    @Basic(optional = false)
+    @Column(insertable=false, updatable=false)
+    @NotNull
+    private Long id;
+
 
     @Column(name = "user_id")
     private UserId userId;

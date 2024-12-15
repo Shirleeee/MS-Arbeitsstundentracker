@@ -6,8 +6,14 @@ import Header from "@/components/Header.vue";
 import Main from "@/components/Main.vue";
 import {ref, computed} from "vue";
 import {formatDate, formatTime, parseDurationToSeconds} from "@/utils/timeUtils.js";
+// logged in user
+const user = ref({
+  id: 101,
+  name: 'Mechthilda',
+  email: 'ssss@wwww.de',
+});
 
-const {projects, taskTimer, timeEntries, fetchData, error} = useFetchProjects();
+const {projects, taskTimer, timeEntries, fetchData, error} = useFetchProjects(user.value.id);
 fetchData();
 
 
@@ -109,7 +115,7 @@ const handleSubmitTaskSuccess = (data) => {
 
 <template>
 
-  <Header :projects="reversedProjects" @submit-success="updateProjects"/>
+  <Header :user=user :projects="reversedProjects" @submit-success="updateProjects"/>
   <main>
     <div v-if="error" class="error">{{ error }}</div>
     <Main :projects="reversedProjects" @delete-success="handleDeleteProjectSuccess"
