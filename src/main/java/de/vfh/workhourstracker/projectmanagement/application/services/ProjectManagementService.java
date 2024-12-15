@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import de.vfh.workhourstracker.shared.util.ErrorResponse;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,6 @@ public class ProjectManagementService {
             // Erstelle eine Liste von Fehlern
             List<ErrorResponse> errors = new ArrayList<>();
             if (!validName.isEmpty()) {
-
                 errors.add(new ErrorResponse(validName, "name", "INVALID"));
             }
             if (!validDescription.isEmpty()) {
@@ -110,8 +110,16 @@ public class ProjectManagementService {
         return ResponseEntity.ok(existingProject);
     }
 
-    public void deleteProject(Long projectId) {
-        projectRepository.deleteById(projectId);
+    public ResponseEntity<?> deleteProject(Long projectId) {
+        if (projectRepository.findById(projectId).isPresent()) {
+            projectRepository.deleteById(projectId);
+            return ResponseEntity.ok().build();
+        } else {
+
+            eventLogger.logError("Project with ID " + projectId + " does not exist in database.");
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse("Project with ID " + projectId + " does not exist in database.", "projectId", "INVALID"));
+        }
+
     }
 
     //region validation

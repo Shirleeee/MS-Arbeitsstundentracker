@@ -1,6 +1,5 @@
 
 <script setup>
-import { computed,ref } from 'vue';
 import Project from "@/components/Project.vue";
 const props = defineProps({
   projects: {
@@ -11,21 +10,35 @@ const props = defineProps({
   }
 
 });
-// const currentDateTimeLocal = new Date().toISOString().slice(0, 16);
-const projects = ref([]);
+const emit = defineEmits(['submit-success', 'delete-success']);
 
-const updateProject = (updatedProject) => {
-  // Finde das Projekt in der Liste und aktualisiere es
-  const index = projects.value.findIndex(project => project.id === updatedProject.id);
-  if (index !== -1) {
-    projects.value[index] = updatedProject;
-  }
+const handleDeleteSuccess = (id) => {
+  emit('delete-success', id);
+
+};
+
+const handleUpdateSuccess = (data) => {
+  console.log('PROJECT MAIN handleUpdateSuccess', data);
+  emit('update-project-success', data);
+};
+
+const handleUpdateTaskSuccess = (data) => {
+  console.log('PROJECT MAIN handleUpdateTaskSuccess', data);
+  emit('update-task-success', data);
+};
+
+const handleSubmitTaskSuccess = (data) => {
+  // isModalOpen.value = false;
+  emit('submit-task-success', data);
+};
+const handleDeleteTaskSuccess = (task) => {
+  emit('delete-task-success', task);
 };
 </script>
 <template>
   <div>
 
-    <Project  v-for="project in props.projects" :key="project.id.value" :project="project" :taskTimer="taskTimer"/>
+    <Project @delete-task-success="handleDeleteTaskSuccess" @update-project-success="handleUpdateSuccess" @submit-task-success="handleSubmitTaskSuccess"  @update-task-success="handleUpdateTaskSuccess" @delete-success="handleDeleteSuccess" v-for="project in props.projects" :key="project.id.value" :project="project" :taskTimer="taskTimer"/>
   </div>
 </template>
 

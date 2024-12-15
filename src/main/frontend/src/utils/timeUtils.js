@@ -17,7 +17,7 @@ export function convertDurationToDHMS(durationStr) {
     if (!durationStr) {
         return '00:00:00';
     }
-    console.log("durationStr", durationStr);
+    // console.log("durationStr", durationStr);
     let durationInSeconds;
     if (durationStr.typeof === 'string') {
 
@@ -26,14 +26,14 @@ export function convertDurationToDHMS(durationStr) {
         durationInSeconds = parseFloat(durationStr);
     }
     const milliseconds = durationInSeconds * 1000;
-    console.log("milliseconds", milliseconds);
+    // console.log("milliseconds", milliseconds);
     // Calculate days, hours, and minutes
     const days = Math.floor(milliseconds / (24 * 60 * 60 * 1000));
     const hours = Math.floor((milliseconds % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
     const minutes = Math.floor((milliseconds % (60 * 60 * 1000)) / (60 * 1000));
 
     // Format the result as `dd:hh:mm`
-    return `${String(days).padStart(2, '0')} Tage:${String(hours).padStart(2, '0')} Stunden:${String(minutes).padStart(2, '0')} Minuten`;
+    return `${String(days).padStart(2, '0')} d : ${String(hours).padStart(2, '0')} h : ${String(minutes).padStart(2, '0')} m`;
 }
 
 

@@ -7,11 +7,11 @@ import {
 } from "./../utils/timeUtils.js";
 
 // Custom Hook für Projekte, Tasks und Time Entries
-export function useFetchProjects() {
+export function useFetchProjects(userId) {
     const projects = ref([]);
     const error = ref(null);
     const taskTimer = ref([]);
-
+    const timeEntries = ref([]);
     // Fetch-Methode, um Daten abzurufen
     const fetchData = async () => {
         try {
@@ -30,15 +30,15 @@ export function useFetchProjects() {
                 }),
             ]);
 
-             // console.log("Projects response:", projectsRes);
-             // console.log("Tasks response:", tasksRes);
-             // console.log("Time Entries response:", timeEntriesRes);
+            // console.log("Projects response:", projectsRes);
+            // console.log("Tasks response:", tasksRes);
+            // console.log("Time Entries response:", timeEntriesRes);
 
 
             const projectsData = JSON.parse(projectsRes);
             const tasksData = JSON.parse(tasksRes);
             const timeEntriesData = JSON.parse(timeEntriesRes);
-
+            timeEntries.value = timeEntriesData;
             // Daten transformieren
             projects.value = mapProjects(projectsData, tasksData, timeEntriesData);
 
@@ -51,23 +51,30 @@ export function useFetchProjects() {
 
     // Transformationslogik für Projekte, Tasks und Time Entries
     const mapProjects = (projects, tasks, timeEntries) => {
+
+        projects = projects.filter(project => project.userId.toString() === userId.toString());
+
         return projects.map(project => {
 
             // console.log(project);
             const projectTasks = tasks.filter(task => {
-              // console.log(task);
+                // console.log(task);
                 return task.projectId.toString() === project.id.toString()
             });
 
             const mappedTasks = projectTasks.map(task => {
 
+
                 const taskTimeEntries = timeEntries.filter(entry => {
                     // console.log("timeEntries entry.", entry);
+
                     return entry.taskId.toString() === task.task_id.toString();
                 });
 
-              console.log("parseDurationToSeconds.parseDurationToSeconds", parseDurationToSeconds(taskTimeEntries.trackedTime));
+                // console.log("parseDurationToSeconds.parseDurationToSeconds", parseDurationToSeconds(taskTimeEntries.trackedTime));
+
                 taskTimer.value.push({
+                    id: taskTimeEntries.length > 0 ? taskTimeEntries[0].id : null,
                     task_id: task.task_id,
                     projectId: project.id,
                     timer: null,
@@ -101,5 +108,5 @@ export function useFetchProjects() {
     };
 
 
-    return {projects, taskTimer, fetchData, error};
+    return {projects, taskTimer, timeEntries, fetchData, error};
 }

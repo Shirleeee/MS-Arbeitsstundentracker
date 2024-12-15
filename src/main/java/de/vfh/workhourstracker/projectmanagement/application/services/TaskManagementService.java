@@ -110,10 +110,18 @@ public class TaskManagementService {
 
     }
 
-    public void deleteTask(Long taskId) {
-        taskRepository.deleteById(taskId);
-    }
 
+    public ResponseEntity<?> deleteTask(Long taskId) {
+        if (taskRepository.findById(taskId).isPresent()) {
+            taskRepository.deleteById(taskId);
+            return ResponseEntity.ok().build();
+        } else {
+
+            eventLogger.logError("Task with ID " + taskId + " does not exist in database.");
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse("Task with ID " + taskId + " does not exist in database.", "taskId", "INVALID"));
+        }
+
+    }
     //region validation
     public String validateName(String name) {
         if (name == null || name.isEmpty()) {

@@ -6,20 +6,19 @@ import {handleNewDateTime} from "@/composables/handleNewDate";
 
 const props = defineProps({
   projects: Array,
-
+user: Object
 });
 
 const text = ref('Project');
-const emit = defineEmits(['update-projects']);
+const emit = defineEmits(['submit-success']);
 const handleNewData = (data) => {
   if (!data) {
     console.error('Received undefined data', data);
     return;
   }
-
   data = handleNewDateTime(data);
   if (data.userId) {
-    emit('update-projects', data);
+    emit('submit-success', data);
   }
 
 };
@@ -28,8 +27,8 @@ const handleNewData = (data) => {
 <template>
   <header>
     <div class="header-container">
-      <h1>Hallo Shirley</h1>
-      <Buttons :text="text" :additionalData="props.projects" @submit-success="handleNewData"></Buttons>
+      <h1>Hallo {{ user.name }}</h1>
+      <Buttons :text="text" :additionalData="props.projects" :userId=user.id @submit-success="handleNewData"></Buttons>
 
     </div>
 
