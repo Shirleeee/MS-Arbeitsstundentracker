@@ -10,14 +10,12 @@ import java.time.LocalDateTime;
 
 @Getter
 public class ReportCreated extends ApplicationEvent {
-    private final ReportId reportId;
     private final UserId userId;
     private final ReportSource reportSource;
     private final LocalDateTime occurredAt;
 
-    public ReportCreated(Object source, ReportId reportId, UserId userId, ReportSource reportSource) {
+    public ReportCreated(Object source, UserId userId, ReportSource reportSource) {
         super(source);
-        this.reportId = reportId;
         this.userId = userId;
         this.reportSource = reportSource;
         this.occurredAt = LocalDateTime.now();

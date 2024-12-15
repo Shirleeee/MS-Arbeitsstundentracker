@@ -7,11 +7,11 @@ import {
 } from "./../utils/timeUtils.js";
 
 // Custom Hook für Projekte, Tasks und Time Entries
-export function useFetchProjects() {
+export function useFetchProjects(userId) {
     const projects = ref([]);
     const error = ref(null);
     const taskTimer = ref([]);
-const timeEntries = ref([]);
+    const timeEntries = ref([]);
     // Fetch-Methode, um Daten abzurufen
     const fetchData = async () => {
         try {
@@ -51,6 +51,9 @@ const timeEntries = ref([]);
 
     // Transformationslogik für Projekte, Tasks und Time Entries
     const mapProjects = (projects, tasks, timeEntries) => {
+
+        projects = projects.filter(project => project.userId.toString() === userId.toString());
+
         return projects.map(project => {
 
             // console.log(project);
@@ -70,16 +73,16 @@ const timeEntries = ref([]);
 
                 // console.log("parseDurationToSeconds.parseDurationToSeconds", parseDurationToSeconds(taskTimeEntries.trackedTime));
 
-    taskTimer.value.push({
-        id: taskTimeEntries.length > 0 ? taskTimeEntries[0].id : null,
-        task_id: task.task_id,
-        projectId: project.id,
-        timer: null,
-        isPlaying: false,
-        trackedTime: taskTimeEntries.reduce((sum, entry) => {
-            return sum + parseDurationToSeconds(entry.timePeriod.timePeriod);
-        }, 0),
-    });
+                taskTimer.value.push({
+                    id: taskTimeEntries.length > 0 ? taskTimeEntries[0].id : null,
+                    task_id: task.task_id,
+                    projectId: project.id,
+                    timer: null,
+                    isPlaying: false,
+                    trackedTime: taskTimeEntries.reduce((sum, entry) => {
+                        return sum + parseDurationToSeconds(entry.timePeriod.timePeriod);
+                    }, 0),
+                });
 
                 return {
                     ...task,
@@ -103,7 +106,6 @@ const timeEntries = ref([]);
             };
         });
     };
-
 
 
     return {projects, taskTimer, timeEntries, fetchData, error};
