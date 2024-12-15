@@ -23,7 +23,7 @@ public class Project {
     @NotNull
     private Long id;
 
-    @Column(name = "user_id")
+    @Column(name = "id")
     private Long userId;
 
     //    @Embedded

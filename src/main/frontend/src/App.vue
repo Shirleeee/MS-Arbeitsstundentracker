@@ -23,10 +23,10 @@ const updateProjects = (newProject) => {
 
 <template>
 
-  <Header :projects="reversedProjects" @update-projects="updateProjects" />
+  <Header :projects="reversedProjects"  />
   <main>
     <div v-if="error" class="error">{{ error }}</div>
-    <Main :projects="reversedProjects" :taskTimer="taskTimer" />
+    <Main @update-projects="updateProjects" :projects="reversedProjects" :taskTimer="taskTimer" />
   </main>
 </template>
 

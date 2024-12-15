@@ -6,26 +6,40 @@ import SubmitForm from './SubmitForm.vue';
 const props = defineProps({
   text: String,
   additionalData: Object,
-    showModal:Boolean
+  showModal:Boolean,
+  actionType: String,
+  currentData: Object,
 });
-
 
 const userId = ref('101');
 const projectId = ref('');
 
-
 const emit = defineEmits(['submit-success', 'close']);
 
 const handleSubmitSuccess = (data) => {
+  console.log('MODAL handleSubmitSuccess', data);
   emit('submit-success', data);
   emit('close');
 };
-
+const getSubmitUrl = (type) => {
+  if (type === 'Project') {
+    return props.actionType === 'Create'
+        ? import.meta.env.VITE_SUBMIT_PROJECT_URL
+        : import.meta.env.VITE_UPDATE_PROJECT_URL;
+  }else if (type === 'Task') {
+    return props.actionType === 'Create'
+        ? import.meta.env.VITE_SUBMIT_TASK_URL
+        : import.meta.env.VITE_UPDATE_TASK_URL;
+  }
+  return '';
+};
 const methods = {
   closeModal() {
     emit('close');
   }
 };
+
+
 </script>
 
 <template>
@@ -36,21 +50,23 @@ const methods = {
 
       <SubmitForm
           v-if="text === 'Project'"
-          formType="Project"
-          submitUrl="http://localhost:8081/api/submitProjectData"
+          :actionType="actionType"
+          :submitUrl="getSubmitUrl(text)"
           additionalField="userId"
           :additionalValue="userId"
+          :text="text"
+          :currentData=props.currentData
           @submit-success="handleSubmitSuccess"
       />
 
       <SubmitForm
           v-if="text === 'Task'"
-          formType="Task"
-          @close="toggleModal"
-          :showModal="showModal"
-          submitUrl="http://localhost:8081/api/submitTaskData"
+          :actionType="actionType"
+          :text="text"
+          :submitUrl="getSubmitUrl(text)"
           additionalField="projectId"
           :additionalValue="props.additionalData.id"
+          :currentData=props.currentData
           @submit-success="handleSubmitSuccess"
       />
     </div>
