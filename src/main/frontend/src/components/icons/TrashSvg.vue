@@ -8,17 +8,12 @@ import {ref} from 'vue';
 import axios from "axios";
 
 
-
-
-
-
-
 </script>
 
 
 <template>
 
-  <div class="svg-container">
+  <div class="svg-container  trash-container">
     <svg class="trash" aria-hidden="true"
          role="img"
          width="24"
@@ -32,5 +27,8 @@ import axios from "axios";
 </template>
 
 <style scoped>
-
+.trash-container {
+  width: min-content;
+  height: min-content;
+}
 </style>
