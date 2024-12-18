@@ -58,7 +58,7 @@ console.log("task", task);
       <div class="title-container">
         <PencilUpdate text="Task" @submit-success="handleUpdateSuccess" :additionalData="additionalData"
                       :currentData="currentData(task.task_id,task.projectId,task.name.taskName,task.description.taskDescription	,task.deadline.deadline)"/>
-        <p> Task: {{ task.name.taskName }}</p>
+        <p>{{ task.task_id }} -  Task: {{ task.name.taskName }}</p>
 
       </div>
       <div>
