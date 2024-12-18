@@ -168,25 +168,10 @@ public class ReportingService {
                     .body(new ErrorResponse("No projects found for user.", "projects", "NOT_FOUND"));
         }
 
-        List<TimeEntry> timeEntries = new ArrayList<>();  // Initialize timeEntries list
-        List<Long> taskIds = new ArrayList<>();  // Initialize taskIds list
-        List<Task> tasks = new ArrayList<>();  // Initialize tasks list
-        // Alle Tasks und TimeEntries sammeln
-        for (Project project : projects) {
-            Long projectId = project.getId();
-            tasks = taskRepository.findByProjectId(projectId);
+        List<TimeEntry> timeEntries = timeEntryRepository.findAll();
+        List<Task> tasks = taskRepository.findAll();
 
-            // Füge Task-IDs zur taskIds-Liste hinzu
-            List<Long> projectTaskIds = tasks.stream()
-                    .map(Task::getTask_id)
-                    .toList();
-            taskIds.addAll(projectTaskIds);  // Accumulate task IDs from all projects
-        }
 
-        // Alle TimeEntries für die gesammelten taskIds holen
-        if (!taskIds.isEmpty()) {
-            timeEntries.addAll(timeEntryRepository.findByTaskIdIn(taskIds));  // Use findByTaskIdIn for a list of taskIds
-        }
         // PDF erstellen
         byte[] pdfContent = createPdfReport(userId, projects, timeEntries, tasks);
 
