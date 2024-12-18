@@ -70,8 +70,7 @@ public class ReportingService {
         contentStream.showText("Report für Benutzer: " + userId);
         contentStream.endText();
         yPosition.set(yPosition.get() - 40);
-        List<TimeEntry> taskTimeEntries = new ArrayList<>();
-        List<Task> projectTasks = new ArrayList<>();
+        
 
 
         for (Project project : projects) {
@@ -80,7 +79,7 @@ public class ReportingService {
             yPosition.set(writeTextWithCheck(document, contentStreams, "Projekt Deadline: " + sanitize(project.getDeadline().getDeadline()), margin, yPosition.get()));
             yPosition.set(yPosition.get() - 10);
 
-            projectTasks = tasks.stream()
+            List<Task> projectTasks = tasks.stream()
                     .filter(task -> task.getProjectId() != null && task.getProjectId().toString().equals(project.getId().toString()))
                     .toList();
             yPosition.set(writeTextWithCheck(document, contentStreams, "Gefundene Tasks für Projekt " + project.getId() + ": " + projectTasks.size(), margin, yPosition.get()));
@@ -91,19 +90,21 @@ public class ReportingService {
                 yPosition.set(writeTextWithCheck(document, contentStreams, "Task Deadline: " + sanitize(task.getDeadline().getDeadline()), margin + 20, yPosition.get()));
                 yPosition.set(yPosition.get() - 10);
 
-           taskTimeEntries = timeEntries.stream()
+                List<TimeEntry> taskTimeEntries = timeEntries.stream()
                         .filter(timeEntry -> timeEntry.getTaskId().equals(task.getTask_id()))
                         .toList();
 
                 for (TimeEntry timeEntry : taskTimeEntries) {
+                    String endTime = timeEntry.getEndTime() != null ? sanitize(timeEntry.getEndTime().getEndTime()) : "N/A";
                     yPosition.set(writeTextWithCheck(
                             document,
                             contentStreams,
                             String.format("    %s   Start: %s | End: %s ", timeEntry.getId(),
-                                    sanitize(timeEntry.getStartTime().getStartTime()), sanitize(timeEntry.getEndTime().getEndTime())),
+                                    sanitize(timeEntry.getStartTime().getStartTime()), endTime),
                             margin + 40,
                             yPosition.get()
                     ));
+
                     yPosition.set(writeTextWithCheck(
                             document,
                             contentStreams,
@@ -168,25 +169,10 @@ public class ReportingService {
                     .body(new ErrorResponse("No projects found for user.", "projects", "NOT_FOUND"));
         }
 
-        List<TimeEntry> timeEntries = new ArrayList<>();  // Initialize timeEntries list
-        List<Long> taskIds = new ArrayList<>();  // Initialize taskIds list
-        List<Task> tasks = new ArrayList<>();  // Initialize tasks list
-        // Alle Tasks und TimeEntries sammeln
-        for (Project project : projects) {
-            Long projectId = project.getId();
-            tasks = taskRepository.findByProjectId(projectId);
+        List<TimeEntry> timeEntries = timeEntryRepository.findAll();
+        List<Task> tasks = taskRepository.findAll();
 
-            // Füge Task-IDs zur taskIds-Liste hinzu
-            List<Long> projectTaskIds = tasks.stream()
-                    .map(Task::getTask_id)
-                    .toList();
-            taskIds.addAll(projectTaskIds);  // Accumulate task IDs from all projects
-        }
 
-        // Alle TimeEntries für die gesammelten taskIds holen
-        if (!taskIds.isEmpty()) {
-            timeEntries.addAll(timeEntryRepository.findByTaskIdIn(taskIds));  // Use findByTaskIdIn for a list of taskIds
-        }
         // PDF erstellen
         byte[] pdfContent = createPdfReport(userId, projects, timeEntries, tasks);
 
