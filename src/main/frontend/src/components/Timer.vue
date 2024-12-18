@@ -150,7 +150,7 @@ onMounted(() => {
 
 <template>
   <div class="icons">
-    <p>Time Elapsed: {{ secondsToTimeFormat(timer.trackedTime) }}</p>
+    <p>Task ID: {{ timer.task_id }} Time Elapsed: {{ secondsToTimeFormat(timer.trackedTime) }}</p>
     <i class="play-btn" @click="submitStartTime(timer)">
       <PlayButtonSVG/>
       <span v-if="errors.startTime" class="error-message">{{ errors.startTime }}</span>

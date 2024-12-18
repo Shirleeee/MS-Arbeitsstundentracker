@@ -16,6 +16,7 @@ import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,118 +51,112 @@ public class ReportingService {
         this.taskRepository = taskRepository;
     }
 
+
     public byte[] createPdfReport(Long userId, List<Project> projects, List<TimeEntry> timeEntries, List<Task> tasks) throws IOException {
-        // Neues PDF-Dokument erstellen
         PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
+        List<PDPageContentStream> contentStreams = new ArrayList<>();
+        PDPage page = new PDPage(PDRectangle.A4);
         document.addPage(page);
-
-        // Inhalt streamen
         PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        contentStreams.add(contentStream);
 
-        // Überschrift hinzufügen
+        AtomicReference<Float> yPosition = new AtomicReference<>(750f);
+        float margin = 50;
+        float lineHeight = 20;
+
         contentStream.beginText();
-        contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER), 18);
-        contentStream.newLineAtOffset(50, 750); // Position x=50, y=750
+        contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 18);
+        contentStream.newLineAtOffset(margin, yPosition.get());
         contentStream.showText("Report für Benutzer: " + userId);
         contentStream.endText();
-
-        // Startposition für die Tabelle
-        float yPosition = 720;
-
-        // Daten der Projekte einfügen
-        contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.COURIER), 12);
-
-
-
-
-
-        // Projekte durchlaufen und in das PDF einfügen
+        yPosition.set(yPosition.get() - 40);
+        List<TimeEntry> taskTimeEntries = new ArrayList<>();
+        List<Task> projectTasks = new ArrayList<>();
 
 
         for (Project project : projects) {
+            yPosition.set(writeTextWithCheck(document, contentStreams, "Projekt Titel: " + project.getId() + "-" + sanitize(project.getName().getProjectName()), margin, yPosition.get()));
+            yPosition.set(writeTextWithCheck(document, contentStreams, "Projekt Beschreibung: " + sanitize(project.getDescription().getProjectDescription()), margin, yPosition.get()));
+            yPosition.set(writeTextWithCheck(document, contentStreams, "Projekt Deadline: " + sanitize(project.getDeadline().getDeadline()), margin, yPosition.get()));
+            yPosition.set(yPosition.get() - 10);
 
+            projectTasks = tasks.stream()
+                    .filter(task -> task.getProjectId() != null && task.getProjectId().toString().equals(project.getId().toString()))
+                    .toList();
+            yPosition.set(writeTextWithCheck(document, contentStreams, "Gefundene Tasks für Projekt " + project.getId() + ": " + projectTasks.size(), margin, yPosition.get()));
 
+            for (Task task : projectTasks) {
+                yPosition.set(writeTextWithCheck(document, contentStreams, "Task Titel: " + task.getTask_id() + "-" + sanitize(task.getName().getTaskName()), margin + 20, yPosition.get()));
+                yPosition.set(writeTextWithCheck(document, contentStreams, "Task Beschreibung: " + sanitize(task.getDescription().getTaskDescription()), margin + 20, yPosition.get()));
+                yPosition.set(writeTextWithCheck(document, contentStreams, "Task Deadline: " + sanitize(task.getDeadline().getDeadline()), margin + 20, yPosition.get()));
+                yPosition.set(yPosition.get() - 10);
 
-            String projectName = (project.getName() != null && project.getName().getProjectName() != null)
-                    ? project.getName().getProjectName().replace("\n", " ")
-                    : "N/A";
+           taskTimeEntries = timeEntries.stream()
+                        .filter(timeEntry -> timeEntry.getTaskId().equals(task.getTask_id()))
+                        .toList();
 
-            String projectDescription = (project.getDescription() != null && project.getDescription().getProjectDescription() != null)
-                    ? project.getDescription().getProjectDescription().replace("\n", " ")
-                    : "N/A";
-
-            String projectDeadline = (project.getDeadline() != null && project.getDeadline().getDeadline() != null)
-                    ? project.getDeadline().getDeadline().toString().replace("\n", " ")
-                    : "N/A";
-
-
-            contentStream.beginText();
-            // Spaltenüberschrift
-            contentStream.showText("Projekt Titel");
-            contentStream.endText();
-
-            yPosition -= 20; // Zeilenabstand
-            contentStream.beginText();
-            contentStream.newLineAtOffset(50, yPosition);
-            contentStream.showText(" | " + projectName + " | ");
-            contentStream.endText();
-
-            // Spaltenüberschrift
-            contentStream.beginText();
-            contentStream.showText("Projekt Beschreibung ");
-            contentStream.endText();
-
-            yPosition -= 20; // Zeilenabstand
-            // Spaltenüberschrift
-            contentStream.beginText();
-            contentStream.showText("Projekt Deadline");
-            contentStream.endText();
-
-            yPosition -= 20; // Move to the next line
-            contentStream.beginText();
-            contentStream.newLineAtOffset(50, yPosition);
-            contentStream.showText(projectDescription + " | " + projectDeadline);
-            contentStream.endText();
-            yPosition -= 20; // Move to the next line
-
-            for (TimeEntry t : timeEntries) {
-                if (t.getTaskId().equals(project.getId())) {
-                    System.out.println("TimeEntry: " + t.getTaskId());
-                    String timeEntry = t.getStartTime().toString();
-                    System.out.println("TimeEntry: " + timeEntry);
-                    String timeEntry2 = t.getEndTime().toString();
-                    System.out.println("TimeEntry: " + timeEntry2);
-                    String timeEntry3 = t.getTimePeriod().toString();
-
-                    contentStream.beginText();
-                    contentStream.showText("TimeEntry: " + timeEntries);
-                    contentStream.endText();
-                    yPosition -= 20;
+                for (TimeEntry timeEntry : taskTimeEntries) {
+                    yPosition.set(writeTextWithCheck(
+                            document,
+                            contentStreams,
+                            String.format("    %s   Start: %s | End: %s ", timeEntry.getId(),
+                                    sanitize(timeEntry.getStartTime().getStartTime()), sanitize(timeEntry.getEndTime().getEndTime())),
+                            margin + 40,
+                            yPosition.get()
+                    ));
+                    yPosition.set(writeTextWithCheck(
+                            document,
+                            contentStreams,
+                            String.format("    Period: %s",
+                                    sanitize(timeEntry.getTimePeriod().getTimePeriod())),
+                            margin + 40,
+                            yPosition.get()
+                    ));
+                    yPosition.set(yPosition.get() - 10);
                 }
-
+                yPosition.set(yPosition.get() - 10);
             }
-
-
-            if (yPosition < 100) { // Seitenumbruch
-                contentStream.close();
-                page = new PDPage();
-                document.addPage(page);
-                contentStream = new PDPageContentStream(document, page);
-                yPosition = 750;
-            }
+            yPosition.set(yPosition.get() - 20);
         }
 
-        contentStream.close();
+        for (PDPageContentStream stream : contentStreams) {
+            stream.close();
+        }
 
-        // PDF-Dokument in ByteArrayOutputStream speichern
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        document.save(byteArrayOutputStream); // Speichern der PDF in den OutputStream
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        document.save(outputStream);
         document.close();
 
-        // Rückgabe des PDF-Inhalts als Byte-Array
-        return byteArrayOutputStream.toByteArray();
+        return outputStream.toByteArray();
     }
+
+
+
+
+    // Verbesserte Methode für Zeilenumbrüche und Seitenwechsel
+    private float writeTextWithCheck(PDDocument document, List<PDPageContentStream> contentStreams, String text, float x, float y) throws IOException {
+        PDPageContentStream contentStream = contentStreams.getLast(); // Hole den letzten Stream
+        if (y < 100) { // Wenig Platz auf Seite
+            contentStream.close(); // Alten Stream schließen
+            PDPage newPage = new PDPage(PDRectangle.A4);// Neue Seite erstellen
+            document.addPage(newPage);
+            contentStream = new PDPageContentStream(document, newPage); // Neuer Stream
+            contentStreams.add(contentStream); // Neuen Stream zur Liste hinzufügen
+            y = 750; // Neustart auf neuer Seite
+        }
+        contentStream.beginText();
+        contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 10);
+        contentStream.newLineAtOffset(x, y);
+        contentStream.showText(text);
+        contentStream.endText();
+        return y - 20; // Neue Y-Position zurückgeben
+    }
+
+    // Hilfsmethode zur Sanitierung von Text
+    private String sanitize(Object input) {
+        return input != null ? input.toString().replace("\n", " ") : "N/A";
+    }
+
 
     public ResponseEntity<?> createReport(Long userId, ReportSource reportSource) throws Exception {
 
@@ -178,7 +174,7 @@ public class ReportingService {
         // Alle Tasks und TimeEntries sammeln
         for (Project project : projects) {
             Long projectId = project.getId();
-             tasks = taskRepository.findByProjectId(projectId);
+            tasks = taskRepository.findByProjectId(projectId);
 
             // Füge Task-IDs zur taskIds-Liste hinzu
             List<Long> projectTaskIds = tasks.stream()
@@ -218,4 +214,5 @@ public class ReportingService {
     public void delete(Report report) {
         reportRepository.delete(report);
     }
+
 }
