@@ -124,7 +124,6 @@ const deleteProject = async (id) => {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-self: baseline;
 
   > * {
     padding-right: 5px;
