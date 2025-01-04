@@ -6,7 +6,7 @@ import {handleNewDateTime} from "@/composables/handleNewDate";
 
 const props = defineProps({
   projects: Array,
-user: Object
+  user: Object
 });
 
 const text = ref('Project');
@@ -28,7 +28,8 @@ const handleNewData = (data) => {
   <header>
     <div class="header-container">
       <h1>Hallo {{ user.name }}</h1>
-      <Buttons :text="text" :additionalData="props.projects" :userId=user.id @submit-success="handleNewData"></Buttons>
+      <Buttons :text="text" :additionalData="props.projects" :projId="0" :userId=user.id
+               @submit-success="handleNewData"></Buttons>
 
     </div>
 

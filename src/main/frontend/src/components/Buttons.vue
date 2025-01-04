@@ -10,7 +10,8 @@ const props = defineProps({
   showModal: Boolean,
   tasks: Array,
   actionType: String,
-  userId: String
+  userId: String,
+  projId: Number
 });
 
 const isModalOpen = ref(false);
@@ -27,19 +28,18 @@ const handleSubmitSuccess = (data) => {
 const handleClose = () => {
   isModalOpen.value = false;
 };
-const exportAll = (userId) => {
+const exportData = (userId, projId) => {
 
-  console.log("Export gestartet");
-  const url = import.meta.env.VITE_EXPORT_WHOLE_URL + userId;
+  const url = import.meta.env.VITE_EXPORT_WHOLE_URL + userId + "/" + projId;
   // Sende eine POST-Anfrage an das Backend, um die PDF zu erzeugen
-  axios.post(url, {}, { responseType: 'blob' })
+  axios.post(url, {}, {responseType: 'blob'})
       .then(response => {
         // Hier wird die PDF vom Backend empfangen
         const blob = response.data;
         const link = document.createElement('a');
         const url = window.URL.createObjectURL(blob);
         link.href = url;
-        link.download = `${userId}_report.pdf`;
+        link.download = `${userId}_${projId}_report.pdf`;
         link.click();
         window.URL.revokeObjectURL(url);
       })
@@ -53,10 +53,11 @@ const exportAll = (userId) => {
 <template>
   <div class="btn-container">
     <div class="export-btn-wrapper">
-      <button @click="exportAll(userId)">Export</button>
+      <button @click="exportData(userId,projId)">Export</button>
     </div>
     <div class="create-btn-wrapper">
-      <CreateModal v-if="isModalOpen" actionType="Create" :text="text" current-data="Create" :additionalData="props.additionalData"
+      <CreateModal v-if="isModalOpen" actionType="Create" :text="text" current-data="Create"
+                   :additionalData="props.additionalData"
                    @close="handleClose"
                    @submit-success="handleSubmitSuccess"/>
       <button @click="toggleModal">Create {{ text }}</button>

@@ -2,7 +2,6 @@
 
 import Timer from "./Timer.vue";
 import PencilUpdate from "@/components/icons/PencilButtonSVG.vue";
-import CreateModal from "@/components/Modal.vue";
 import TrashDelete from "@/components/icons/TrashSvg.vue";
 import axios from "axios";
 
@@ -17,7 +16,6 @@ const props = defineProps({
   taskTimer: Array
 });
 
-//TODO in Project vue auch vorhanden - seperate Datei auslagern
 const currentData = (id, projectId, name, description, deadline) => {
   return {
     task_id: id,
@@ -32,7 +30,6 @@ const handleUpdateSuccess = (data) => {
   emit('update-task-success', data);
 };
 const deleteTask = async (task) => {
-console.log("task", task);
   const id = task.task_id;
   const url = import.meta.env.VITE_DELETE_TASK_URL + id;
 
@@ -58,19 +55,21 @@ console.log("task", task);
       <div class="title-container">
         <PencilUpdate text="Task" @submit-success="handleUpdateSuccess" :additionalData="additionalData"
                       :currentData="currentData(task.task_id,task.projectId,task.name.taskName,task.description.taskDescription	,task.deadline.deadline)"/>
-        <p>{{ task.task_id }} -  Task: {{ task.name.taskName }}</p>
+        <p>Task: {{ task.name.taskName }}</p>
 
       </div>
       <div>
         <p>Deadline: {{ task.deadlineDate }} {{ task.deadlineTime }}</p>
 
       </div>
-      <div v-if="props.taskTimer && props.taskTimer.length">
+      <div class="icons" v-if="props.taskTimer && props.taskTimer.length">
         <Timer
             v-for="timer in props.taskTimer.filter(taskTime => task.task_id.toString() === taskTime.task_id.toString())"
             :key="timer.id" :timer="timer"/>
       </div>
-      <TrashDelete @click="deleteTask(task)"/>
+      <div class="trash-container">
+        <TrashDelete @click="deleteTask(task)"/>
+      </div>
     </li>
   </ul>
 </template>
@@ -80,10 +79,10 @@ ul.task {
   width: 100%;
   display: flex;
   flex-direction: column;
-
   border-radius: 10px;
   margin: 1rem 0;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
 
   & > .task-list {
     width: 100%;
@@ -92,8 +91,9 @@ ul.task {
 
     & > div {
       display: flex;
-      align-items: center;
+      align-items: start;
       padding: 1rem;
+
       > * {
         padding-right: 5px;
 
@@ -107,38 +107,15 @@ ul.task {
       }
     }
 
-
-  }
-}
-
-
-</style>
-
-
-<style scoped>
-
-
-ul.task {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-
-
-  & > li {
-    width: 100%;
-    display: flex;
-    padding-bottom: 20px;
-    flex-direction: row;
-    justify-content: space-between;
-
-    & > .icons-container .icons {
-      & > * {
-        padding-right: 5px;
-        cursor: pointer;
-      }
+    & > .trash-container {
+      display: flex;
+      justify-content: end;
     }
 
-  }
 
+  }
 }
+
+
 </style>
+

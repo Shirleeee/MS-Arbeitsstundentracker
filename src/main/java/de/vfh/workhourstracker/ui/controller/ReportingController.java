@@ -1,15 +1,9 @@
 package de.vfh.workhourstracker.ui.controller;
 
-import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.reporting.application.services.ReportingService;
-import de.vfh.workhourstracker.reporting.domain.report.Report;
-import de.vfh.workhourstracker.reporting.domain.report.ReportSource;
-import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -23,12 +17,11 @@ public class ReportingController {
     }
 
 
-    @PostMapping("/reportAll/{userId}")
-    public ResponseEntity<?> getReport(@PathVariable Long userId) throws Exception {
+    @PostMapping("/export_report/{userId}/{projId}")
+    public ResponseEntity<?> getReport(@PathVariable Long userId, @PathVariable Long projId) throws Exception {
 
-        ReportSource reportSource = new ReportSource();
-        reportSource.setReportSource("reportSource");
-        ResponseEntity<?> response = reportingService.createReport(userId, reportSource);
+
+        ResponseEntity<?> response = reportingService.createReport(userId, projId);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return response;

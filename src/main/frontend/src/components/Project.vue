@@ -14,6 +14,8 @@ const props = defineProps({
     required: true,
     default: () => ({tasks: []})
   },
+
+  user: Object,
   taskTimer: Array
 });
 
@@ -77,20 +79,25 @@ const deleteProject = async (id) => {
         <PencilUpdate text="Project" @submit-success="handleUpdateSuccess"
                       :currentData="currentData(project.id,project.name.projectName,project.description.projectDescription,project.deadline.deadline)"/>
 
-        <h2 class="title"> {{ project.id }}-{{ project.name.projectName }}</h2>
+        <h2 class="title">{{ project.name.projectName }}</h2>
 
       </div>
       <p class="deadline">Deadline Project: {{ project.deadlineDate }} {{ project.deadlineTime }} </p>
 
       <p class="total-time">Total: {{ convertDurationToDHMS(project.total) }}</p>
-      <TrashDelete @click="deleteProject(project.id)"/>
 
+      <div class="delete">
 
+        <TrashDelete @click="deleteProject(project.id)"/>
+
+      </div>
     </div>
-    <Task @update-task-success="handleUpdateTaskSuccess"  @delete-task-success="handleDeleteTaskSuccess"  v-for="task in project.tasks" :key="task.task_id" :task="task" :additionalData="project"
+    <Task @update-task-success="handleUpdateTaskSuccess" @delete-task-success="handleDeleteTaskSuccess"
+          v-for="task in project.tasks" :key="task.task_id" :task="task" :additionalData="project"
           :taskTimer="taskTimer" :text="text"/>
   </div>
-  <Buttons :text="text" :additionalData="project" @submit-success="handleSubmitSuccess" :key="project.id"></Buttons>
+  <Buttons :text="text" :additionalData="project" :projId="project.id" :userId=user.id
+           @submit-success="handleSubmitSuccess" :key="project.id"></Buttons>
 </template>
 
 
@@ -105,14 +112,13 @@ const deleteProject = async (id) => {
   & > .proj-head {
 
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    justify-items: end;
+
     align-items: center;
     margin-bottom: 2rem;
     padding: 1rem;
     border-radius: 10px;
-    & > .total-time{
+
+    & > .total-time {
 
       font-weight: 700;
     }

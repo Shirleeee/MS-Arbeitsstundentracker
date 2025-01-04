@@ -6,18 +6,16 @@ import SubmitForm from './SubmitForm.vue';
 const props = defineProps({
   text: String,
   additionalData: Object,
-  showModal:Boolean,
+  showModal: Boolean,
   actionType: String,
   currentData: Object,
 });
 
 const userId = ref('101');
-const projectId = ref('');
 
 const emit = defineEmits(['submit-success', 'close']);
 
 const handleSubmitSuccess = (data) => {
-  console.log('MODAL handleSubmitSuccess', data);
   emit('submit-success', data);
   emit('close');
 };
@@ -26,7 +24,7 @@ const getSubmitUrl = (type) => {
     return props.actionType === 'Create'
         ? import.meta.env.VITE_SUBMIT_PROJECT_URL
         : import.meta.env.VITE_UPDATE_PROJECT_URL;
-  }else if (type === 'Task') {
+  } else if (type === 'Task') {
     return props.actionType === 'Create'
         ? import.meta.env.VITE_SUBMIT_TASK_URL
         : import.meta.env.VITE_UPDATE_TASK_URL;
