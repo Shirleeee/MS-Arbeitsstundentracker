@@ -1,5 +1,6 @@
 package de.vfh.workhourstracker.reporting.domain.report;
 
+import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
 import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -27,8 +28,8 @@ public class Report {
     @Column(name = "user_id")
     private UserId userId;
 
-    @Column(name = "link")
-    private ReportSource source;
+    @Column(name = "proj_id")
+    private ProjectId projId;
 
     @CreatedDate
     @Column(name = "created_at")
@@ -38,9 +39,9 @@ public class Report {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Report(UserId userId, ReportSource source) {
+    public Report(UserId userId, ProjectId projId) {
         this.userId = userId;
-        this.source = source;
+        this.projId = projId;
     }
 
 }

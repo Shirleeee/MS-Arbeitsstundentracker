@@ -5,7 +5,7 @@ import {useFetchProjects} from "@/composables/useFetchProjects";
 import Header from "@/components/Header.vue";
 import Main from "@/components/Main.vue";
 import {ref, computed} from "vue";
-import {formatDate, formatTime, parseDurationToSeconds} from "@/utils/timeUtils.js";
+import {formatDate, formatTime} from "@/utils/timeUtils.js";
 // logged in user
 const user = ref({
   id: 101,
@@ -13,7 +13,7 @@ const user = ref({
   email: 'ssss@wwww.de',
 });
 
-const {projects, taskTimer, timeEntries, fetchData, error} = useFetchProjects(user.value.id);
+const {projects, taskTimer, fetchData, error} = useFetchProjects(user.value.id);
 fetchData();
 
 
@@ -28,7 +28,6 @@ const updateProjects = (newProject) => {
   projects.value.push(newProject);
 };
 const handleDeleteProjectSuccess = (id) => {
-  console.log('PROJECT handleDeleteSuccess ID', id);
   if (!id) {
     console.error('Received undefined data', id);
     return;
@@ -63,7 +62,6 @@ const handleDeleteTaskSuccess = (task) => {
 };
 const updateProjectData = (updatedProjectData) => {
 
-  console.log("updatedProject", updatedProjectData);
   const index = projects.value.findIndex(project => project.id === updatedProjectData.id);
   if (index !== -1) {
 
@@ -79,7 +77,6 @@ const updateProjectData = (updatedProjectData) => {
 };
 
 const handleUpdateTaskSuccess = (data) => {
-  console.log('PROJECT handleUpdateTaskSuccess', data);
   const projectIndex = projects.value.findIndex(project => project.id === data.projectId);
   if (projectIndex !== -1) {
     const taskIndex = projects.value[projectIndex].tasks.findIndex(task => task.task_id === data.task_id);
@@ -92,7 +89,6 @@ const handleUpdateTaskSuccess = (data) => {
   }
 };
 const handleSubmitTaskSuccess = (data) => {
-  console.log('PROJECT handleSubmitTaskSuccess', data);
   const projectIndex = projects.value.findIndex(project => project.id === data.projectId);
   if (projectIndex !== -1) {
 
@@ -102,9 +98,9 @@ const handleSubmitTaskSuccess = (data) => {
       projectId: data.projectId,
       timer: null,
       isPlaying: false,
-      trackedTime:  0,
+      trackedTime: 0,
     });
-    data.timeEntries= taskTimer;
+    data.timeEntries = taskTimer;
     data.deadlineDate = formatDate(data.deadline.deadline);
     data.deadlineTime = formatTime(data.deadline.deadline);
     projects.value[projectIndex].tasks.push(data);
@@ -118,9 +114,10 @@ const handleSubmitTaskSuccess = (data) => {
   <Header :user=user :projects="reversedProjects" @submit-success="updateProjects"/>
   <main>
     <div v-if="error" class="error">{{ error }}</div>
-    <Main :projects="reversedProjects" @delete-success="handleDeleteProjectSuccess"
+    <Main :user=user :projects="reversedProjects" @delete-success="handleDeleteProjectSuccess"
           @submit-task-success="handleSubmitTaskSuccess" @update-task-success="handleUpdateTaskSuccess"
-          @update-project-success="updateProjectData" :taskTimer="taskTimer" @delete-task-success="handleDeleteTaskSuccess"/>
+          @update-project-success="updateProjectData" :taskTimer="taskTimer"
+          @delete-task-success="handleDeleteTaskSuccess"/>
   </main>
 </template>
 

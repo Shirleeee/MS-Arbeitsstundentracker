@@ -1,5 +1,6 @@
 package de.vfh.workhourstracker.timemanagement.infrastructure.repositories;
 
+import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,6 @@ public interface TimeEntryRepository  {
 
     Optional<TimeEntry> findById(Long id);
     List<TimeEntry> findAll();
-    List<TimeEntry> findByTaskIdIn(List<Long> taskId);
+    TimeEntry findByTaskId(Long taskId);
     void deleteById(Long id);
 }
