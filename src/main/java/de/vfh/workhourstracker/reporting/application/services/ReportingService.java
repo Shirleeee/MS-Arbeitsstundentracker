@@ -178,10 +178,10 @@ public class ReportingService {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND)
                             .body(new ErrorResponse("No tasks found for project.", "tasks", "NOT_FOUND"));
                 }
-                TimeEntry timeEntry = timeEntryRepository.findByTaskId(task.getTask_id());
-                if (timeEntry != null) {
+                List<TimeEntry> timeEntryList = timeEntryRepository.findByTaskId(task.getTask_id());
+                if (timeEntryList != null) {
 
-                    timeEntries.add(timeEntry);
+                    timeEntries.addAll(timeEntryList);
                 }
             }
 

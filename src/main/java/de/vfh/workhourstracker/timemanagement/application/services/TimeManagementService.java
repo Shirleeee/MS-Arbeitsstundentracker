@@ -143,6 +143,8 @@ public class TimeManagementService {
         return "";
     }
 
+    private static final LocalDateTime MAX_END_TIME = LocalDateTime.of(2100, 12, 31, 23, 59, 59);
+
     public String validateEndTime(LocalDateTime endTime, LocalDateTime startTime) {
         if (endTime == null) {
             eventLogger.logWarning("Endzeitpunkt darf nicht leer sein.");
@@ -162,6 +164,11 @@ public class TimeManagementService {
         if (startTime.isEqual(endTime)) {
             eventLogger.logWarning("Endzeitpunkt ist gleich Startzeitpunkt.");
             return "Endzeitpunkt ist gleich Startzeitpunkt.";
+        }
+
+        if (endTime.isAfter(MAX_END_TIME)) {
+            eventLogger.logWarning("Endzeit darf nicht nach dem 31.12.2100 liegen.");
+            return "Endzeit darf nicht nach dem 31.12.2100 liegen.";
         }
         return "";
     }

@@ -11,12 +11,17 @@ import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.TaskRepository;
 import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import de.vfh.workhourstracker.shared.util.EventLogger;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;
+import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +30,14 @@ import java.util.List;
 public class TaskManagementService {
     private final ApplicationEventPublisher eventPublisher;
     private final TaskRepository taskRepository;
+    private final TimeEntryRepository timeEntryRepository;
     EventLogger eventLogger = new EventLogger();
 
     @Autowired
-    public TaskManagementService(ApplicationEventPublisher eventPublisher, TaskRepository taskRepository) {
+    public TaskManagementService(ApplicationEventPublisher eventPublisher, TaskRepository taskRepository, TimeEntryRepository timeEntryRepository) {
         this.eventPublisher = eventPublisher;
         this.taskRepository = taskRepository;
+        this.timeEntryRepository = timeEntryRepository;
     }
 
     public ResponseEntity<?> createTask(Long projectId, String name, String description, LocalDateTime deadline) {
@@ -67,6 +74,13 @@ public class TaskManagementService {
 
     public List<Task> findAllTasks() {
         return taskRepository.findAll();
+    }
+
+    public Duration getTotalDurationOfTask(Long taskId) {
+        return timeEntryRepository.findByTaskId(taskId).stream()
+                .map(TimeEntry::getTimePeriod)
+                .map(TimePeriod::getTimePeriod)
+                .reduce(Duration.ZERO, Duration::plus);
     }
 
     public ResponseEntity<?> updateTask(Long taskId, String name, String description, LocalDateTime deadline) {
