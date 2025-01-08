@@ -9,8 +9,11 @@ import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectUp
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
 import de.vfh.workhourstracker.shared.util.EventLogger;
-import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;
+import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import de.vfh.workhourstracker.shared.util.ErrorResponse;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +30,14 @@ import java.util.List;
 public class ProjectManagementService {
     private final ApplicationEventPublisher eventPublisher;
     private final ProjectRepository projectRepository;
+    private final TimeEntryRepository timeEntryRepository;
     EventLogger eventLogger = new EventLogger();
 
     @Autowired
-    public ProjectManagementService(ProjectRepository projectRepository, ApplicationEventPublisher eventPublisher) {
+    public ProjectManagementService(ProjectRepository projectRepository, ApplicationEventPublisher eventPublisher, TimeEntryRepository timeEntryRepository) {
         this.projectRepository = projectRepository;
         this.eventPublisher = eventPublisher;
+        this.timeEntryRepository = timeEntryRepository;
     }
 
     public ResponseEntity<?> createProject(Long userId, String name, String description, LocalDateTime deadline) {
@@ -67,6 +73,13 @@ public class ProjectManagementService {
 
     public List<Project> findAllProjects() {
         return projectRepository.findAll();
+    }
+
+    public Duration getTotalDurationOfProject(Long projectId) {
+        return timeEntryRepository.findTimeEntriesByProjectId(projectId).stream()
+                .map(TimeEntry::getTimePeriod)
+                .map(TimePeriod::getTimePeriod)
+                .reduce(Duration.ZERO, Duration::plus);
     }
 
     //TODO: connect with frontend
