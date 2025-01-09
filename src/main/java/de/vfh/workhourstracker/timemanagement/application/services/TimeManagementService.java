@@ -1,6 +1,5 @@
 package de.vfh.workhourstracker.timemanagement.application.services;
 
-import de.vfh.workhourstracker.projectmanagement.domain.task.TaskId;
 import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.*;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeTrackingEnded;
@@ -75,18 +74,14 @@ public class TimeManagementService {
         eventPublisher.publishEvent(event);
 
         return ResponseEntity.ok(timeEntry);
-
     }
 
     public ResponseEntity<?> endTimeTracking(Long timeEntryId, LocalDateTime endTime) {
         TimeEntry existingTimeEntry = timeEntryRepository.findById(timeEntryId).orElse(null);
 
-
         if (existingTimeEntry == null) {
             eventLogger.logError("Time entry with ID " + timeEntryId + " could not be found in database.");
-
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse("Time entry with ID " + timeEntryId + " could not be found in database.", "endTime", "INVALID"));
-
         }
         LocalDateTime startTime = existingTimeEntry.getStartTime().getStartTime();
 
@@ -111,9 +106,7 @@ public class TimeManagementService {
         TimeTrackingEnded event = new TimeTrackingEnded(this, existingTimeEntry.getId(), existingTimeEntry.getTaskId(), existingTimeEntry.getStartTime(), existingTimeEntry.getEndTime(), existingTimeEntry.getTimePeriod());
         eventPublisher.publishEvent(event);
 
-        return ResponseEntity.ok(endTime);
-
-
+        return ResponseEntity.ok(existingTimeEntry);
     }
 
     public List<TimeEntry> findAllTimeEntries() {
@@ -143,8 +136,6 @@ public class TimeManagementService {
         return "";
     }
 
-    private static final LocalDateTime MAX_END_TIME = LocalDateTime.of(2100, 12, 31, 23, 59, 59);
-
     public String validateEndTime(LocalDateTime endTime, LocalDateTime startTime) {
         if (endTime == null) {
             eventLogger.logWarning("Endzeitpunkt darf nicht leer sein.");
@@ -156,20 +147,16 @@ public class TimeManagementService {
             return "Endzeitpunkt liegt in der Zukunft.";
         }
 
-        if (!startTime.isBefore(endTime)) {
-            eventLogger.logWarning("Endzeitpunkt liegt vor Startzeitpunkt.");
-            return "Endzeitpunkt liegt vor Startzeitpunkt.";
-        }
-
         if (startTime.isEqual(endTime)) {
             eventLogger.logWarning("Endzeitpunkt ist gleich Startzeitpunkt.");
             return "Endzeitpunkt ist gleich Startzeitpunkt.";
         }
 
-        if (endTime.isAfter(MAX_END_TIME)) {
-            eventLogger.logWarning("Endzeit darf nicht nach dem 31.12.2100 liegen.");
-            return "Endzeit darf nicht nach dem 31.12.2100 liegen.";
+        if (endTime.isBefore(startTime)) {
+            eventLogger.logWarning("Endzeitpunkt liegt vor Startzeitpunkt.");
+            return "Endzeitpunkt liegt vor Startzeitpunkt.";
         }
+
         return "";
     }
 

@@ -1,7 +1,5 @@
 package de.vfh.workhourstracker.timemanagement.domain.timeentry;
 
-import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
-import de.vfh.workhourstracker.projectmanagement.domain.task.TaskId;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

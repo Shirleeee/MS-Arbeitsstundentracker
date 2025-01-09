@@ -1,9 +1,7 @@
 package de.vfh.workhourstracker.projectmanagement.application.services;
 
-import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.projectmanagement.domain.task.TaskDescription;
-import de.vfh.workhourstracker.projectmanagement.domain.task.TaskId;
 import de.vfh.workhourstracker.projectmanagement.domain.task.TaskName;
 import de.vfh.workhourstracker.projectmanagement.domain.task.events.TaskCreated;
 import de.vfh.workhourstracker.projectmanagement.domain.task.events.TaskUpdated;
@@ -15,7 +13,6 @@ import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;
 import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +29,8 @@ public class TaskManagementService {
     private final TaskRepository taskRepository;
     private final TimeEntryRepository timeEntryRepository;
     EventLogger eventLogger = new EventLogger();
+
+    private static final LocalDateTime MAX_END_TIME = LocalDateTime.of(2100, 12, 31, 23, 59, 59);
 
     @Autowired
     public TaskManagementService(ApplicationEventPublisher eventPublisher, TaskRepository taskRepository, TimeEntryRepository timeEntryRepository) {
@@ -150,6 +149,7 @@ public class TaskManagementService {
     }
 
     public String validateDescription(String description) {
+        //TODO: Darf die Description nicht leer sein?
         if (description == null || description.isEmpty()) {
             eventLogger.logWarning("Beschreibung darf nicht leer sein.");
             return "Beschreibung darf nicht leer sein.";
@@ -170,8 +170,12 @@ public class TaskManagementService {
             eventLogger.logWarning("Deadline liegt in der Vergangenheit");
             return "Deadline liegt in der Vergangenheit";
         }
+        if (deadline.isAfter(MAX_END_TIME)) {
+            //TODO: Datum im String durch MAX_END_TIME ersetzen
+            eventLogger.logWarning("Deadline darf nicht nach dem 31.12.2100 liegen.");
+            return "Deadline darf nicht nach dem 31.12.2100 liegen.";
+        }
         return "";
-
     }
     //endregion
 }

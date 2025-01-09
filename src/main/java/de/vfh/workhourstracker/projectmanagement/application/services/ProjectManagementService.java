@@ -13,7 +13,6 @@ import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;
 import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +31,8 @@ public class ProjectManagementService {
     private final ProjectRepository projectRepository;
     private final TimeEntryRepository timeEntryRepository;
     EventLogger eventLogger = new EventLogger();
+
+    private static final LocalDateTime MAX_END_TIME = LocalDateTime.of(2100, 12, 31, 23, 59, 59);
 
     @Autowired
     public ProjectManagementService(ProjectRepository projectRepository, ApplicationEventPublisher eventPublisher, TimeEntryRepository timeEntryRepository) {
@@ -142,14 +143,14 @@ public class ProjectManagementService {
             return "Name darf nicht leer sein.";
         }
         if (name.length() > 256) {
-            eventLogger.logWarning("Name ist zu lang");
-            return "Name ist zu lang";
+            eventLogger.logWarning("Name ist zu lang.");
+            return "Name ist zu lang.";
         }
         return "";
     }
 
-
     public String validateDescription(String description) {
+        //TODO: Warum darf die Description nicht null sein?
         if (description == null || description.isEmpty()) {
             eventLogger.logWarning("Beschreibung darf nicht leer sein.");
             return "Beschreibung darf nicht leer sein.";
@@ -161,15 +162,19 @@ public class ProjectManagementService {
         return "";
     }
 
-
     public String validateDeadline(LocalDateTime deadline) {
         if (deadline == null) {
             eventLogger.logWarning("Deadline darf nicht leer sein.");
             return "Deadline darf nicht leer sein.";
         }
         if (!LocalDateTime.now().isBefore(deadline)) {
-            eventLogger.logWarning("Deadline darf nicht leer sein.");
-            return "Deadline darf nicht leer sein.";
+            eventLogger.logWarning("Deadline darf nicht in der Vergangenheit liegen.");
+            return "Deadline darf nicht in der Vergangenheit liegen.";
+        }
+        if (deadline.isAfter(MAX_END_TIME)) {
+            //TODO: Datum im String durch MAX_END_TIME ersetzen
+            eventLogger.logWarning("Deadline darf nicht nach dem 31.12.2100 liegen.");
+            return "Deadline darf nicht nach dem 31.12.2100 liegen.";
         }
         return "";
     }

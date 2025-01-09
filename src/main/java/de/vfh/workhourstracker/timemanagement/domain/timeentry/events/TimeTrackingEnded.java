@@ -1,6 +1,5 @@
 package de.vfh.workhourstracker.timemanagement.domain.timeentry.events;
 
-import de.vfh.workhourstracker.projectmanagement.domain.task.TaskId;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.EndTime;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.StartTime;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;

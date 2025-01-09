@@ -3,7 +3,6 @@ package de.vfh.workhourstracker.projectmanagement.domain.project.events;
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectDescription;
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectName;
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
-import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

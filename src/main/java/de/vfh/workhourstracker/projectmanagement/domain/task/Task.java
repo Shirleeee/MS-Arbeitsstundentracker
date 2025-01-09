@@ -1,6 +1,5 @@
 package de.vfh.workhourstracker.projectmanagement.domain.task;
 
-import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import jakarta.persistence.*;
 import lombok.Data;

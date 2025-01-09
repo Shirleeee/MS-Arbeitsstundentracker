@@ -1,6 +1,5 @@
 package de.vfh.workhourstracker.timemanagement.domain.timeentry;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

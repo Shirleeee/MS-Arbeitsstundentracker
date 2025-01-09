@@ -1,7 +1,6 @@
 package de.vfh.workhourstracker.usermanagement.domain.user.events;
 
 import de.vfh.workhourstracker.usermanagement.domain.user.MailAddress;
-import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import de.vfh.workhourstracker.usermanagement.domain.user.UserName;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
