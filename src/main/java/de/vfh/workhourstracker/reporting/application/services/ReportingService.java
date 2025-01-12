@@ -50,7 +50,6 @@ public class ReportingService {
         this.taskRepository = taskRepository;
     }
 
-
     public byte[] createPdfReport(Long userId, List<Project> projects, List<TimeEntry> timeEntries, List<Task> tasks) throws IOException {
         PDDocument document = new PDDocument();
         List<PDPageContentStream> contentStreams = new ArrayList<>();
@@ -130,7 +129,6 @@ public class ReportingService {
         return outputStream.toByteArray();
     }
 
-
     // Verbesserte Methode für Zeilenumbrüche und Seitenwechsel
     private float writeTextWithCheck(PDDocument document, List<PDPageContentStream> contentStreams, String text, float x, float y) throws IOException {
         PDPageContentStream contentStream = contentStreams.getLast(); // Hole den letzten Stream
@@ -155,10 +153,7 @@ public class ReportingService {
         return input != null ? input.toString().replace("\n", " ") : "N/A";
     }
 
-
     public ResponseEntity<?> createReport(Long userId, Long projectId) throws Exception {
-
-
         // PDF erstellen
         byte[] pdfContent = null;
 
@@ -187,9 +182,7 @@ public class ReportingService {
 
             // PDF erstellen
             pdfContent = createPdfReport(userId, projects, timeEntries, tasks);
-
         } else {
-
             // Projekte abrufen
             List<Project> projects = projectRepository.findProjectByUserId(userId);
 
@@ -203,10 +196,7 @@ public class ReportingService {
 
             // PDF erstellen
             pdfContent = createPdfReport(userId, projects, timeEntries, tasks);
-
-
         }
-
 
         // Report speichern
         Report report = new Report(new UserId(userId), new ProjectId(projectId));
@@ -232,5 +222,4 @@ public class ReportingService {
     public void delete(Report report) {
         reportRepository.delete(report);
     }
-
 }

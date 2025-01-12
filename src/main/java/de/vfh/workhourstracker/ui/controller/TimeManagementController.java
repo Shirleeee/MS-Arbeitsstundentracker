@@ -1,9 +1,7 @@
 package de.vfh.workhourstracker.ui.controller;
 
-import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
-import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
 import de.vfh.workhourstracker.timemanagement.application.services.TimeManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +17,7 @@ public class TimeManagementController {
     private final TimeManagementService timeManagementService;
 
     @Autowired
-    public TimeManagementController(TimeManagementService timeManagementService, TimeEntryRepository timeEntryRepository) {
+    public TimeManagementController(TimeManagementService timeManagementService) {
         this.timeManagementService = timeManagementService;
     }
 

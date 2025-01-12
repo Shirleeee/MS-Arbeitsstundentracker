@@ -1,7 +1,6 @@
 package de.vfh.workhourstracker.projectmanagement.domain.project;
 
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
-import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,19 +25,12 @@ public class Project {
     @Column(name = "id")
     private Long userId;
 
-    //    @Embedded
-//    @AttributeOverride(name = "value", column = @Column(name = "project_name"))
     @Column(name = "project_name")
     private ProjectName name;
 
-    //    @Embedded
-//    @AttributeOverride(name = "value", column = @Column(name = "project_description"))
     @Column(name = "project_description")
-
     private ProjectDescription description;
 
-    //    @Embedded
-//    @AttributeOverride(name = "value", column = @Column(name = "deadline"))
     @Column(name = "deadline")
     private Deadline deadline;
 

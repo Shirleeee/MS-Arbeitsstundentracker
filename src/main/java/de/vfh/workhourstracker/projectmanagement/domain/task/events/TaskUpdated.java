@@ -1,8 +1,6 @@
 package de.vfh.workhourstracker.projectmanagement.domain.task.events;
 
-import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
 import de.vfh.workhourstracker.projectmanagement.domain.task.TaskDescription;
-import de.vfh.workhourstracker.projectmanagement.domain.task.TaskId;
 import de.vfh.workhourstracker.projectmanagement.domain.task.TaskName;
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import lombok.Getter;

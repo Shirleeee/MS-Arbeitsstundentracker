@@ -85,18 +85,23 @@ public class ProjectManagementServiceTest {
     public void validateName_ValidName_ReturnString() {
         String testName = "Test Name";
         String validName = projectManagementService.validateName(testName);
-        Assertions.assertEquals( 0,validName.length());
-
+        Assertions.assertEquals("", validName);
     }
 
     @Test
-    public void validateName_NameToLong_ReturnNull() {
+    public void validateName_NameEmpty_ReturnString() {
+        String testName = "";
+        String invalidName = projectManagementService.validateName(testName);
+        Assertions.assertEquals("Name darf nicht leer sein.", invalidName);
+    }
+
+    @Test
+    public void validateName_NameToLong_ReturnString() {
         String testName = "tooLongTestName Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor " +
                 "invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores " +
                 "et ea rebum. Stet clita kasd gubergren, no sea takimata ";
         String invalidName = projectManagementService.validateName(testName);
-        Assertions.assertNotEquals( 0,invalidName.length());
-
+        Assertions.assertEquals("Name ist zu lang.", invalidName);
     }
     //endregion
 
@@ -105,12 +110,11 @@ public class ProjectManagementServiceTest {
     public void validateDescription_ValidDescription_ReturnString() {
         String testDescription = "This is a test description";
         String validDescription = projectManagementService.validateDescription(testDescription);
-        Assertions.assertEquals( 0,validDescription.length());
-
+        Assertions.assertEquals("", validDescription);
     }
 
     @Test
-    public void validateDescription_DescriptionToLong_ReturnNull() {
+    public void validateDescription_DescriptionToLong_ReturnString() {
         String testDescription = "This is a way too long test description. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, " +
                 "sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et " +
                 "accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor " +
@@ -122,24 +126,36 @@ public class ProjectManagementServiceTest {
                 "Lorem ipsum dolor sit amet. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, " +
                 "vel illum dolore eu feugiat nulla facilisis a";
         String invalidDescription = projectManagementService.validateDescription(testDescription);
-        Assertions.assertNotEquals( 0,invalidDescription.length());
+        Assertions.assertEquals("Beschreibung ist zu lang.", invalidDescription);
     }
     //endregion
 
     //region Test validateDeadline
     @Test
-    public void validateDeadline_ValidDeadline_ReturnLocalDateTime() {
+    public void validateDeadline_ValidDeadline_ReturnString() {
         LocalDateTime testDeadline = LocalDateTime.of(2025, 12, 10, 23, 59, 59);
         String validDeadline = projectManagementService.validateDeadline(testDeadline);
-
-        Assertions.assertEquals( 0,validDeadline.length());
+        Assertions.assertEquals("", validDeadline);
     }
 
     @Test
-    public void validateDeadline_DeadlineInThePast_ReturnNull() {
+    public void validateDeadline_DeadlineEmpty_ReturnString() {
+        String invalidDeadline = projectManagementService.validateDeadline(null);
+        Assertions.assertEquals("Deadline darf nicht leer sein.", invalidDeadline);
+    }
+
+    @Test
+    public void validateDeadline_DeadlineInThePast_ReturnString() {
         LocalDateTime testDeadline = LocalDateTime.of(2024, 3, 10, 23, 59, 59);
         String invalidDeadline = projectManagementService.validateDeadline(testDeadline);
-        Assertions.assertNotEquals( 0,invalidDeadline.length());
+        Assertions.assertEquals("Deadline darf nicht in der Vergangenheit liegen.", invalidDeadline);
+    }
+
+    @Test
+    public void validateDeadline_DeadlineTooFarInFuture_ReturnString() {
+        LocalDateTime testDeadline = LocalDateTime.of(2999, 12, 10, 23, 59, 59);
+        String invalidDeadline = projectManagementService.validateDeadline(testDeadline);
+        Assertions.assertEquals("Deadline darf nicht nach dem 31.12.2100 liegen.", invalidDeadline);
     }
     //endregion
 }

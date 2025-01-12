@@ -1,8 +1,6 @@
 package de.vfh.workhourstracker.ui.controller;
 
-import de.vfh.workhourstracker.projectmanagement.application.services.ProjectManagementService;
 import de.vfh.workhourstracker.projectmanagement.application.services.TaskManagementService;
-import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;

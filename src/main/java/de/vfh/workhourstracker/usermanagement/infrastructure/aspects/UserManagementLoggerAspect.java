@@ -1,6 +1,5 @@
 package de.vfh.workhourstracker.usermanagement.infrastructure.aspects;
 
-import de.vfh.workhourstracker.projectmanagement.infrastructure.aspects.ProjectManagementLoggingAspect;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;

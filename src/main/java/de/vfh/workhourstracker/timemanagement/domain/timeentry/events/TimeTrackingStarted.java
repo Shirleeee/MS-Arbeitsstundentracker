@@ -1,8 +1,6 @@
 package de.vfh.workhourstracker.timemanagement.domain.timeentry.events;
 
-import de.vfh.workhourstracker.projectmanagement.domain.task.TaskId;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.StartTime;
-import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntryId;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
