@@ -8,9 +8,4 @@ import java.util.Optional;
 @Repository
 public interface ReportRepository {
     Report save(Report report);
-
-    Optional<Report> findById(Long id);
-
-    void delete(Report report);
-    void deleteById(Long id);
 }
