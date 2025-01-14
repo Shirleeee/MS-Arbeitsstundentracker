@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class ReportingService {
@@ -45,7 +44,7 @@ public class ReportingService {
         this.reportGeneratorService = reportGeneratorService;
     }
 
-    public ResponseEntity<?> createReport(Long userId, Long projectId) {
+    public ResponseEntity<Object> createReport(Long userId, Long projectId) {
         try {
             List<Project> projects = fetchProjects(userId, projectId);
             List<Task> tasks = fetchTasks(projectId);
@@ -85,10 +84,9 @@ public class ReportingService {
                 .map(task -> timeEntryRepository.findByTaskId(task.getTask_id()))
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
-                .collect(Collectors.toList());
+                .toList();
     }
-
-    private ResponseEntity<?> handleReportError(Exception e) {
+    private ResponseEntity<Object> handleReportError(Exception e) {
         eventLogger.logError("Error creating report: " + e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("An unexpected error occurred.", "report", "ERROR"));
@@ -105,7 +103,7 @@ public class ReportingService {
         eventPublisher.publishEvent(event);
     }
 
-    private ResponseEntity<byte[]> createPdfResponse(Long userId, byte[] pdfContent) {
+    private ResponseEntity<Object> createPdfResponse(Long userId, byte[] pdfContent) {
         if (pdfContent == null) {
             eventLogger.logError("PDF content is null.");
             throw new IllegalStateException("PDF could not be created.");

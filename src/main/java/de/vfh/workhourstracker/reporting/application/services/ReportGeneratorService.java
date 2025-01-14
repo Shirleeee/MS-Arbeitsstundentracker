@@ -2,7 +2,6 @@ package de.vfh.workhourstracker.reporting.application.services;
 
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
-import de.vfh.workhourstracker.reporting.infrastructure.repositories.ReportRepository;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -16,46 +15,38 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class ReportGeneratorService {
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
     public byte[] createPdfReport(Long userId, List<Project> projects, List<TimeEntry> timeEntries, List<Task> tasks) throws IOException {
-        // Initialisiere das PDF-Dokument
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
+        try (PDDocument document = new PDDocument()) { // PDDocument wird automatisch geschlossen
+            PDPage page = new PDPage();
+            document.addPage(page);
 
-        document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page);
-        List<PDPageContentStream> contentStreams = new ArrayList<>();
-        contentStreams.add(contentStream);
+            float margin = 50;
+            AtomicReference<Float> yStartPosition = new AtomicReference<>(page.getMediaBox().getHeight() - margin);
 
-        float margin = 50;
-        // Anfangsposition für Text
-        AtomicReference<Float> yStartPosition = new AtomicReference<>(page.getMediaBox().getHeight() - margin);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) { // ContentStream im try-with-resources
+                // Schreibe Benutzerinformationen
+                yStartPosition.set(writeTextWithCheck(document, List.of(contentStream), "Bericht für Benutzer: " + userId, margin, yStartPosition.get()));
+                yStartPosition.set(yStartPosition.get() - 20);
 
+                // Verarbeite Projekte und ihre Aufgaben
+                for (Project project : projects) {
+                    this.processProject(document, List.of(contentStream), project, tasks, timeEntries, margin, yStartPosition);
+                }
 
-        // Schreibe Benutzerinformationen
-        yStartPosition.set(writeTextWithCheck(document, contentStreams, "Bericht für Benutzer: " + userId, margin, yStartPosition.get()));
-        yStartPosition.set(yStartPosition.get() - 20);
-
-        // Verarbeite Projekte und ihre Aufgaben
-        for (Project project : projects) {
-            this.processProject(document, contentStreams, project, tasks, timeEntries, margin, yStartPosition);
+                // Dokument speichern und zurückgeben
+                return saveDocument(document);
+            }
         }
-
-        // Schließe alle ContentStreams
-        for (PDPageContentStream stream : contentStreams) {
-            stream.close();
-        }
-
-        // Speichere das Dokument und gib es als Byte-Array zurück
-        return saveDocument(document);
     }
+
 
     private byte[] saveDocument(PDDocument document) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -64,12 +55,12 @@ public class ReportGeneratorService {
         return outputStream.toByteArray();
     }
 
-    // Hilfsmethode zur Sanitierung von Text
-    private String sanitize(Object input) {
-        return input != null ? input.toString().replace("\n", " ") : "N/A";
+    // Hilfsmethode zur Bereinigung von Text
+    public String sanitize(Object input) {
+        return  input != null ? input.toString().replaceAll("[\r\n]+", " ") : "N/A";
+
     }
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
     private String parseDuration(Duration duration) {
         long hours = duration.toHours();

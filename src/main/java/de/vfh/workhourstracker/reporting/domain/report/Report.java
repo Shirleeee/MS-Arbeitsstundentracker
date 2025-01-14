@@ -20,8 +20,7 @@ public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(insertable=false, updatable=false)
-    @NotNull
+    @Column(insertable = false, updatable = false)
     private Long id;
 
 
