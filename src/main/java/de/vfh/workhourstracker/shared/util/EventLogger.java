@@ -1,7 +1,10 @@
 package de.vfh.workhourstracker.shared.util;
 
-import java.util.logging.Logger;
+import org.aspectj.lang.ProceedingJoinPoint;
+
+import java.util.Arrays;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EventLogger {
 
@@ -18,5 +21,21 @@ public class EventLogger {
 
     public void logError(String message) {
         logger.log(Level.SEVERE, message);
+    }
+
+
+    public Object getLoggerObject(ProceedingJoinPoint joinPoint, org.slf4j.Logger logger) throws Throwable {
+        long start = System.currentTimeMillis();
+        if (logger.isInfoEnabled()) {
+            logger.info("Method {} is being called with arguments: {}", joinPoint.getSignature().toShortString(), Arrays.toString(joinPoint.getArgs()));
+        }
+
+        Object result = joinPoint.proceed();
+
+        long elapsedTime = System.currentTimeMillis() - start;
+        if (logger.isInfoEnabled()) {
+            logger.info("Method {} executed successfully in {} ms with return value: {}", joinPoint.getSignature().toShortString(), elapsedTime, result);
+        }
+        return result;
     }
 }

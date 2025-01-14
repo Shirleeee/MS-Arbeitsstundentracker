@@ -3,7 +3,6 @@ import {ref} from 'vue';
 import axios from 'axios';
 
 import {useFormData, useFormType} from "@/composables/useFormData.js";
-import {getBerlinDateTime} from "@/utils/timeUtils.js";
 import {handleErrorResponse} from "@/utils/errorResponse.js";
 //definiert Props die von der Elternkomponente übergeben werden
 const props = defineProps({
@@ -40,6 +39,7 @@ const submit = async (event) => {
   try {
     deadline.value = deadline.value ? deadline.value : null;
     const data = useFormData(props, title.value, description.value, deadline.value, additionalValue.value);
+    console.log('submit', deadline.value);
 
     const response = await axios.post(props.submitUrl, data, {
       headers: {

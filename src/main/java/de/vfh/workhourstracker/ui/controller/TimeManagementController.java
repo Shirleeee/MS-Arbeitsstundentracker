@@ -27,9 +27,9 @@ public class TimeManagementController {
     }
 
     @PostMapping("/submit_startTime")
-    public ResponseEntity<?> submitStartTime(@RequestBody TimeEntry timeEntry) {
+    public ResponseEntity<Object> submitStartTime(@RequestBody TimeEntry timeEntry) {
         try {
-            ResponseEntity<?> response = timeManagementService.startTimeTracking(
+            ResponseEntity<Object> response = timeManagementService.startTimeTracking(
                     timeEntry.getTaskId(),
                     timeEntry.getStartTime().getStartTime()
             );
@@ -53,9 +53,9 @@ public class TimeManagementController {
     }
 
     @PostMapping("/submit_endTime")
-    public ResponseEntity<?> submitEndTime(@RequestBody TimeEntry timeEntry) {
+    public ResponseEntity<Object> submitEndTime(@RequestBody TimeEntry timeEntry) {
         try {
-            ResponseEntity<?> response = timeManagementService.endTimeTracking(
+            ResponseEntity<Object> response = timeManagementService.endTimeTracking(
                     timeEntry.getId(),
                     timeEntry.getEndTime().getEndTime()
             );

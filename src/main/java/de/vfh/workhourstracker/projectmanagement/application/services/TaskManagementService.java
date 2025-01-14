@@ -39,7 +39,7 @@ public class TaskManagementService {
         this.timeEntryRepository = timeEntryRepository;
     }
 
-    public ResponseEntity<?> createTask(Long projectId, String name, String description, LocalDateTime deadline) {
+    public ResponseEntity<Object> createTask(Long projectId, String name, String description, LocalDateTime deadline) {
         String validName = validateName(name);
         String validDescription = validateDescription(description);
         String validDeadline = validateDeadline(deadline);
@@ -82,7 +82,7 @@ public class TaskManagementService {
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
-    public ResponseEntity<?> updateTask(Long taskId, String name, String description, LocalDateTime deadline) {
+    public ResponseEntity<Object> updateTask(Long taskId, String name, String description, LocalDateTime deadline) {
         Task existingTask = taskRepository.findById(taskId).orElse(null);
         if (existingTask == null) {
             eventLogger.logError("Task with ID " + taskId + " does not exist in database.");
@@ -124,7 +124,7 @@ public class TaskManagementService {
     }
 
 
-    public ResponseEntity<?> deleteTask(Long taskId) {
+    public ResponseEntity<Object> deleteTask(Long taskId) {
         if (taskRepository.findById(taskId).isPresent()) {
             taskRepository.deleteById(taskId);
             return ResponseEntity.ok().build();

@@ -29,14 +29,13 @@ public class ProjectManagementController {
     }
 
     @DeleteMapping("/deleteProject/{id}")
-    public ResponseEntity<?> deleteProject(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteProject(@PathVariable Long id) {
 
-        ResponseEntity<?> response = projectManagementService.deleteProject(id);
+        ResponseEntity<Object> response = projectManagementService.deleteProject(id);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return response;
         } else {
-            // Fehlerbehandlung basierend auf der Antwort
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }
     }
@@ -54,7 +53,6 @@ public class ProjectManagementController {
             if (response.getStatusCode().is2xxSuccessful()) {
                 return response;
             } else {
-                // Fehlerbehandlung basierend auf der Antwort
                 return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
             }
         } catch (Exception e) {
@@ -63,7 +61,6 @@ public class ProjectManagementController {
 
             errors.add(new ErrorResponse("Unexpected error", "general", "INTERNAL_SERVER_ERROR"));
 
-            // Exception weiterverarbeiten und in eine ResponseEntity mit Fehlern zurückgeben
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
         }
     }

@@ -24,7 +24,6 @@ const handleUpdateSuccess = (data) => {
   console.log('pencil BTNhandleUpdateSuccess', data);
   isModalOpen.value = false;
   emit('submit-success', data);
-  // location.reload();
 
 };
 </script>
@@ -41,7 +40,6 @@ const handleUpdateSuccess = (data) => {
 
   <svg @click="toggleModal"
      aria-hidden="true"
-     role="img"
      width="24"
      height="24"
      class="iconify iconify--mdi"

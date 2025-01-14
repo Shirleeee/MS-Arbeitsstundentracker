@@ -2,10 +2,8 @@ import {ref} from "vue";
 
 export function useFormData(props, title, description, deadline, additionalValue) {
     let data;
-    // console.log('useFormData - props.currentData.id', props.currentData)
-    // console.log('useFormData - props.actionType', props.actionType)
-    // console.log('useFormData - props.additionalValue', additionalValue)
 
+console.log('useFormData - deadline', deadline)
     if (props.text === 'Task') {
         data = {
             task_id: props.currentData.task_id,

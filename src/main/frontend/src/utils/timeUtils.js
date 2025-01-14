@@ -17,7 +17,6 @@ export function convertDurationToDHMS(durationStr) {
     if (!durationStr) {
         return '00:00:00';
     }
-    // console.log("durationStr", durationStr);
     let durationInSeconds;
     if (durationStr.typeof === 'string') {
 

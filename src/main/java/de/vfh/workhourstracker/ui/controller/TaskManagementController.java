@@ -8,18 +8,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 public class TaskManagementController {
-    //TODO
+
     private final TaskManagementService taskManagementService;
 
     @Autowired
-    public TaskManagementController( TaskManagementService taskManagementService) {
+    public TaskManagementController(TaskManagementService taskManagementService) {
         this.taskManagementService = taskManagementService;
     }
 
@@ -29,9 +28,9 @@ public class TaskManagementController {
     }
 
     @PostMapping("/submitTaskData")
-    public ResponseEntity<?> submitTaskData(@RequestBody Task task) {
+    public ResponseEntity<Object> submitTaskData(@RequestBody Task task) {
         try {
-            ResponseEntity<?> response = taskManagementService.createTask(
+            ResponseEntity<Object> response = taskManagementService.createTask(
                     task.getProjectId(),
                     task.getName().getTaskName(),
                     task.getDescription().getTaskDescription(),
@@ -49,17 +48,16 @@ public class TaskManagementController {
 
             errors.add(new ErrorResponse("Unexpected error", "general", "INTERNAL_SERVER_ERROR"));
 
-            // Exception weiterverarbeiten und in eine ResponseEntity mit Fehlern zurückgeben
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
         }
 
     }
 
     @PostMapping("/updateTaskData")
-    public ResponseEntity<?> updateTaskData(@RequestBody Task task ) {
+    public ResponseEntity<Object> updateTaskData(@RequestBody Task task) {
 
         try {
-            ResponseEntity<?> response = taskManagementService.updateTask(
+            ResponseEntity<Object> response = taskManagementService.updateTask(
                     task.getTask_id(),
                     task.getName().getTaskName(),
                     task.getDescription().getTaskDescription(),
@@ -68,7 +66,7 @@ public class TaskManagementController {
             if (response.getStatusCode().is2xxSuccessful()) {
                 return response;
             } else {
-                // Fehlerbehandlung basierend auf der Antwort
+
                 return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
             }
         } catch (Exception e) {
@@ -77,19 +75,18 @@ public class TaskManagementController {
 
             errors.add(new ErrorResponse("Unexpected error", "general", "INTERNAL_SERVER_ERROR"));
 
-            // Exception weiterverarbeiten und in eine ResponseEntity mit Fehlern zurückgeben
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
         }
     }
-    @DeleteMapping("/deleteTask/{id}")
-    public ResponseEntity<?> deleteProject(@PathVariable Long id) {
 
-        ResponseEntity<?> response = taskManagementService.deleteTask(id);
+    @DeleteMapping("/deleteTask/{id}")
+    public ResponseEntity<Object> deleteProject(@PathVariable Long id) {
+
+        ResponseEntity<Object> response = taskManagementService.deleteTask(id);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return response;
         } else {
-            // Fehlerbehandlung basierend auf der Antwort
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }
     }

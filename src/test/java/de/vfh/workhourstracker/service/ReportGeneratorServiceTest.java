@@ -26,18 +26,46 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class ReportGeneratorServiceTest {
+class ReportGeneratorServiceTest {
 
     @Autowired
     private ReportGeneratorService reportGeneratorService;
 
+    //region testSanitize
+    @Test
+    void testSanitize() {
+
+
+        // Test with null input
+        String result = reportGeneratorService.sanitize(null);
+        assertEquals("N/A", result);
+
+        // Test with normal string
+        result = reportGeneratorService.sanitize("Hello World");
+        assertEquals("Hello World", result);
+
+        // Test with string containing newline
+        result = reportGeneratorService.sanitize("Hello\nWorld");
+        assertEquals("Hello World", result);
+
+        // Test with string containing carriage return
+        result = reportGeneratorService.sanitize("Hello\rWorld");
+        assertEquals("Hello World", result);
+
+        // Test with string containing both newline and carriage return
+        result = reportGeneratorService.sanitize("Hello\r\nWorld");
+        assertEquals("Hello World", result);
+    }
+
+
+    //endregion
     //region testCreatePdfReport
     @Test
-    public void testCreatePdfReport() throws IOException {
+    void testCreatePdfReport() throws IOException {
         Long userId = 1L;
         List<Project> projects = IntStream.range(1, 6)
                 .mapToObj(i -> new Project(
@@ -46,7 +74,8 @@ public class ReportGeneratorServiceTest {
                         new ProjectDescription("ProjectDescription " + i),
                         new Deadline(LocalDateTime.now().plusDays(i))
                 ))
-                .collect(Collectors.toList());
+                        .
+                collect(Collectors.toList());
 
         List<Task> tasks = IntStream.range(1, 6)
                 .mapToObj(i -> new Task(
@@ -54,8 +83,8 @@ public class ReportGeneratorServiceTest {
                         new TaskName("TaskTitle " + i),
                         new TaskDescription("TaskDescription " + i),
                         new Deadline(LocalDateTime.now().plusDays(i))
-                ))
-                .collect(Collectors.toList());
+                )).
+                collect(Collectors.toList());
 
         List<TimeEntry> timeEntries = IntStream.range(1, 6)
                 .mapToObj(i -> new TimeEntry(
@@ -63,8 +92,8 @@ public class ReportGeneratorServiceTest {
                         new StartTime(LocalDateTime.now().plusDays(i)),
                         new EndTime(LocalDateTime.now().plusDays(i)),
                         new TimePeriod(Duration.ofHours(1))
-                ))
-                .collect(Collectors.toList());
+                )).
+                collect(Collectors.toList());
 
         byte[] pdfContent = reportGeneratorService.createPdfReport(userId, projects, timeEntries, tasks);
 

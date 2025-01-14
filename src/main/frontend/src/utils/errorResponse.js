@@ -1,10 +1,11 @@
-export const handleErrorResponse = (error,errors) => {
-    if (error.response && error.response.data) {
+export const handleErrorResponse = (error, errors) => {
+    if (error.response?.data) {
         console.log("error.response.data", error.response.data);
+
         error.response.data.forEach(err => {
-            if (err.field) {
+            if (err && typeof err === "object" && "field" in err) {
                 console.log("err", err);
-               return errors.value[err.field] = err.message;
+                errors.value[err.field] = err.message;
             }
         });
     } else {

@@ -1,11 +1,14 @@
 package de.vfh.workhourstracker.timemanagement.application.services;
 
 import de.vfh.workhourstracker.shared.util.ErrorResponse;
-import de.vfh.workhourstracker.timemanagement.domain.timeentry.*;
+import de.vfh.workhourstracker.shared.util.EventLogger;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.EndTime;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.StartTime;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
+import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeTrackingEnded;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeTrackingStarted;
 import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
-import de.vfh.workhourstracker.shared.util.EventLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -29,7 +32,7 @@ public class TimeManagementService {
         this.timeEntryRepository = timeEntryRepository;
     }
 
-    public ResponseEntity<?> createTimeEntry(Long taskId, LocalDateTime startTime, LocalDateTime endTime) {
+    public ResponseEntity<Object> createTimeEntry(Long taskId, LocalDateTime startTime, LocalDateTime endTime) {
         String validStartTime = validateStartTime(startTime);
         String validEndTime = validateEndTime(endTime, startTime);
         String validTimePeriod = validateDuration(calculateDuration(startTime, endTime));
@@ -59,7 +62,7 @@ public class TimeManagementService {
         return ResponseEntity.ok(timeEntry);
     }
 
-    public ResponseEntity<?> startTimeTracking(Long taskId, LocalDateTime startTime) {
+    public ResponseEntity<Object> startTimeTracking(Long taskId, LocalDateTime startTime) {
         String validStartTime = validateStartTime(startTime);
 
         if (!validStartTime.isEmpty()) {
@@ -76,7 +79,7 @@ public class TimeManagementService {
         return ResponseEntity.ok(timeEntry);
     }
 
-    public ResponseEntity<?> endTimeTracking(Long timeEntryId, LocalDateTime endTime) {
+    public ResponseEntity<Object> endTimeTracking(Long timeEntryId, LocalDateTime endTime) {
         TimeEntry existingTimeEntry = timeEntryRepository.findById(timeEntryId).orElse(null);
 
         if (existingTimeEntry == null) {
@@ -113,9 +116,6 @@ public class TimeManagementService {
         return timeEntryRepository.findAll();
     }
 
-    public void deleteById(Long id) {
-        timeEntryRepository.deleteById(id);
-    }
 
     private Duration calculateDuration(LocalDateTime startTime, LocalDateTime endTime) {
         return Duration.between(startTime, endTime);

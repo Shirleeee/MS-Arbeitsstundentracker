@@ -15,7 +15,6 @@ public interface TimeEntryRepository  {
     Optional<TimeEntry> findById(Long id);
     List<TimeEntry> findAll();
     List<TimeEntry> findByTaskId(Long taskId);
-    void deleteById(Long id);
 
     @Query("SELECT te FROM TimeEntry te JOIN Task t ON te.taskId = t.task_id WHERE t.projectId = :projectId")
     List<TimeEntry> findTimeEntriesByProjectId(@Param("projectId") Long projectId);

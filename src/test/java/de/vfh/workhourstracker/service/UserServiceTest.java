@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = WorkHoursTrackerApplication.class)
-public class UserServiceTest {
+ class UserServiceTest {
     @Autowired
     private UserService userService;
 
     //region Test createUser
     @Test
-    public void createUser_validInput_ReturnUser() {
+     void createUser_validInput_ReturnUser() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
     }
@@ -24,22 +24,22 @@ public class UserServiceTest {
 
     //region Test validateName
     @Test
-    public void validateName_ValidName_ReturnString() {
+     void validateName_ValidName_ReturnString() {
         String testName = "Max Mustermann";
         String validName = userService.validateName(testName);
         Assertions.assertNotNull(validName);
-        Assertions.assertEquals(validName, testName);
+        Assertions.assertEquals(testName, validName);
     }
 
     @Test
-    public void validateName_InvalidChars_ReturnNull() {
+     void validateName_InvalidChars_ReturnNull() {
         String testName = "Max Mu§+€rmann";
         String invalidName = userService.validateName(testName);
         Assertions.assertNull(invalidName);
     }
 
     @Test
-    public void validateName_NameTooLong_ReturnNull() {
+     void validateName_NameTooLong_ReturnNull() {
         String testName = "Maximilian Theodor Wilhelm Franz Benedikt Albrecht Mustermann-Schneider von und zu Schwabenhausen";
         String invalidName = userService.validateName(testName);
         Assertions.assertNull(invalidName);
@@ -48,7 +48,7 @@ public class UserServiceTest {
 
     //region Test validateMailAddress
     @Test
-    public void validateMailAddress_ValidEmail_ReturnString() {
+     void validateMailAddress_ValidEmail_ReturnString() {
         String testMailAddress = "test@test.com";
         String mailAddress = userService.validateMailAddress(testMailAddress);
         Assertions.assertNotNull(mailAddress);
@@ -56,7 +56,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void validateMailAddress_InvalidEmail_ReturnNull() {
+     void validateMailAddress_InvalidEmail_ReturnNull() {
         String testMailAddress = "test/test-com";
         String mailAddress = userService.validateMailAddress(testMailAddress);
         Assertions.assertNull(mailAddress);

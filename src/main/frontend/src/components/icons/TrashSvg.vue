@@ -1,21 +1,13 @@
 <!-- This icon is from <https://github.com/Templarian/MaterialDesign>, distributed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0) license-->
 
 
-<script setup>
-
-import {ref} from 'vue';
-
-import axios from "axios";
-
-
-</script>
+<script setup></script>
 
 
 <template>
 
 
     <svg class="trash" aria-hidden="true"
-         role="img"
          width="24"
          height="24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>
       trash-can-outline</title>

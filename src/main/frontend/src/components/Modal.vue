@@ -1,6 +1,6 @@
 <script setup>
 
-import {ref, computed} from 'vue';
+import {ref} from 'vue';
 import SubmitForm from './SubmitForm.vue';
 
 const props = defineProps({
@@ -84,7 +84,7 @@ const methods = {
   margin: auto;
 
   & > p {
-    color: #181818;
+    color:#181818;
   }
 }
 
@@ -94,7 +94,7 @@ const methods = {
   position: fixed;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);;
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 h1 {

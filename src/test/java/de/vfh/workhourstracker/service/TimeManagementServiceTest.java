@@ -33,7 +33,7 @@ class TimeManagementServiceTest {
 
     //region Test startTimeTracking
     @Test
-    public void startTimeTracking_ValidInput_ReturnTimeEntry() {
+     void startTimeTracking_ValidInput_ReturnTimeEntry() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -50,7 +50,7 @@ class TimeManagementServiceTest {
 
     //region Test endTimeTracking
     @Test
-    public void endTimeTracking_ValidInput_ReturnTimeEntry() {
+     void endTimeTracking_ValidInput_ReturnTimeEntry() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -71,20 +71,20 @@ class TimeManagementServiceTest {
 
     //region Test validateStartTime
     @Test
-    public void validateStartTime_ValidFormat_ReturnString() {
+     void validateStartTime_ValidFormat_ReturnString() {
         LocalDateTime testStartTime = LocalDateTime.of(2024, 11, 11, 8, 0, 0);
         String validStartTime = timeManagementService.validateStartTime(testStartTime);
         Assertions.assertEquals("", validStartTime);
     }
 
     @Test
-    public void validateStartTime_StartTimeEmpty_ReturnString() {
+     void validateStartTime_StartTimeEmpty_ReturnString() {
         String invalidStartTime = timeManagementService.validateStartTime(null);
         Assertions.assertEquals("Startzeitpunkt darf nicht leer sein.", invalidStartTime);
     }
 
     @Test
-    public void validateStartTime_StartTimeInFuture_ReturnString() {
+     void validateStartTime_StartTimeInFuture_ReturnString() {
         LocalDateTime testStartTime = LocalDateTime.of(2025, 11, 10, 8, 0, 0);
         String invalidStartTime = timeManagementService.validateStartTime(testStartTime);
         Assertions.assertEquals("Startzeitpunkt liegt in der Zukunft.", invalidStartTime);
@@ -93,7 +93,7 @@ class TimeManagementServiceTest {
 
     //region Test validateEndTime
     @Test
-    public void validateEndTime_ValidFormat_ReturnString() {
+     void validateEndTime_ValidFormat_ReturnString() {
         LocalDateTime testStartTime = LocalDateTime.of(2024, 11, 11, 8, 0, 0);
         LocalDateTime testEndTime = LocalDateTime.of(2024, 11, 11, 9, 0, 0);
         String validEndTime = timeManagementService.validateEndTime(testEndTime, testStartTime);
@@ -101,14 +101,14 @@ class TimeManagementServiceTest {
     }
 
     @Test
-    public void validateEndTime_EndTimeEmpty_ReturnString() {
+     void validateEndTime_EndTimeEmpty_ReturnString() {
         LocalDateTime testStartTime = LocalDateTime.of(2024, 11, 11, 8, 0, 0);
         String invalidEndTime = timeManagementService.validateEndTime(null, testStartTime);
         Assertions.assertEquals("Endzeitpunkt darf nicht leer sein.", invalidEndTime);
     }
 
     @Test
-    public void validateEndTime_EndTimeInFuture_ReturnString() {
+     void validateEndTime_EndTimeInFuture_ReturnString() {
         LocalDateTime testStartTime = LocalDateTime.of(2024, 11, 11, 8, 0, 0);
         LocalDateTime testEndTime = LocalDateTime.of(2025, 11 ,10, 8, 0, 0);
         String invalidEndTime = timeManagementService.validateEndTime(testEndTime, testStartTime);
@@ -116,7 +116,7 @@ class TimeManagementServiceTest {
     }
 
     @Test
-    public void validateEndTime_EndTimeEqualsStartTime_ReturnString() {
+     void validateEndTime_EndTimeEqualsStartTime_ReturnString() {
         LocalDateTime testStartTime = LocalDateTime.of(2024,11, 11, 8, 0, 0);
         LocalDateTime testEndTime = LocalDateTime.of(2024, 11, 11, 8, 0, 0);
         String invalidEndTime = timeManagementService.validateEndTime(testStartTime, testEndTime);
@@ -124,7 +124,7 @@ class TimeManagementServiceTest {
     }
 
     @Test
-    public void validateEndTime_EndTimeBeforeStartTime_ReturnString() {
+     void validateEndTime_EndTimeBeforeStartTime_ReturnString() {
         LocalDateTime testStartTime = LocalDateTime.of(2024, 11, 11, 8, 0, 0);
         LocalDateTime testEndTime = LocalDateTime.of(2024, 11, 11, 5, 0, 0);
         String invalidEndTime = timeManagementService.validateEndTime(testEndTime, testStartTime);
@@ -134,20 +134,20 @@ class TimeManagementServiceTest {
 
     //region Test validateDuration
     @Test
-    public void validateDuration_ValidFormat_ReturnString() {
+     void validateDuration_ValidFormat_ReturnString() {
         Duration testDuration = Duration.parse("PT2H30M30S");
         String duration = timeManagementService.validateDuration(testDuration);
         Assertions.assertEquals("", duration);
     }
 
     @Test
-    public void validateDuration_DurationEmpty_ReturnString() {
+     void validateDuration_DurationEmpty_ReturnString() {
         String invalidDuration = timeManagementService.validateDuration(null);
         Assertions.assertEquals("Dauer darf nicht leer sein.", invalidDuration);
     }
 
     @Test
-    public void validateDuration_DurationTooLong_ReturnString() {
+     void validateDuration_DurationTooLong_ReturnString() {
         Duration testDuration = Duration.parse("PT48H30M30S");
         String duration = timeManagementService.validateDuration(testDuration);
         Assertions.assertEquals("Dauer ist zu lang.", duration);

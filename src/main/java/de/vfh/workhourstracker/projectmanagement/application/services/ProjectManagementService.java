@@ -41,7 +41,7 @@ public class ProjectManagementService {
         this.timeEntryRepository = timeEntryRepository;
     }
 
-    public ResponseEntity<?> createProject(Long userId, String name, String description, LocalDateTime deadline) {
+    public ResponseEntity<Object> createProject(Long userId, String name, String description, LocalDateTime deadline) {
         String validName = validateName(name);
         String validDescription = validateDescription(description);
         String validDeadline = validateDeadline(deadline);
@@ -83,8 +83,8 @@ public class ProjectManagementService {
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
-    //TODO: connect with frontend
-    public ResponseEntity<?> updateProject(Long projectId, String name, String description, LocalDateTime deadline) {
+
+    public ResponseEntity<Object> updateProject(Long projectId, String name, String description, LocalDateTime deadline) {
         Project existingProject = projectRepository.findById(projectId).orElse(null);
         if (existingProject == null) {
             eventLogger.logError("Project with ID " + projectId + " does not exist in database.");
@@ -124,7 +124,7 @@ public class ProjectManagementService {
         return ResponseEntity.ok(existingProject);
     }
 
-    public ResponseEntity<?> deleteProject(Long projectId) {
+    public ResponseEntity<Object> deleteProject(Long projectId) {
         if (projectRepository.findById(projectId).isPresent()) {
             projectRepository.deleteById(projectId);
             return ResponseEntity.ok().build();
@@ -150,7 +150,6 @@ public class ProjectManagementService {
     }
 
     public String validateDescription(String description) {
-        //TODO: Warum darf die Description nicht null sein?
         if (description == null || description.isEmpty()) {
             eventLogger.logWarning("Beschreibung darf nicht leer sein.");
             return "Beschreibung darf nicht leer sein.";

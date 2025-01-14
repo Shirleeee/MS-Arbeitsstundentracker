@@ -17,7 +17,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @SpringBootTest
-public class ProjectManagementServiceTest {
+ class ProjectManagementServiceTest {
 
     @Autowired
     private ProjectManagementService projectManagementService;
@@ -31,7 +31,7 @@ public class ProjectManagementServiceTest {
 
     //region Test createProject
     @Test
-    public void createProject_ValidInput_ReturnProject() {
+     void createProject_ValidInput_ReturnProject() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -42,7 +42,7 @@ public class ProjectManagementServiceTest {
 
     //region Test updatedProject
     @Test
-    public void updateProject_ValidInput_ReturnProject() {
+     void updateProject_ValidInput_ReturnProject() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -56,7 +56,7 @@ public class ProjectManagementServiceTest {
 
     //region Test getTotalDurationOfProject
     @Test
-    public void getTotalDurationOfProject_ValidInput_ReturnDurationOfProject() {
+     void getTotalDurationOfProject_ValidInput_ReturnDurationOfProject() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -82,21 +82,21 @@ public class ProjectManagementServiceTest {
 
     //region Test validateName
     @Test
-    public void validateName_ValidName_ReturnString() {
+     void validateName_ValidName_ReturnString() {
         String testName = "Test Name";
         String validName = projectManagementService.validateName(testName);
         Assertions.assertEquals("", validName);
     }
 
     @Test
-    public void validateName_NameEmpty_ReturnString() {
+     void validateName_NameEmpty_ReturnString() {
         String testName = "";
         String invalidName = projectManagementService.validateName(testName);
         Assertions.assertEquals("Name darf nicht leer sein.", invalidName);
     }
 
     @Test
-    public void validateName_NameToLong_ReturnString() {
+     void validateName_NameToLong_ReturnString() {
         String testName = "tooLongTestName Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor " +
                 "invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores " +
                 "et ea rebum. Stet clita kasd gubergren, no sea takimata ";
@@ -107,14 +107,14 @@ public class ProjectManagementServiceTest {
 
     //region Test validateDescription
     @Test
-    public void validateDescription_ValidDescription_ReturnString() {
+     void validateDescription_ValidDescription_ReturnString() {
         String testDescription = "This is a test description";
         String validDescription = projectManagementService.validateDescription(testDescription);
         Assertions.assertEquals("", validDescription);
     }
 
     @Test
-    public void validateDescription_DescriptionToLong_ReturnString() {
+     void validateDescription_DescriptionToLong_ReturnString() {
         String testDescription = "This is a way too long test description. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, " +
                 "sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et " +
                 "accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor " +
@@ -132,27 +132,27 @@ public class ProjectManagementServiceTest {
 
     //region Test validateDeadline
     @Test
-    public void validateDeadline_ValidDeadline_ReturnString() {
+     void validateDeadline_ValidDeadline_ReturnString() {
         LocalDateTime testDeadline = LocalDateTime.of(2025, 12, 10, 23, 59, 59);
         String validDeadline = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertEquals("", validDeadline);
     }
 
     @Test
-    public void validateDeadline_DeadlineEmpty_ReturnString() {
+     void validateDeadline_DeadlineEmpty_ReturnString() {
         String invalidDeadline = projectManagementService.validateDeadline(null);
         Assertions.assertEquals("Deadline darf nicht leer sein.", invalidDeadline);
     }
 
     @Test
-    public void validateDeadline_DeadlineInThePast_ReturnString() {
+     void validateDeadline_DeadlineInThePast_ReturnString() {
         LocalDateTime testDeadline = LocalDateTime.of(2024, 3, 10, 23, 59, 59);
         String invalidDeadline = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertEquals("Deadline darf nicht in der Vergangenheit liegen.", invalidDeadline);
     }
 
     @Test
-    public void validateDeadline_DeadlineTooFarInFuture_ReturnString() {
+     void validateDeadline_DeadlineTooFarInFuture_ReturnString() {
         LocalDateTime testDeadline = LocalDateTime.of(2999, 12, 10, 23, 59, 59);
         String invalidDeadline = projectManagementService.validateDeadline(testDeadline);
         Assertions.assertEquals("Deadline darf nicht nach dem 31.12.2100 liegen.", invalidDeadline);
