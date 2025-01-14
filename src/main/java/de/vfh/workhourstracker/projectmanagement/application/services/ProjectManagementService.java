@@ -1,13 +1,14 @@
 package de.vfh.workhourstracker.projectmanagement.application.services;
 
+import de.vfh.workhourstracker.projectmanagement.common.ProjectManagementValidationUtils;
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectDescription;
-
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectName;
 import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectCreated;
 import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectUpdated;
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
+import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import de.vfh.workhourstracker.shared.util.EventLogger;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;
@@ -17,8 +18,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import de.vfh.workhourstracker.shared.util.ErrorResponse;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -31,8 +30,14 @@ public class ProjectManagementService {
     private final ProjectRepository projectRepository;
     private final TimeEntryRepository timeEntryRepository;
     EventLogger eventLogger = new EventLogger();
+    private static final String INVALID = "INVALID";
 
-    private static final LocalDateTime MAX_END_TIME = LocalDateTime.of(2100, 12, 31, 23, 59, 59);
+
+    private String generateProjectNotFoundMessage(Long projectId) {
+        return "Project with ID " + projectId + " does not exist in database.";
+    }
+
+
 
     @Autowired
     public ProjectManagementService(ProjectRepository projectRepository, ApplicationEventPublisher eventPublisher, TimeEntryRepository timeEntryRepository) {
@@ -42,34 +47,30 @@ public class ProjectManagementService {
     }
 
     public ResponseEntity<Object> createProject(Long userId, String name, String description, LocalDateTime deadline) {
-        String validName = validateName(name);
-        String validDescription = validateDescription(description);
-        String validDeadline = validateDeadline(deadline);
-
-        if (!validName.isEmpty() || !validDescription.isEmpty() || !validDeadline.isEmpty()) {
-            // Erstelle eine Liste von Fehlern
-            List<ErrorResponse> errors = new ArrayList<>();
-            if (!validName.isEmpty()) {
-                errors.add(new ErrorResponse(validName, "name", "INVALID"));
-            }
-            if (!validDescription.isEmpty()) {
-                errors.add(new ErrorResponse(validDescription, "description", "INVALID"));
-            }
-            if (!validDeadline.isEmpty()) {
-                errors.add(new ErrorResponse(validDeadline, "deadline", "INVALID"));
-            }
-            // Rückgabe der Fehlerantwort
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
+        List<ErrorResponse> validationErrors = validateProjectInputs(name, description, deadline);
+        if (!validationErrors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationErrors);
         }
 
+        // Neues Projekt erstellen
         Project project = new Project(userId, new ProjectName(name), new ProjectDescription(description), new Deadline(deadline));
         project = projectRepository.save(project);
 
-
-        ProjectCreated event = new ProjectCreated(this, project.getUserId(), project.getName(), project.getDescription(), project.getDeadline());
-        eventPublisher.publishEvent(event);
+        // Event veröffentlichen
+        publishProjectCreatedEvent(project);
 
         return ResponseEntity.ok(project);
+    }
+
+    private void publishProjectCreatedEvent(Project project) {
+        ProjectCreated event = new ProjectCreated(
+                this,
+                project.getUserId(),
+                project.getName(),
+                project.getDescription(),
+                project.getDeadline()
+        );
+        eventPublisher.publishEvent(event);
     }
 
     public List<Project> findAllProjects() {
@@ -87,41 +88,52 @@ public class ProjectManagementService {
     public ResponseEntity<Object> updateProject(Long projectId, String name, String description, LocalDateTime deadline) {
         Project existingProject = projectRepository.findById(projectId).orElse(null);
         if (existingProject == null) {
-            eventLogger.logError("Project with ID " + projectId + " does not exist in database.");
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse("Project with ID " + projectId + " does not exist in database.", "projectId", "INVALID"));
+            return createErrorResponse(
+                    generateProjectNotFoundMessage(projectId)
+            );
         }
 
-        String validName = validateName(name);
-        String validDescription = validateDescription(description);
-        String validDeadline = validateDeadline(deadline);
-
-        if (!validName.isEmpty() || !validDescription.isEmpty() || !validDeadline.isEmpty()) {
-            // Erstelle eine Liste von Fehlern
-            List<ErrorResponse> errors = new ArrayList<>();
-            if (!validName.isEmpty()) {
-
-                errors.add(new ErrorResponse(validName, "name", "INVALID"));
-            }
-            if (!validDescription.isEmpty()) {
-                errors.add(new ErrorResponse(validDescription, "description", "INVALID"));
-            }
-            if (!validDeadline.isEmpty()) {
-                errors.add(new ErrorResponse(validDeadline, "deadline", "INVALID"));
-            }
-            // Rückgabe der Fehlerantwort
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
+        List<ErrorResponse> validationErrors = validateProjectInputs(name, description, deadline);
+        if (!validationErrors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationErrors);
         }
 
-        existingProject.setName(new ProjectName(name));
-        existingProject.setDescription(new ProjectDescription(description));
-        existingProject.setDeadline(new Deadline(deadline));
+        updateProjectFields(existingProject, name, description, deadline);
 
         existingProject = projectRepository.save(existingProject);
 
-        ProjectUpdated event = new ProjectUpdated(this, existingProject.getUserId(), existingProject.getName(), existingProject.getDescription(), existingProject.getDeadline());
-        eventPublisher.publishEvent(event);
+        publishProjectUpdatedEvent(existingProject);
 
         return ResponseEntity.ok(existingProject);
+    }
+
+    private List<ErrorResponse> validateProjectInputs(String name, String description, LocalDateTime deadline) {
+        return ProjectManagementValidationUtils.getErrorResponses(name, description, deadline, eventLogger, INVALID);
+    }
+
+
+
+    private void updateProjectFields(Project project, String name, String description, LocalDateTime deadline) {
+        project.setName(new ProjectName(name));
+        project.setDescription(new ProjectDescription(description));
+        project.setDeadline(new Deadline(deadline));
+    }
+
+    private void publishProjectUpdatedEvent(Project project) {
+        ProjectUpdated event = new ProjectUpdated(
+                this,
+                project.getUserId(),
+                project.getName(),
+                project.getDescription(),
+                project.getDeadline()
+        );
+        eventPublisher.publishEvent(event);
+    }
+
+    private ResponseEntity<Object> createErrorResponse(String message) {
+        ErrorResponse errorResponse = new ErrorResponse(message, "projectId", INVALID);
+        eventLogger.logError(message);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse);
     }
 
     public ResponseEntity<Object> deleteProject(Long projectId) {
@@ -130,52 +142,12 @@ public class ProjectManagementService {
             return ResponseEntity.ok().build();
         } else {
 
-            eventLogger.logError("Project with ID " + projectId + " does not exist in database.");
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse("Project with ID " + projectId + " does not exist in database.", "projectId", "INVALID"));
+            eventLogger.logError(generateProjectNotFoundMessage(projectId));
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(generateProjectNotFoundMessage(projectId), "projectId", INVALID));
         }
 
     }
 
-    //region validation
-    public String validateName(String name) {
-        if (name == null || name.isEmpty()) {
-            eventLogger.logWarning("Name darf nicht leer sein.");
-            return "Name darf nicht leer sein.";
-        }
-        if (name.length() > 256) {
-            eventLogger.logWarning("Name ist zu lang.");
-            return "Name ist zu lang.";
-        }
-        return "";
-    }
 
-    public String validateDescription(String description) {
-        if (description == null || description.isEmpty()) {
-            eventLogger.logWarning("Beschreibung darf nicht leer sein.");
-            return "Beschreibung darf nicht leer sein.";
-        }
-        if (description.length() > 1024) {
-            eventLogger.logWarning("Beschreibung ist zu lang.");
-            return "Beschreibung ist zu lang.";
-        }
-        return "";
-    }
 
-    public String validateDeadline(LocalDateTime deadline) {
-        if (deadline == null) {
-            eventLogger.logWarning("Deadline darf nicht leer sein.");
-            return "Deadline darf nicht leer sein.";
-        }
-        if (!LocalDateTime.now().isBefore(deadline)) {
-            eventLogger.logWarning("Deadline darf nicht in der Vergangenheit liegen.");
-            return "Deadline darf nicht in der Vergangenheit liegen.";
-        }
-        if (deadline.isAfter(MAX_END_TIME)) {
-            //TODO: Datum im String durch MAX_END_TIME ersetzen
-            eventLogger.logWarning("Deadline darf nicht nach dem 31.12.2100 liegen.");
-            return "Deadline darf nicht nach dem 31.12.2100 liegen.";
-        }
-        return "";
-    }
-    //endregion
 }

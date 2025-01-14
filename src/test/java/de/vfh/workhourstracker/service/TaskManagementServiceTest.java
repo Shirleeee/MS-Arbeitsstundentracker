@@ -2,8 +2,10 @@ package de.vfh.workhourstracker.service;
 
 import de.vfh.workhourstracker.projectmanagement.application.services.ProjectManagementService;
 import de.vfh.workhourstracker.projectmanagement.application.services.TaskManagementService;
+import de.vfh.workhourstracker.projectmanagement.common.ProjectManagementValidationUtils;
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
+import de.vfh.workhourstracker.shared.util.EventLogger;
 import de.vfh.workhourstracker.timemanagement.application.services.TimeManagementService;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.usermanagement.application.services.UserService;
@@ -83,18 +85,19 @@ import java.time.LocalDateTime;
         Assertions.assertEquals(Duration.ofHours(1).plusMinutes(25).plusSeconds(45), duration);
     }
     //endregion
+    EventLogger eventLogger = new EventLogger();
 
     //region Test validateName
     @Test
      void validateName_ValidateName_ReturnString() {
         String testName = "Test Name";
-        String validName = taskManagementService.validateName(testName);
+        String validName = ProjectManagementValidationUtils.validateName(testName,  eventLogger);
         Assertions.assertEquals("", validName);
     }
 
     @Test
      void validateName_NameEmpty_ReturnString() {
-        String invalidName = taskManagementService.validateName(null);
+        String invalidName = ProjectManagementValidationUtils.validateName(null,  eventLogger);
         Assertions.assertEquals("Name darf nicht leer sein.", invalidName);
     }
 
@@ -103,8 +106,8 @@ import java.time.LocalDateTime;
         String testName = "tooLongTestName Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor " +
                 "invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores " +
                 "et ea rebum. Stet clita kasd gubergren, no sea takimata, Lorem ipsum dolor sit amet, consetetur sadipscing elitr, " ;
-        String invalidName = taskManagementService.validateName(testName);
-        Assertions.assertEquals("Name ist zu lang", invalidName);
+        String invalidName = ProjectManagementValidationUtils.validateName(testName,  eventLogger);
+        Assertions.assertEquals("Name ist zu lang.", invalidName);
     }
     //endregion
 
@@ -112,7 +115,7 @@ import java.time.LocalDateTime;
     @Test
      void validateDescription_ValidDescription_ReturnString() {
         String testDescription = "This is a test description";
-        String validDescription = taskManagementService.validateDescription(testDescription);
+        String validDescription = ProjectManagementValidationUtils.validateDescription(testDescription,  eventLogger);
         Assertions.assertEquals("", validDescription);
     }
 
@@ -128,7 +131,7 @@ import java.time.LocalDateTime;
                 "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est " +
                 "Lorem ipsum dolor sit amet. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, " +
                 "vel illum dolore eu feugiat nulla facilisis a";
-        String invalidDescription = taskManagementService.validateDescription(testDescription);
+        String invalidDescription = ProjectManagementValidationUtils.validateDescription(testDescription,  eventLogger);
         Assertions.assertEquals("Beschreibung ist zu lang.", invalidDescription);
     }
     //endregion
@@ -137,27 +140,27 @@ import java.time.LocalDateTime;
     @Test
      void validateDeadline_ValidDeadline_ReturnString() {
         LocalDateTime testDeadline = LocalDateTime.of(2025, 12, 10, 23, 59, 59);
-        String validDeadline = taskManagementService.validateDeadline(testDeadline);
+        String validDeadline = ProjectManagementValidationUtils.validateDeadline(testDeadline,  eventLogger);
         Assertions.assertEquals("", validDeadline);
     }
 
     @Test
      void validateDeadline_DeadlineEmpty_ReturnString() {
-        String invalidDeadline = taskManagementService.validateDeadline(null);
+        String invalidDeadline = ProjectManagementValidationUtils.validateDeadline(null,  eventLogger);
         Assertions.assertEquals("Deadline darf nicht leer sein.", invalidDeadline);
     }
 
     @Test
      void validateDeadline_DeadlineInThePast_ReturnString() {
         LocalDateTime testDeadline = LocalDateTime.of(2024, 3, 10, 23, 59, 59);
-        String invalidDeadline = taskManagementService.validateDeadline(testDeadline);
-        Assertions.assertEquals("Deadline liegt in der Vergangenheit", invalidDeadline);
+        String invalidDeadline = ProjectManagementValidationUtils.validateDeadline(testDeadline,  eventLogger);
+        Assertions.assertEquals("Deadline darf nicht in der Vergangenheit liegen.", invalidDeadline);
     }
 
     @Test
      void validateDeadline_DeadlineTooFarInFuture_ReturnString() {
         LocalDateTime testDeadline = LocalDateTime.of(2999, 3, 10, 23, 59, 59);
-        String invalidDeadline = taskManagementService.validateDeadline(testDeadline);
+        String invalidDeadline = ProjectManagementValidationUtils.validateDeadline(testDeadline,  eventLogger);
         Assertions.assertEquals("Deadline darf nicht nach dem 31.12.2100 liegen.", invalidDeadline);
     }
     //endregion

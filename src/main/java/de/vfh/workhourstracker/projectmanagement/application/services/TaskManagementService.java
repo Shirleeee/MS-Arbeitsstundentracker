@@ -1,5 +1,6 @@
 package de.vfh.workhourstracker.projectmanagement.application.services;
 
+import de.vfh.workhourstracker.projectmanagement.common.ProjectManagementValidationUtils;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.projectmanagement.domain.task.TaskDescription;
 import de.vfh.workhourstracker.projectmanagement.domain.task.TaskName;
@@ -23,14 +24,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
 public class TaskManagementService {
     private final ApplicationEventPublisher eventPublisher;
     private final TaskRepository taskRepository;
     private final TimeEntryRepository timeEntryRepository;
     EventLogger eventLogger = new EventLogger();
+    private static final String INVALID = "INVALID";
 
-    private static final LocalDateTime MAX_END_TIME = LocalDateTime.of(2100, 12, 31, 23, 59, 59);
+    private String generateTaskNotFoundMessage(Long projectId) {
+        return "Task with ID " + projectId + " does not exist in database.";
+    }
 
     @Autowired
     public TaskManagementService(ApplicationEventPublisher eventPublisher, TaskRepository taskRepository, TimeEntryRepository timeEntryRepository) {
@@ -40,36 +45,34 @@ public class TaskManagementService {
     }
 
     public ResponseEntity<Object> createTask(Long projectId, String name, String description, LocalDateTime deadline) {
-        String validName = validateName(name);
-        String validDescription = validateDescription(description);
-        String validDeadline = validateDeadline(deadline);
-
-
-        if (!validName.isEmpty() || !validDescription.isEmpty() || !validDeadline.isEmpty()) {
-
-            List<ErrorResponse> errors = new ArrayList<>();
-            if (!validName.isEmpty()) {
-                errors.add(new ErrorResponse(validName, "name", "INVALID"));
-            }
-            if (!validDescription.isEmpty()) {
-                errors.add(new ErrorResponse(validDescription, "description", "INVALID"));
-            }
-            if (!validDeadline.isEmpty()) {
-                errors.add(new ErrorResponse(validDeadline, "deadline", "INVALID"));
-            }
-            // Rückgabe der Fehlerantwort
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
+        List<ErrorResponse> validationErrors = validateTaskInputs(name, description, deadline);
+        if (!validationErrors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationErrors);
         }
 
+        // Neues Task erstellen
         Task task = new Task(projectId, new TaskName(name), new TaskDescription(description), new Deadline(deadline));
         task = taskRepository.save(task);
 
-        TaskCreated event = new TaskCreated(this, task.getTask_id(), task.getProjectId(), task.getName(), task.getDescription(), task.getDeadline());
-        eventPublisher.publishEvent(event);
+        // Event veröffentlichen
+        publishTaskCreatedEvent(task);
 
         return ResponseEntity.ok(task);
 
     }
+
+    private void publishTaskCreatedEvent(Task task) {
+        TaskCreated event = new TaskCreated(
+                this,
+                task.getTask_id(),
+                task.getProjectId(),
+                task.getName(),
+                task.getDescription(),
+                task.getDeadline()
+        );
+        eventPublisher.publishEvent(event);
+    }
+
 
     public List<Task> findAllTasks() {
         return taskRepository.findAll();
@@ -85,44 +88,51 @@ public class TaskManagementService {
     public ResponseEntity<Object> updateTask(Long taskId, String name, String description, LocalDateTime deadline) {
         Task existingTask = taskRepository.findById(taskId).orElse(null);
         if (existingTask == null) {
-            eventLogger.logError("Task with ID " + taskId + " does not exist in database.");
+            eventLogger.logError(generateTaskNotFoundMessage(taskId));
             return null;
         }
 
-        String validName = validateName(name);
-        String validDescription = validateDescription(description);
-        String validDeadline = validateDeadline(deadline);
-
-        if (!validName.isEmpty() || !validDescription.isEmpty() || !validDeadline.isEmpty()) {
-            eventLogger.logError("Task could not be updated because of invalid input.");
-
-            List<ErrorResponse> errors = new ArrayList<>();
-            if (!validName.isEmpty()) {
-
-                errors.add(new ErrorResponse(validName, "name", "INVALID"));
-            }
-            if (!validDescription.isEmpty()) {
-                errors.add(new ErrorResponse(validDescription, "description", "INVALID"));
-            }
-            if (!validDeadline.isEmpty()) {
-                errors.add(new ErrorResponse(validDeadline, "deadline", "INVALID"));
-            }
-            // Rückgabe der Fehlerantwort
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
+        // Validierung der Eingabedaten
+        List<ErrorResponse> validationErrors = validateTaskInputs(name, description, deadline);
+        if (!validationErrors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationErrors);
         }
-        existingTask.setName(new TaskName(name));
-        existingTask.setDescription(new TaskDescription(description));
-        existingTask.setDeadline(new Deadline(deadline));
 
+        // Projekt aktualisieren
+        updateTaskFields(existingTask, name, description, deadline);
+
+        // Änderungen speichern
         existingTask = taskRepository.save(existingTask);
 
-        TaskUpdated event = new TaskUpdated(this, existingTask.getTask_id(), existingTask.getProjectId(), existingTask.getName(), existingTask.getDescription(), existingTask.getDeadline());
-        eventPublisher.publishEvent(event);
+        // Event veröffentlichen
+        publishTaskUpdatedEvent(existingTask);
 
         return ResponseEntity.ok(existingTask);
 
     }
 
+    private List<ErrorResponse> validateTaskInputs(String name, String description, LocalDateTime deadline) {
+        return ProjectManagementValidationUtils.getErrorResponses(name, description, deadline, eventLogger, INVALID);
+    }
+
+    private void updateTaskFields(Task task, String name, String description, LocalDateTime deadline) {
+        task.setName(new TaskName(name));
+        task.setDescription(new TaskDescription(description));
+        task.setDeadline(new Deadline(deadline));
+    }
+
+    private void publishTaskUpdatedEvent(Task task) {
+
+        TaskUpdated event = new TaskUpdated(
+                this,
+                task.getTask_id(),
+                task.getProjectId(),
+                task.getName(),
+                task.getDescription(),
+                task.getDeadline()
+        );
+        eventPublisher.publishEvent(event);
+    }
 
     public ResponseEntity<Object> deleteTask(Long taskId) {
         if (taskRepository.findById(taskId).isPresent()) {
@@ -130,54 +140,16 @@ public class TaskManagementService {
             return ResponseEntity.ok().build();
         } else {
 
-            eventLogger.logError("Task with ID " + taskId + " does not exist in database.");
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse("Task with ID " + taskId + " does not exist in database.", "taskId", "INVALID"));
+            eventLogger.logError(generateTaskNotFoundMessage(taskId));
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(generateTaskNotFoundMessage(taskId), "taskId", INVALID));
         }
 
     }
+
     //region validation
-    public String validateName(String name) {
-        if (name == null || name.isEmpty()) {
-            eventLogger.logWarning("Name darf nicht leer sein.");
-            return "Name darf nicht leer sein.";
-        }
-        if (name.length() > 256) {
-            eventLogger.logWarning("Name ist zu lang");
-            return "Name ist zu lang";
-        }
-        return "";
-    }
 
-    public String validateDescription(String description) {
-        //TODO: Darf die Description nicht leer sein?
-        if (description == null || description.isEmpty()) {
-            eventLogger.logWarning("Beschreibung darf nicht leer sein.");
-            return "Beschreibung darf nicht leer sein.";
-        }
-        if (description.length() > 1024) {
-            eventLogger.logWarning("Beschreibung ist zu lang.");
-            return "Beschreibung ist zu lang.";
-        }
-        return "";
-    }
 
-    public String validateDeadline(LocalDateTime deadline) {
-        if (deadline == null) {
-            eventLogger.logWarning("Deadline darf nicht leer sein.");
-            return "Deadline darf nicht leer sein.";
-        }
-        if (!LocalDateTime.now().isBefore(deadline)) {
-            eventLogger.logWarning("Deadline liegt in der Vergangenheit");
-            return "Deadline liegt in der Vergangenheit";
-        }
-        if (deadline.isAfter(MAX_END_TIME)) {
-            //TODO: Datum im String durch MAX_END_TIME ersetzen
-            eventLogger.logWarning("Deadline darf nicht nach dem 31.12.2100 liegen.");
-            return "Deadline darf nicht nach dem 31.12.2100 liegen.";
-        }
-        return "";
-    }
-    //endregion
+//endregion
 }
 
 
