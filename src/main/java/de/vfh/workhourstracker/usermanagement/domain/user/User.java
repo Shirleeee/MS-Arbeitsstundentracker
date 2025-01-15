@@ -22,8 +22,6 @@ public class User {
     @Column(name = "mail_address")
     private MailAddress mailAddress;
 
-    //TODO: brauchen wir ein Passwort?
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

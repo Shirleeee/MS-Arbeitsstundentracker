@@ -113,10 +113,6 @@ public class TimeManagementService {
         return timeEntryRepository.findAll();
     }
 
-    public void deleteById(Long id) {
-        timeEntryRepository.deleteById(id);
-    }
-
     private Duration calculateDuration(LocalDateTime startTime, LocalDateTime endTime) {
         return Duration.between(startTime, endTime);
     }

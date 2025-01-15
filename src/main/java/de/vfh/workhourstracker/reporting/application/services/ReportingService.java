@@ -1,7 +1,6 @@
 package de.vfh.workhourstracker.reporting.application.services;
 
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
-import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.TaskRepository;
@@ -12,7 +11,6 @@ import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import de.vfh.workhourstracker.shared.util.EventLogger;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
-import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -199,7 +197,7 @@ public class ReportingService {
         }
 
         // Report speichern
-        Report report = new Report(new UserId(userId), new ProjectId(projectId));
+        Report report = new Report(userId, projectId);
         report = reportRepository.save(report);
 
         // Event veröffentlichen
@@ -217,9 +215,5 @@ public class ReportingService {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body(new ErrorResponse("Report could not be created.", "report", "INVALID"));
         }
-    }
-
-    public void delete(Report report) {
-        reportRepository.delete(report);
     }
 }
