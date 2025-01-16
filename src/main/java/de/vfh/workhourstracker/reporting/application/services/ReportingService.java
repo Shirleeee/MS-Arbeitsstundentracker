@@ -1,7 +1,6 @@
 package de.vfh.workhourstracker.reporting.application.services;
 
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
-import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.TaskRepository;
@@ -13,7 +12,6 @@ import de.vfh.workhourstracker.shared.util.EventLogger;
 import de.vfh.workhourstracker.shared.util.ResourceNotFoundException;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
-import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
@@ -36,12 +34,13 @@ public class ReportingService {
     private final ReportGeneratorService reportGeneratorService;
 
     @Autowired
-    public ReportingService(ApplicationEventPublisher eventPublisher, ReportRepository reportRepository, ProjectRepository projectRepository, TimeEntryRepository timeEntryRepository, TaskRepository taskRepository, ReportGeneratorService reportGeneratorService) {
+    public ReportingService(ApplicationEventPublisher eventPublisher, ReportRepository reportRepository, ProjectRepository projectRepository, TimeEntryRepository timeEntryRepository, TaskRepository taskRepository, ReportGeneratorService reportGeneratorService, ReportGeneratorService reportGeneratorService1) {
         this.eventPublisher = eventPublisher;
         this.reportRepository = reportRepository;
         this.projectRepository = projectRepository;
         this.timeEntryRepository = timeEntryRepository;
         this.taskRepository = taskRepository;
+        this.reportGeneratorService = reportGeneratorService1;
     }
 
     public ResponseEntity<?> createReport(Long userId, Long projectId) {
@@ -95,7 +94,7 @@ public class ReportingService {
 
 
     private Report saveReport(Long userId, Long projectId) {
-        Report report = new Report(new UserId(userId), new ProjectId(projectId));
+        Report report = new Report(userId, projectId);
         return reportRepository.save(report);
     }
 
