@@ -2,7 +2,6 @@ package de.vfh.workhourstracker.reporting.application.services;
 
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
-import de.vfh.workhourstracker.reporting.infrastructure.repositories.ReportRepository;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -25,7 +24,6 @@ public class ReportGeneratorService {
 
 
     public byte[] createPdfReport(Long userId, List<Project> projects, List<TimeEntry> timeEntries, List<Task> tasks) throws IOException {
-        // Initialisiere das PDF-Dokument
         PDDocument document = new PDDocument();
         PDPage page = new PDPage();
 
@@ -64,9 +62,10 @@ public class ReportGeneratorService {
         return outputStream.toByteArray();
     }
 
-    // Hilfsmethode zur Sanitierung von Text
-    private String sanitize(Object input) {
-        return input != null ? input.toString().replace("\n", " ") : "N/A";
+    // Hilfsmethode zur Bereinigung von Leerzeichen von Text
+    public String sanitize(Object input) {
+        return input != null ? input.toString().replaceAll("[\r\n]+", " ") : "N/A";
+
     }
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
@@ -81,12 +80,12 @@ public class ReportGeneratorService {
 
     // Verbesserte Methode für Zeilenumbrüche und Seitenwechsel
     private float writeTextWithCheck(PDDocument document, List<PDPageContentStream> contentStreams, String text, float x, float y) throws IOException {
-        PDPageContentStream contentStream = contentStreams.getLast(); // Hole den letzten Stream
-        if (y < 100) { // Wenig Platz auf Seite
-            contentStream.close(); // Alten Stream schließen
-            PDPage newPage = new PDPage(PDRectangle.A4);// Neue Seite erstellen
+        PDPageContentStream contentStream = contentStreams.getLast();
+        if (y < 100) { // Wenn der Text zu nah am unteren Rand ist
+            contentStream.close();
+            PDPage newPage = new PDPage(PDRectangle.A4);
             document.addPage(newPage);
-            contentStream = new PDPageContentStream(document, newPage); // Neuer Stream
+            contentStream = new PDPageContentStream(document, newPage);
             contentStreams.add(contentStream); // Neuen Stream zur Liste hinzufügen
             y = 750; // Neustart auf neuer Seite
         }

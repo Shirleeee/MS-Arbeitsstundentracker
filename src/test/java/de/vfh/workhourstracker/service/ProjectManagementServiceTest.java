@@ -4,6 +4,7 @@ import de.vfh.workhourstracker.projectmanagement.application.services.ProjectMan
 import de.vfh.workhourstracker.projectmanagement.application.services.TaskManagementService;
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
+import de.vfh.workhourstracker.shared.util.EventLogger;
 import de.vfh.workhourstracker.timemanagement.application.services.TimeManagementService;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.usermanagement.application.services.UserService;
@@ -49,7 +50,10 @@ public class ProjectManagementServiceTest {
         Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
         Assertions.assertNotNull(project);
 
-        project = (Project) projectManagementService.updateProject(project.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 1, 15, 19, 0, 0)).getBody();
+        project = (Project) projectManagementService.updateProject(project.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 11, 15, 19, 0, 0)).getBody();
+        EventLogger eventLogger = new EventLogger();
+        eventLogger.logWarning( "Project updated: " + project);
+
         Assertions.assertNotNull(project);
     }
     //endregion

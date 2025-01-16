@@ -26,15 +26,42 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 public class ReportGeneratorServiceTest {
 
     @Autowired
     private ReportGeneratorService reportGeneratorService;
+    //region testSanitize
+    @Test
+    void testSanitize() {
 
+
+        // Test with null input
+        String result = reportGeneratorService.sanitize(null);
+        assertEquals("N/A", result);
+
+        // Test with normal string
+        result = reportGeneratorService.sanitize("Hello World");
+        assertEquals("Hello World", result);
+
+        // Test with string containing newline
+        result = reportGeneratorService.sanitize("Hello\nWorld");
+        assertEquals("Hello World", result);
+
+        // Test with string containing carriage return
+        result = reportGeneratorService.sanitize("Hello\rWorld");
+        assertEquals("Hello World", result);
+
+        // Test with string containing both newline and carriage return
+        result = reportGeneratorService.sanitize("Hello\r\nWorld");
+        assertEquals("Hello World", result);
+    }
+
+
+    //endregion
     //region testCreatePdfReport
     @Test
     public void testCreatePdfReport() throws IOException {

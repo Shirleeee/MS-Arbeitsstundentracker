@@ -172,7 +172,6 @@ public class ProjectManagementService {
             return "Deadline darf nicht in der Vergangenheit liegen.";
         }
         if (deadline.isAfter(MAX_END_TIME)) {
-            //TODO: Datum im String durch MAX_END_TIME ersetzen
             eventLogger.logWarning("Deadline darf nicht nach dem 31.12.2100 liegen.");
             return "Deadline darf nicht nach dem 31.12.2100 liegen.";
         }
