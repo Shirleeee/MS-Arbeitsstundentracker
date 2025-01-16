@@ -42,7 +42,6 @@ public class ReportingService {
         this.projectRepository = projectRepository;
         this.timeEntryRepository = timeEntryRepository;
         this.taskRepository = taskRepository;
-        this.reportGeneratorService = reportGeneratorService;
     }
 
     public ResponseEntity<?> createReport(Long userId, Long projectId) {

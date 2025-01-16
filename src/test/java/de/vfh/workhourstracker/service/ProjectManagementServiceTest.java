@@ -4,7 +4,7 @@ import de.vfh.workhourstracker.projectmanagement.application.services.ProjectMan
 import de.vfh.workhourstracker.projectmanagement.application.services.TaskManagementService;
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
-import de.vfh.workhourstracker.shared.util.EventLogger;
+import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
 import de.vfh.workhourstracker.timemanagement.application.services.TimeManagementService;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.usermanagement.application.services.UserService;
@@ -29,6 +29,8 @@ public class ProjectManagementServiceTest {
     private TaskManagementService taskManagementService;
     @Autowired
     private TimeManagementService timeManagementService;
+    @Autowired
+    private ProjectRepository projectRepository;
 
     //region Test createProject
     @Test
@@ -47,14 +49,25 @@ public class ProjectManagementServiceTest {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 3, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+
+        project = (Project) projectManagementService.updateProject(project.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+    }
+    //endregion
+
+    //region Test deleteProject
+    @Test
+    public void deleteProject() {
+        User user = userService.createUser("John Doe", "john.doe@mail.de");
+        Assertions.assertNotNull(user);
+
         Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
         Assertions.assertNotNull(project);
 
-        project = (Project) projectManagementService.updateProject(project.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 11, 15, 19, 0, 0)).getBody();
-        EventLogger eventLogger = new EventLogger();
-        eventLogger.logWarning( "Project updated: " + project);
-
-        Assertions.assertNotNull(project);
+        projectManagementService.deleteProject(project.getId());
+        Assertions.assertFalse(projectRepository.findById(project.getId()).isPresent());
     }
     //endregion
 
@@ -81,85 +94,6 @@ public class ProjectManagementServiceTest {
 
         Duration duration = projectManagementService.getTotalDurationOfProject(project.getId());
         Assertions.assertEquals(Duration.ofHours(1).plusMinutes(25).plusSeconds(45), duration);
-    }
-    //endregion
-
-    //region Test validateName
-    @Test
-    public void validateName_ValidName_ReturnString() {
-        String testName = "Test Name";
-        String validName = projectManagementService.validateName(testName);
-        Assertions.assertEquals("", validName);
-    }
-
-    @Test
-    public void validateName_NameEmpty_ReturnString() {
-        String testName = "";
-        String invalidName = projectManagementService.validateName(testName);
-        Assertions.assertEquals("Name darf nicht leer sein.", invalidName);
-    }
-
-    @Test
-    public void validateName_NameToLong_ReturnString() {
-        String testName = "tooLongTestName Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor " +
-                "invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores " +
-                "et ea rebum. Stet clita kasd gubergren, no sea takimata ";
-        String invalidName = projectManagementService.validateName(testName);
-        Assertions.assertEquals("Name ist zu lang.", invalidName);
-    }
-    //endregion
-
-    //region Test validateDescription
-    @Test
-    public void validateDescription_ValidDescription_ReturnString() {
-        String testDescription = "This is a test description";
-        String validDescription = projectManagementService.validateDescription(testDescription);
-        Assertions.assertEquals("", validDescription);
-    }
-
-    @Test
-    public void validateDescription_DescriptionToLong_ReturnString() {
-        String testDescription = "This is a way too long test description. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, " +
-                "sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et " +
-                "accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor " +
-                "sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore " +
-                "et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita " +
-                "kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur " +
-                "sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. " +
-                "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est " +
-                "Lorem ipsum dolor sit amet. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, " +
-                "vel illum dolore eu feugiat nulla facilisis a";
-        String invalidDescription = projectManagementService.validateDescription(testDescription);
-        Assertions.assertEquals("Beschreibung ist zu lang.", invalidDescription);
-    }
-    //endregion
-
-    //region Test validateDeadline
-    @Test
-    public void validateDeadline_ValidDeadline_ReturnString() {
-        LocalDateTime testDeadline = LocalDateTime.of(2025, 12, 10, 23, 59, 59);
-        String validDeadline = projectManagementService.validateDeadline(testDeadline);
-        Assertions.assertEquals("", validDeadline);
-    }
-
-    @Test
-    public void validateDeadline_DeadlineEmpty_ReturnString() {
-        String invalidDeadline = projectManagementService.validateDeadline(null);
-        Assertions.assertEquals("Deadline darf nicht leer sein.", invalidDeadline);
-    }
-
-    @Test
-    public void validateDeadline_DeadlineInThePast_ReturnString() {
-        LocalDateTime testDeadline = LocalDateTime.of(2024, 3, 10, 23, 59, 59);
-        String invalidDeadline = projectManagementService.validateDeadline(testDeadline);
-        Assertions.assertEquals("Deadline darf nicht in der Vergangenheit liegen.", invalidDeadline);
-    }
-
-    @Test
-    public void validateDeadline_DeadlineTooFarInFuture_ReturnString() {
-        LocalDateTime testDeadline = LocalDateTime.of(2999, 12, 10, 23, 59, 59);
-        String invalidDeadline = projectManagementService.validateDeadline(testDeadline);
-        Assertions.assertEquals("Deadline darf nicht nach dem 31.12.2100 liegen.", invalidDeadline);
     }
     //endregion
 }
