@@ -6,6 +6,7 @@ import de.vfh.workhourstracker.projectmanagement.common.ProjectManagementValidat
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.shared.util.EventLogger;
+import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
 import de.vfh.workhourstracker.timemanagement.application.services.TimeManagementService;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.usermanagement.application.services.UserService;
@@ -19,7 +20,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @SpringBootTest
- class ProjectManagementServiceTest {
+public class ProjectManagementServiceTest {
 
     @Autowired
     private ProjectManagementService projectManagementService;
@@ -30,10 +31,12 @@ import java.time.LocalDateTime;
     private TaskManagementService taskManagementService;
     @Autowired
     private TimeManagementService timeManagementService;
+    @Autowired
+    private ProjectRepository projectRepository;
 
     //region Test createProject
     @Test
-     void createProject_ValidInput_ReturnProject() {
+    public void createProject_ValidInput_ReturnProject() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -48,17 +51,31 @@ import java.time.LocalDateTime;
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 3, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+
+        project = (Project) projectManagementService.updateProject(project.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+    }
+    //endregion
+
+    //region Test deleteProject
+    @Test
+    public void deleteProject() {
+        User user = userService.createUser("John Doe", "john.doe@mail.de");
+        Assertions.assertNotNull(user);
+
         Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
         Assertions.assertNotNull(project);
 
-        project = (Project) projectManagementService.updateProject(project.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 1, 15, 19, 0, 0)).getBody();
-        Assertions.assertNotNull(project);
+        projectManagementService.deleteProject(project.getId());
+        Assertions.assertFalse(projectRepository.findById(project.getId()).isPresent());
     }
     //endregion
 
     //region Test getTotalDurationOfProject
     @Test
-     void getTotalDurationOfProject_ValidInput_ReturnDurationOfProject() {
+    public void getTotalDurationOfProject_ValidInput_ReturnDurationOfProject() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 

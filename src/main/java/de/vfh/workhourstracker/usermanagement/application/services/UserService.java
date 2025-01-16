@@ -40,10 +40,6 @@ public class UserService {
         return user;
     }
 
-    public void deleteById(Long id) {
-        userRepository.deleteById(id);
-    }
-
     //region validation
     public String validateName(String name) {
         if (name == null || name.isEmpty()) {

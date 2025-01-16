@@ -9,6 +9,7 @@ import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeTrackingEnded;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.events.TimeTrackingStarted;
 import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
+import de.vfh.workhourstracker.shared.util.EventLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -115,7 +116,6 @@ public class TimeManagementService {
     public List<TimeEntry> findAllTimeEntries() {
         return timeEntryRepository.findAll();
     }
-
 
     private Duration calculateDuration(LocalDateTime startTime, LocalDateTime endTime) {
         return Duration.between(startTime, endTime);

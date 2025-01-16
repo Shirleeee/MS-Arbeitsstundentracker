@@ -1,14 +1,15 @@
 package de.vfh.workhourstracker.projectmanagement.application.services;
 
-import de.vfh.workhourstracker.projectmanagement.common.ProjectManagementValidationUtils;
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectDescription;
+
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectName;
 import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectCreated;
+import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectDeleted;
 import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectUpdated;
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
-import de.vfh.workhourstracker.shared.util.ErrorResponse;
+import de.vfh.workhourstracker.projectmanagement.utils.ValidationUtils;
 import de.vfh.workhourstracker.shared.util.EventLogger;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;
@@ -19,9 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import de.vfh.workhourstracker.shared.util.ErrorResponse;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,11 +35,7 @@ public class ProjectManagementService {
     private static final String INVALID = "INVALID";
 
 
-    private String generateProjectNotFoundMessage(Long projectId) {
-        return "Project with ID " + projectId + " does not exist in database.";
-    }
-
-
+    private static final String PROJECT_NOT_FOUND_MESSAGE = "Project with ID %s does not exist in database.";
 
     @Autowired
     public ProjectManagementService(ProjectRepository projectRepository, ApplicationEventPublisher eventPublisher, TimeEntryRepository timeEntryRepository) {
@@ -46,31 +44,20 @@ public class ProjectManagementService {
         this.timeEntryRepository = timeEntryRepository;
     }
 
-    public ResponseEntity<Object> createProject(Long userId, String name, String description, LocalDateTime deadline) {
-        List<ErrorResponse> validationErrors = validateProjectInputs(name, description, deadline);
-        if (!validationErrors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationErrors);
+    public ResponseEntity<?> createProject(Long userId, String name, String description, LocalDateTime deadline) {
+        ResponseEntity<?> validationResponse = ValidationUtils.validateObject(name, description, deadline);
+        if (validationResponse != null) {
+            return validationResponse;
         }
 
-        // Neues Projekt erstellen
         Project project = new Project(userId, new ProjectName(name), new ProjectDescription(description), new Deadline(deadline));
         project = projectRepository.save(project);
 
-        // Event veröffentlichen
-        publishProjectCreatedEvent(project);
+
+        ProjectCreated event = new ProjectCreated(this, project.getUserId(), project.getName(), project.getDescription(), project.getDeadline());
+        eventPublisher.publishEvent(event);
 
         return ResponseEntity.ok(project);
-    }
-
-    private void publishProjectCreatedEvent(Project project) {
-        ProjectCreated event = new ProjectCreated(
-                this,
-                project.getUserId(),
-                project.getName(),
-                project.getDescription(),
-                project.getDeadline()
-        );
-        eventPublisher.publishEvent(event);
     }
 
     public List<Project> findAllProjects() {
@@ -88,66 +75,38 @@ public class ProjectManagementService {
     public ResponseEntity<Object> updateProject(Long projectId, String name, String description, LocalDateTime deadline) {
         Project existingProject = projectRepository.findById(projectId).orElse(null);
         if (existingProject == null) {
-            return createErrorResponse(
-                    generateProjectNotFoundMessage(projectId)
-            );
+            eventLogger.logError(String.format(PROJECT_NOT_FOUND_MESSAGE, projectId));
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(String.format(PROJECT_NOT_FOUND_MESSAGE, projectId), "projectId", "INVALID"));
         }
 
-        List<ErrorResponse> validationErrors = validateProjectInputs(name, description, deadline);
-        if (!validationErrors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationErrors);
+        ResponseEntity<?> validationResponse = ValidationUtils.validateObject(name, description, deadline);
+        if (validationResponse != null) {
+            return validationResponse;
         }
 
-        updateProjectFields(existingProject, name, description, deadline);
+        existingProject.setName(new ProjectName(name));
+        existingProject.setDescription(new ProjectDescription(description));
+        existingProject.setDeadline(new Deadline(deadline));
 
         existingProject = projectRepository.save(existingProject);
 
-        publishProjectUpdatedEvent(existingProject);
+        ProjectUpdated event = new ProjectUpdated(this, existingProject.getUserId(), existingProject.getName(), existingProject.getDescription(), existingProject.getDeadline());
+        eventPublisher.publishEvent(event);
 
         return ResponseEntity.ok(existingProject);
     }
 
-    private List<ErrorResponse> validateProjectInputs(String name, String description, LocalDateTime deadline) {
-        return ProjectManagementValidationUtils.getErrorResponses(name, description, deadline, eventLogger, INVALID);
-    }
-
-
-
-    private void updateProjectFields(Project project, String name, String description, LocalDateTime deadline) {
-        project.setName(new ProjectName(name));
-        project.setDescription(new ProjectDescription(description));
-        project.setDeadline(new Deadline(deadline));
-    }
-
-    private void publishProjectUpdatedEvent(Project project) {
-        ProjectUpdated event = new ProjectUpdated(
-                this,
-                project.getUserId(),
-                project.getName(),
-                project.getDescription(),
-                project.getDeadline()
-        );
-        eventPublisher.publishEvent(event);
-    }
-
-    private ResponseEntity<Object> createErrorResponse(String message) {
-        ErrorResponse errorResponse = new ErrorResponse(message, "projectId", INVALID);
-        eventLogger.logError(message);
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse);
-    }
-
-    public ResponseEntity<Object> deleteProject(Long projectId) {
+    public ResponseEntity<?> deleteProject(Long projectId) {
         if (projectRepository.findById(projectId).isPresent()) {
             projectRepository.deleteById(projectId);
+
+            ProjectDeleted event = new ProjectDeleted(this, projectId);
+            eventPublisher.publishEvent(event);
+
             return ResponseEntity.ok().build();
         } else {
-
-            eventLogger.logError(generateProjectNotFoundMessage(projectId));
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(generateProjectNotFoundMessage(projectId), "projectId", INVALID));
+            eventLogger.logError(String.format(PROJECT_NOT_FOUND_MESSAGE, projectId));
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(String.format(PROJECT_NOT_FOUND_MESSAGE, projectId), "projectId", "INVALID"));
         }
-
     }
-
-
-
 }

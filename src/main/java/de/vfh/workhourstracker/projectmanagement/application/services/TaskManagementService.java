@@ -5,9 +5,11 @@ import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.projectmanagement.domain.task.TaskDescription;
 import de.vfh.workhourstracker.projectmanagement.domain.task.TaskName;
 import de.vfh.workhourstracker.projectmanagement.domain.task.events.TaskCreated;
+import de.vfh.workhourstracker.projectmanagement.domain.task.events.TaskDeleted;
 import de.vfh.workhourstracker.projectmanagement.domain.task.events.TaskUpdated;
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.TaskRepository;
+import de.vfh.workhourstracker.projectmanagement.utils.ValidationUtils;
 import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import de.vfh.workhourstracker.shared.util.EventLogger;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
@@ -33,9 +35,7 @@ public class TaskManagementService {
     EventLogger eventLogger = new EventLogger();
     private static final String INVALID = "INVALID";
 
-    private String generateTaskNotFoundMessage(Long projectId) {
-        return "Task with ID " + projectId + " does not exist in database.";
-    }
+    private static final String TASK_NOT_FOUND_MESSAGE = "Task with ID %s does not exist in database.";
 
     @Autowired
     public TaskManagementService(ApplicationEventPublisher eventPublisher, TaskRepository taskRepository, TimeEntryRepository timeEntryRepository) {
@@ -44,35 +44,21 @@ public class TaskManagementService {
         this.timeEntryRepository = timeEntryRepository;
     }
 
-    public ResponseEntity<Object> createTask(Long projectId, String name, String description, LocalDateTime deadline) {
-        List<ErrorResponse> validationErrors = validateTaskInputs(name, description, deadline);
-        if (!validationErrors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationErrors);
+    public ResponseEntity<?> createTask(Long projectId, String name, String description, LocalDateTime deadline) {
+        ResponseEntity<?> validationResponse = ValidationUtils.validateObject(name, description, deadline);
+        if (validationResponse != null) {
+            return validationResponse;
         }
 
-        // Neues Task erstellen
         Task task = new Task(projectId, new TaskName(name), new TaskDescription(description), new Deadline(deadline));
         task = taskRepository.save(task);
 
-        // Event veröffentlichen
-        publishTaskCreatedEvent(task);
+        TaskCreated event = new TaskCreated(this, task.getTask_id(), task.getProjectId(), task.getName(), task.getDescription(), task.getDeadline());
+        eventPublisher.publishEvent(event);
 
         return ResponseEntity.ok(task);
 
     }
-
-    private void publishTaskCreatedEvent(Task task) {
-        TaskCreated event = new TaskCreated(
-                this,
-                task.getTask_id(),
-                task.getProjectId(),
-                task.getName(),
-                task.getDescription(),
-                task.getDeadline()
-        );
-        eventPublisher.publishEvent(event);
-    }
-
 
     public List<Task> findAllTasks() {
         return taskRepository.findAll();
@@ -85,71 +71,44 @@ public class TaskManagementService {
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
-    public ResponseEntity<Object> updateTask(Long taskId, String name, String description, LocalDateTime deadline) {
+    public ResponseEntity<?> updateTask(Long taskId, String name, String description, LocalDateTime deadline) {
         Task existingTask = taskRepository.findById(taskId).orElse(null);
         if (existingTask == null) {
-            eventLogger.logError(generateTaskNotFoundMessage(taskId));
+            eventLogger.logError(String.format(TASK_NOT_FOUND_MESSAGE, taskId));
             return null;
         }
 
-        // Validierung der Eingabedaten
-        List<ErrorResponse> validationErrors = validateTaskInputs(name, description, deadline);
-        if (!validationErrors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationErrors);
+        ResponseEntity<?> validationResponse = ValidationUtils.validateObject(name, description, deadline);
+        if (validationResponse != null) {
+            return validationResponse;
         }
 
-        // Projekt aktualisieren
-        updateTaskFields(existingTask, name, description, deadline);
+        existingTask.setName(new TaskName(name));
+        existingTask.setDescription(new TaskDescription(description));
+        existingTask.setDeadline(new Deadline(deadline));
 
-        // Änderungen speichern
         existingTask = taskRepository.save(existingTask);
 
-        // Event veröffentlichen
-        publishTaskUpdatedEvent(existingTask);
+        TaskUpdated event = new TaskUpdated(this, existingTask.getTask_id(), existingTask.getProjectId(), existingTask.getName(), existingTask.getDescription(), existingTask.getDeadline());
+        eventPublisher.publishEvent(event);
 
         return ResponseEntity.ok(existingTask);
-
     }
 
-    private List<ErrorResponse> validateTaskInputs(String name, String description, LocalDateTime deadline) {
-        return ProjectManagementValidationUtils.getErrorResponses(name, description, deadline, eventLogger, INVALID);
-    }
-
-    private void updateTaskFields(Task task, String name, String description, LocalDateTime deadline) {
-        task.setName(new TaskName(name));
-        task.setDescription(new TaskDescription(description));
-        task.setDeadline(new Deadline(deadline));
-    }
-
-    private void publishTaskUpdatedEvent(Task task) {
-
-        TaskUpdated event = new TaskUpdated(
-                this,
-                task.getTask_id(),
-                task.getProjectId(),
-                task.getName(),
-                task.getDescription(),
-                task.getDeadline()
-        );
-        eventPublisher.publishEvent(event);
-    }
-
-    public ResponseEntity<Object> deleteTask(Long taskId) {
+    public ResponseEntity<?> deleteTask(Long taskId) {
         if (taskRepository.findById(taskId).isPresent()) {
             taskRepository.deleteById(taskId);
+
+            TaskDeleted event = new TaskDeleted(this, taskId);
+            eventPublisher.publishEvent(event);
+
             return ResponseEntity.ok().build();
         } else {
-
-            eventLogger.logError(generateTaskNotFoundMessage(taskId));
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(generateTaskNotFoundMessage(taskId), "taskId", INVALID));
+            eventLogger.logError(String.format(TASK_NOT_FOUND_MESSAGE, taskId));
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(String.format(TASK_NOT_FOUND_MESSAGE, taskId), "taskId", "INVALID"));
         }
 
     }
-
-    //region validation
-
-
-//endregion
 }
 
 

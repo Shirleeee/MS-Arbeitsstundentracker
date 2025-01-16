@@ -1,7 +1,5 @@
 package de.vfh.workhourstracker.reporting.domain.report;
 
-import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
-import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,19 +14,17 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class Report {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(insertable = false, updatable = false)
     private Long id;
 
-
     @Column(name = "user_id")
-    private UserId userId;
+    private Long userId;
 
     @Column(name = "proj_id")
-    private ProjectId projId;
+    private Long projId;
 
     @CreatedDate
     @Column(name = "created_at")
@@ -38,7 +34,7 @@ public class Report {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Report(UserId userId, ProjectId projId) {
+    public Report(Long userId, Long projId) {
         this.userId = userId;
         this.projId = projId;
     }

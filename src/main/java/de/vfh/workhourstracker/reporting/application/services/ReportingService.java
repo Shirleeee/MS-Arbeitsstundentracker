@@ -1,7 +1,6 @@
 package de.vfh.workhourstracker.reporting.application.services;
 
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
-import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectId;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.TaskRepository;
@@ -10,10 +9,14 @@ import de.vfh.workhourstracker.reporting.domain.report.events.ReportCreated;
 import de.vfh.workhourstracker.reporting.infrastructure.repositories.ReportRepository;
 import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import de.vfh.workhourstracker.shared.util.EventLogger;
-import de.vfh.workhourstracker.shared.util.ResourceNotFoundException;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
-import de.vfh.workhourstracker.usermanagement.domain.user.UserId;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
@@ -21,8 +24,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class ReportingService {

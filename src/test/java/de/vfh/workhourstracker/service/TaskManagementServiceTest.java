@@ -2,10 +2,8 @@ package de.vfh.workhourstracker.service;
 
 import de.vfh.workhourstracker.projectmanagement.application.services.ProjectManagementService;
 import de.vfh.workhourstracker.projectmanagement.application.services.TaskManagementService;
-import de.vfh.workhourstracker.projectmanagement.common.ProjectManagementValidationUtils;
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.task.Task;
-import de.vfh.workhourstracker.shared.util.EventLogger;
 import de.vfh.workhourstracker.timemanagement.application.services.TimeManagementService;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.usermanagement.application.services.UserService;
@@ -19,7 +17,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @SpringBootTest
- class TaskManagementServiceTest {
+public class TaskManagementServiceTest {
 
     @Autowired
     private TaskManagementService taskManagementService;
@@ -32,9 +30,10 @@ import java.time.LocalDateTime;
 
     @Autowired
     private TimeManagementService timeManagementService;
+
     //region Test createTask
     @Test
-     void createTask_ValidInput_ReturnTask() {
+    public void createTask_ValidInput_ReturnTask() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -48,7 +47,7 @@ import java.time.LocalDateTime;
 
     //region Test updateTask
     @Test
-     void updateTask_ValidInput_ReturnTask() {
+    public void updateTask_ValidInput_ReturnTask() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -63,9 +62,26 @@ import java.time.LocalDateTime;
     }
     //endregion
 
+    //region Test deleteTask
+    @Test
+    public void deleteTask() {
+        User user = userService.createUser("John Doe", "john.doe@mail.de");
+        Assertions.assertNotNull(user);
+
+        Project project = (Project) projectManagementService.createProject(user.getId(), "Hausputz", "Das Haus muss gründlich geputzt werden.", LocalDateTime.of(2025, 2, 15, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(project);
+
+        Task task = (Task) taskManagementService.createTask(project.getId(), "Fenster putzen", "Die Fenster müssen dringend geputzt werden.", LocalDateTime.of(2025, 1, 30, 19, 0, 0)).getBody();
+        Assertions.assertNotNull(task);
+
+        taskManagementService.deleteTask(task.getTask_id());
+        Assertions.assertFalse(taskRepository.findById(task.getTask_id()).isPresent());
+    }
+    //endregion
+
     //region Test getTotalDurationOfTask
     @Test
-     void getTotalDurationOfTask_ValidInput_ReturnDurationOfTask() {
+    public void getTotalDurationOfTask_ValidInput_ReturnDurationOfTask() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
