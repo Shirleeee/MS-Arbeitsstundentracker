@@ -9,14 +9,9 @@ import de.vfh.workhourstracker.reporting.domain.report.events.ReportCreated;
 import de.vfh.workhourstracker.reporting.infrastructure.repositories.ReportRepository;
 import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import de.vfh.workhourstracker.shared.util.EventLogger;
+import de.vfh.workhourstracker.shared.util.ResourceNotFoundException;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEntryRepository;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
@@ -24,11 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportingService {
@@ -38,182 +31,88 @@ public class ReportingService {
     private final TaskRepository taskRepository;
     EventLogger eventLogger = new EventLogger();
     private final ProjectRepository projectRepository;
+    private final ReportGeneratorService reportGeneratorService;
 
     @Autowired
-    public ReportingService(ApplicationEventPublisher eventPublisher, ReportRepository reportRepository, ProjectRepository projectRepository, TimeEntryRepository timeEntryRepository, TaskRepository taskRepository) {
+    public ReportingService(ApplicationEventPublisher eventPublisher, ReportRepository reportRepository, ProjectRepository projectRepository, TimeEntryRepository timeEntryRepository, TaskRepository taskRepository, ReportGeneratorService reportGeneratorService, ReportGeneratorService reportGeneratorService1) {
         this.eventPublisher = eventPublisher;
         this.reportRepository = reportRepository;
         this.projectRepository = projectRepository;
         this.timeEntryRepository = timeEntryRepository;
         this.taskRepository = taskRepository;
+        this.reportGeneratorService = reportGeneratorService1;
     }
 
-    public byte[] createPdfReport(Long userId, List<Project> projects, List<TimeEntry> timeEntries, List<Task> tasks) throws IOException {
-        PDDocument document = new PDDocument();
-        List<PDPageContentStream> contentStreams = new ArrayList<>();
-        PDPage page = new PDPage(PDRectangle.A4);
-        document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page);
-        contentStreams.add(contentStream);
-
-        AtomicReference<Float> yPosition = new AtomicReference<>(750f);
-        float margin = 50;
-        float lineHeight = 20;
-
-        contentStream.beginText();
-        contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 18);
-        contentStream.newLineAtOffset(margin, yPosition.get());
-        contentStream.showText("Report für Benutzer: " + userId);
-        contentStream.endText();
-        yPosition.set(yPosition.get() - 40);
-
-
-        for (Project project : projects) {
-            yPosition.set(writeTextWithCheck(document, contentStreams, "Projekt Titel: " + project.getId() + "-" + sanitize(project.getName().getProjectName()), margin, yPosition.get()));
-            yPosition.set(writeTextWithCheck(document, contentStreams, "Projekt Beschreibung: " + sanitize(project.getDescription().getProjectDescription()), margin, yPosition.get()));
-            yPosition.set(writeTextWithCheck(document, contentStreams, "Projekt Deadline: " + sanitize(project.getDeadline().getDeadline()), margin, yPosition.get()));
-            yPosition.set(yPosition.get() - 10);
-
-            List<Task> projectTasks = tasks.stream()
-                    .filter(task -> task.getProjectId() != null && task.getProjectId().toString().equals(project.getId().toString()))
-                    .toList();
-
-            yPosition.set(writeTextWithCheck(document, contentStreams, "Gefundene Tasks für Projekt " + project.getId() + ": " + projectTasks.size(), margin, yPosition.get()));
-
-            for (Task task : projectTasks) {
-                yPosition.set(writeTextWithCheck(document, contentStreams, "Task Titel: " + task.getTask_id() + "-" + sanitize(task.getName().getTaskName()), margin + 20, yPosition.get()));
-                yPosition.set(writeTextWithCheck(document, contentStreams, "Task Beschreibung: " + sanitize(task.getDescription().getTaskDescription()), margin + 20, yPosition.get()));
-                yPosition.set(writeTextWithCheck(document, contentStreams, "Task Deadline: " + sanitize(task.getDeadline().getDeadline()), margin + 20, yPosition.get()));
-                yPosition.set(yPosition.get() - 10);
-
-                List<TimeEntry> taskTimeEntries = timeEntries.stream()
-                        .filter(timeEntry -> timeEntry.getTaskId().equals(task.getTask_id()))
-                        .toList();
-
-                for (TimeEntry timeEntry : taskTimeEntries) {
-                    String endTime = timeEntry.getEndTime() != null ? sanitize(timeEntry.getEndTime().getEndTime()) : "N/A";
-                    yPosition.set(writeTextWithCheck(
-                            document,
-                            contentStreams,
-                            String.format("    %s   Start: %s | End: %s ", timeEntry.getId(),
-                                    sanitize(timeEntry.getStartTime().getStartTime()), endTime),
-                            margin + 40,
-                            yPosition.get()
-                    ));
-
-                    yPosition.set(writeTextWithCheck(
-                            document,
-                            contentStreams,
-                            String.format("    Period: %s",
-                                    sanitize(timeEntry.getTimePeriod().getTimePeriod())),
-                            margin + 40,
-                            yPosition.get()
-                    ));
-                    yPosition.set(yPosition.get() - 10);
-                }
-                yPosition.set(yPosition.get() - 10);
-            }
-            yPosition.set(yPosition.get() - 20);
+    public ResponseEntity<?> createReport(Long userId, Long projectId) {
+        try {
+            List<Project> projects = fetchProjects(userId, projectId);
+            List<Task> tasks = fetchTasks(projectId);
+            List<TimeEntry> timeEntries = fetchTimeEntries(tasks);
+            byte[] pdfContent = reportGeneratorService.createPdfReport(userId, projects, timeEntries, tasks);
+            Report report = saveReport(userId, projectId);
+            publishReportEvent(report, projectId);
+            return createPdfResponse(userId, pdfContent);
+        } catch (Exception e) {
+            return handleReportError(e);
         }
-
-        for (PDPageContentStream stream : contentStreams) {
-            stream.close();
-        }
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        document.save(outputStream);
-        document.close();
-
-        return outputStream.toByteArray();
     }
 
-    // Verbesserte Methode für Zeilenumbrüche und Seitenwechsel
-    private float writeTextWithCheck(PDDocument document, List<PDPageContentStream> contentStreams, String text, float x, float y) throws IOException {
-        PDPageContentStream contentStream = contentStreams.getLast(); // Hole den letzten Stream
-        if (y < 100) { // Wenig Platz auf Seite
-            contentStream.close(); // Alten Stream schließen
-            PDPage newPage = new PDPage(PDRectangle.A4);// Neue Seite erstellen
-            document.addPage(newPage);
-            contentStream = new PDPageContentStream(document, newPage); // Neuer Stream
-            contentStreams.add(contentStream); // Neuen Stream zur Liste hinzufügen
-            y = 750; // Neustart auf neuer Seite
+
+    private List<Project> fetchProjects(Long userId, Long projectId) {
+        List<Project> projects = (projectId != 0)
+                ? projectRepository.findProjectByUserIdAndProjId(userId, projectId)
+                : projectRepository.findProjectByUserId(userId);
+        if (projects.isEmpty()) {
+            throw new ResourceNotFoundException("No projects found for user.");
         }
-        contentStream.beginText();
-        contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 10);
-        contentStream.newLineAtOffset(x, y);
-        contentStream.showText(text);
-        contentStream.endText();
-        return y - 20; // Neue Y-Position zurückgeben
+        return projects;
     }
 
-    // Hilfsmethode zur Sanitierung von Text
-    private String sanitize(Object input) {
-        return input != null ? input.toString().replace("\n", " ") : "N/A";
+    private List<Task> fetchTasks(Long projectId) {
+        List<Task> tasks = (projectId != 0)
+                ? taskRepository.findByProjectId(projectId)
+                : taskRepository.findAll();
+        if (tasks.isEmpty()) {
+            throw new ResourceNotFoundException("No tasks found for the project.");
+        }
+        return tasks;
     }
 
-    public ResponseEntity<?> createReport(Long userId, Long projectId) throws Exception {
-        // PDF erstellen
-        byte[] pdfContent = null;
+    private List<TimeEntry> fetchTimeEntries(List<Task> tasks) {
+        return tasks.stream()
+                .map(task -> timeEntryRepository.findByTaskId(task.getTask_id()))
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
 
-        if (projectId != 0) {
-            // Projekte abrufen
-            List<Project> projects = projectRepository.findProjectByUserIdAndProjId(userId, projectId);
-
-            if (projects.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ErrorResponse("No projects found for user.", "projects", "NOT_FOUND"));
-            }
-            List<Task> tasks = taskRepository.findByProjectId(projectId);
-            List<TimeEntry> timeEntries = new ArrayList<>();
-
-            for (Task task : tasks) {
-                if (!task.getProjectId().toString().equals(projectId.toString())) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                            .body(new ErrorResponse("No tasks found for project.", "tasks", "NOT_FOUND"));
-                }
-                List<TimeEntry> timeEntryList = timeEntryRepository.findByTaskId(task.getTask_id());
-                if (timeEntryList != null) {
-
-                    timeEntries.addAll(timeEntryList);
-                }
-            }
-
-            // PDF erstellen
-            pdfContent = createPdfReport(userId, projects, timeEntries, tasks);
-        } else {
-            // Projekte abrufen
-            List<Project> projects = projectRepository.findProjectByUserId(userId);
-
-            if (projects.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ErrorResponse("No projects found for user.", "projects", "NOT_FOUND"));
-            }
-            List<TimeEntry> timeEntries = timeEntryRepository.findAll();
-            List<Task> tasks = taskRepository.findAll();
+    private ResponseEntity<?> handleReportError(Exception e) {
+        eventLogger.logError("Error creating report: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("An unexpected error occurred.", "report", "ERROR"));
+    }
 
 
-            // PDF erstellen
-            pdfContent = createPdfReport(userId, projects, timeEntries, tasks);
-        }
-
-        // Report speichern
+    private Report saveReport(Long userId, Long projectId) {
         Report report = new Report(userId, projectId);
-        report = reportRepository.save(report);
+        return reportRepository.save(report);
+    }
 
-        // Event veröffentlichen
+    private void publishReportEvent(Report report, Long projectId) {
         ReportCreated event = new ReportCreated(this, report.getUserId(), projectId);
         eventPublisher.publishEvent(event);
-
-        // Antwort zurückgeben
-        if (pdfContent != null) {
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report-" + userId + ".pdf")
-                    .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-                    .body(pdfContent);
-        } else {
-            eventLogger.logError("Report could not be created.");
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .body(new ErrorResponse("Report could not be created.", "report", "INVALID"));
-        }
     }
+
+    private ResponseEntity<byte[]> createPdfResponse(Long userId, byte[] pdfContent) {
+        if (pdfContent == null) {
+            eventLogger.logError("PDF content is null.");
+            throw new IllegalStateException("PDF could not be created.");
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report-" + userId + ".pdf")
+                .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+                .body(pdfContent);
+    }
+
+
 }
