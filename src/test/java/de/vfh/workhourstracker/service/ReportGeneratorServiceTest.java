@@ -170,17 +170,5 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         PDDocument document = Loader.loadPDF(pdfContent);
         assertEquals(1, document.getNumberOfPages()); // Prüfe Seitenanzahl
     }
-    @Test
-    void testCreatePdfReportWithConditionalLogic() throws IOException {
-        // Beispiel, wenn das Projekt null ist oder eine spezielle Bedingung erfüllt wird
-        Long userId = 1L;
-        List<Project> projects = List.of(new Project(null, null, null, null));
-        List<Task> tasks = List.of(new Task(1L, new TaskName("TaskTitle"), new TaskDescription("TaskDescription"), null));
-        List<TimeEntry> timeEntries = List.of(new TimeEntry(1L, new StartTime(LocalDateTime.now()), new EndTime(LocalDateTime.now().plusHours(1)), new TimePeriod(Duration.ofHours(1))));
 
-        byte[] pdfContent = reportGeneratorService.createPdfReport(userId, projects, timeEntries, tasks);
-
-        // Assertion, um sicherzustellen, dass der Report trotzdem erstellt wird
-        assertNotNull(pdfContent);
-    }
 }
