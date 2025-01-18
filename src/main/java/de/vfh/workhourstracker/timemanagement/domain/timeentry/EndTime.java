@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class EndTime {
-   // @Column(insertable = false, updatable = false)
-
     private LocalDateTime endTime;
 
     public EndTime(LocalDateTime endTime) {

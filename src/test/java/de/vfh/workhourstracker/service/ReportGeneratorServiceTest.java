@@ -30,15 +30,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class ReportGeneratorServiceTest {
+class ReportGeneratorServiceTest {
 
     @Autowired
     private ReportGeneratorService reportGeneratorService;
     //region testSanitize
     @Test
     void testSanitize() {
-
-
         // Test with null input
         String result = reportGeneratorService.sanitize(null);
         assertEquals("N/A", result);
@@ -60,11 +58,10 @@ public class ReportGeneratorServiceTest {
         assertEquals("Hello World", result);
     }
 
-
     //endregion
     //region testCreatePdfReport
     @Test
-    public void testCreatePdfReport() throws IOException {
+    void testCreatePdfReport() throws IOException {
         Long userId = 1L;
         List<Project> projects = IntStream.range(1, 6)
                 .mapToObj(i -> new Project(
@@ -107,6 +104,5 @@ public class ReportGeneratorServiceTest {
         assertTrue(pdfText.contains("ProjectTitle 1"));
 
     }
-
     //endregion
 }

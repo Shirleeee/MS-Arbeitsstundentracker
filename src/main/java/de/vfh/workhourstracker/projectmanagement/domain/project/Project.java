@@ -4,7 +4,6 @@ import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -19,7 +18,6 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "proj_id")
-    @NotNull
     private Long id;
 
     @Column(name = "id")

@@ -24,7 +24,6 @@ import de.vfh.workhourstracker.shared.util.ErrorResponse;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,7 +31,6 @@ public class ProjectManagementService {
     private final ApplicationEventPublisher eventPublisher;
     private final ProjectRepository projectRepository;
     private final TimeEntryRepository timeEntryRepository;
-    EventLogger eventLogger = new EventLogger();
 
     private static final String PROJECT_NOT_FOUND_MESSAGE = "Project with ID %s does not exist in database.";
 
@@ -70,11 +68,10 @@ public class ProjectManagementService {
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
-    //TODO: connect with frontend
     public ResponseEntity<?> updateProject(Long projectId, String name, String description, LocalDateTime deadline) {
         Project existingProject = projectRepository.findById(projectId).orElse(null);
         if (existingProject == null) {
-            eventLogger.logError(String.format(PROJECT_NOT_FOUND_MESSAGE, projectId));
+            EventLogger.logError(String.format(PROJECT_NOT_FOUND_MESSAGE, projectId));
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(String.format(PROJECT_NOT_FOUND_MESSAGE, projectId), "projectId", "INVALID"));
         }
 
@@ -104,7 +101,7 @@ public class ProjectManagementService {
 
             return ResponseEntity.ok().build();
         } else {
-            eventLogger.logError(String.format(PROJECT_NOT_FOUND_MESSAGE, projectId));
+            EventLogger.logError(String.format(PROJECT_NOT_FOUND_MESSAGE, projectId));
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(String.format(PROJECT_NOT_FOUND_MESSAGE, projectId), "projectId", "INVALID"));
         }
     }

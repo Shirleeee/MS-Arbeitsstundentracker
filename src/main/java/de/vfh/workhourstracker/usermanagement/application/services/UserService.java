@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final ApplicationEventPublisher eventPublisher;
     private final UserRepository userRepository;
-    EventLogger eventLogger = new EventLogger();
 
     @Autowired
     public UserService(ApplicationEventPublisher eventPublisher, UserRepository userRepository) {
@@ -27,7 +26,7 @@ public class UserService {
         String validMailAddress = validateMailAddress(mailAddress);
 
         if (validName == null || validMailAddress == null) {
-            eventLogger.logError("User could not be created because of invalid input");
+            EventLogger.logError("User could not be created because of invalid input");
             return null;
         }
 
@@ -43,17 +42,17 @@ public class UserService {
     //region validation
     public String validateName(String name) {
         if (name == null || name.isEmpty()) {
-            eventLogger.logError("Name darf nicht leer sein.");
+            EventLogger.logWarning("Name darf nicht leer sein.");
             return null;
         }
         if (name.length() > 64) {
-            eventLogger.logError("Name darf nicht länger als 64 Zeichen sein.");
+            EventLogger.logWarning("Name darf nicht länger als 64 Zeichen sein.");
             return null;
         }
 
         String namePattern = "^[a-zA-ZäöüÄÖÜß\\s'-]{1,155}$";
         if (!name.matches(namePattern)) {
-            eventLogger.logWarning("Name ist nicht valide.");
+            EventLogger.logWarning("Name ist nicht valide.");
             return null;
         }
         return name;
@@ -61,18 +60,18 @@ public class UserService {
 
     public String validateMailAddress(String mailAddress) {
         if (mailAddress == null || mailAddress.isEmpty()) {
-            eventLogger.logError("E-Mail-Addresse darf nicht leer sein.");
+            EventLogger.logWarning("E-Mail-Adresse darf nicht leer sein.");
             return null;
 
         }
         if (mailAddress.length() >= 64) {
-            eventLogger.logError("E-Mail-Addresse darf nicht länger als 64 Zeichen sein.");
+            EventLogger.logWarning("E-Mail-Adresse darf nicht länger als 64 Zeichen sein.");
             return null;
         }
 
         String mailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         if (!mailAddress.matches(mailPattern)) {
-            eventLogger.logWarning("Mailadresse ist nicht valide.");
+            EventLogger.logWarning("Mailadresse ist nicht valide.");
             return null;
         }
         return mailAddress;

@@ -15,7 +15,7 @@ public class ProjectCreated extends ApplicationEvent {
     private final ProjectName projectName;
     private final ProjectDescription projectDescription;
     private final Deadline deadline;
-    private final LocalDateTime created_at;
+    private final LocalDateTime createdAt;
 
     public ProjectCreated(Object source, Long userId, ProjectName projectName, ProjectDescription projectDescription, Deadline deadline) {
         super(source);
@@ -23,6 +23,6 @@ public class ProjectCreated extends ApplicationEvent {
         this.projectName = projectName;
         this.projectDescription = projectDescription;
         this.deadline = deadline;
-        this.created_at = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 }
