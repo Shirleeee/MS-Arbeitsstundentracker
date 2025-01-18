@@ -2,7 +2,6 @@ package de.vfh.workhourstracker.projectmanagement.application.services;
 
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectDescription;
-
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectName;
 import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectCreated;
 import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectDeleted;
@@ -10,6 +9,7 @@ import de.vfh.workhourstracker.projectmanagement.domain.project.events.ProjectUp
 import de.vfh.workhourstracker.projectmanagement.domain.valueobjects.Deadline;
 import de.vfh.workhourstracker.projectmanagement.infrastructure.repositories.ProjectRepository;
 import de.vfh.workhourstracker.projectmanagement.utils.ValidationUtils;
+import de.vfh.workhourstracker.shared.util.ErrorResponse;
 import de.vfh.workhourstracker.shared.util.EventLogger;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimeEntry;
 import de.vfh.workhourstracker.timemanagement.domain.timeentry.TimePeriod;
@@ -20,11 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import de.vfh.workhourstracker.shared.util.ErrorResponse;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -70,7 +67,6 @@ public class ProjectManagementService {
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
-    //TODO: connect with frontend
     public ResponseEntity<?> updateProject(Long projectId, String name, String description, LocalDateTime deadline) {
         Project existingProject = projectRepository.findById(projectId).orElse(null);
         if (existingProject == null) {

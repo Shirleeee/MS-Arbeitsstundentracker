@@ -34,13 +34,13 @@ public class ReportingService {
     private final ReportGeneratorService reportGeneratorService;
 
     @Autowired
-    public ReportingService(ApplicationEventPublisher eventPublisher, ReportRepository reportRepository, ProjectRepository projectRepository, TimeEntryRepository timeEntryRepository, TaskRepository taskRepository, ReportGeneratorService reportGeneratorService, ReportGeneratorService reportGeneratorService1) {
+    public ReportingService(ApplicationEventPublisher eventPublisher, ReportRepository reportRepository, ProjectRepository projectRepository, TimeEntryRepository timeEntryRepository, TaskRepository taskRepository, ReportGeneratorService reportGeneratorService) {
         this.eventPublisher = eventPublisher;
         this.reportRepository = reportRepository;
         this.projectRepository = projectRepository;
         this.timeEntryRepository = timeEntryRepository;
         this.taskRepository = taskRepository;
-        this.reportGeneratorService = reportGeneratorService1;
+        this.reportGeneratorService = reportGeneratorService;
     }
 
     public ResponseEntity<?> createReport(Long userId, Long projectId) {

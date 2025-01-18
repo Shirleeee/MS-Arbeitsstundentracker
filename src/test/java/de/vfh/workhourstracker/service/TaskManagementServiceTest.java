@@ -18,7 +18,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @SpringBootTest
-public class TaskManagementServiceTest {
+class TaskManagementServiceTest {
 
     @Autowired
     private TaskManagementService taskManagementService;
@@ -37,7 +37,7 @@ public class TaskManagementServiceTest {
 
     //region Test createTask
     @Test
-    public void createTask_ValidInput_ReturnTask() {
+    void createTask_ValidInput_ReturnTask() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -51,7 +51,7 @@ public class TaskManagementServiceTest {
 
     //region Test updateTask
     @Test
-    public void updateTask_ValidInput_ReturnTask() {
+    void updateTask_ValidInput_ReturnTask() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -68,7 +68,7 @@ public class TaskManagementServiceTest {
 
     //region Test deleteTask
     @Test
-    public void deleteTask() {
+    void deleteTask() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -85,7 +85,7 @@ public class TaskManagementServiceTest {
 
     //region Test getTotalDurationOfTask
     @Test
-    public void getTotalDurationOfTask_ValidInput_ReturnDurationOfTask() {
+    void getTotalDurationOfTask_ValidInput_ReturnDurationOfTask() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 

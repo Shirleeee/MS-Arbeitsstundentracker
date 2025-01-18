@@ -12,34 +12,27 @@ export function useFetchProjects(userId) {
     const error = ref(null);
     const taskTimer = ref([]);
     const timeEntries = ref([]);
-    // Fetch-Methode, um Daten abzurufen
+
+
     const fetchData = async () => {
         try {
             const [projectsRes, tasksRes, timeEntriesRes] = await Promise.all([
                 fetch(`http://localhost:8081/api/project`).then(res => {
-                    // console.log(res);
-                    return res.text();  // Lese die Antwort als Text
+                    return res.text();
                 }),
                 fetch(`http://localhost:8081/api/task`).then(res => {
-                    //console.log(res);
-                    return res.text();  // Lese die Antwort als Text
+                    return res.text();
                 }),
                 fetch(`http://localhost:8081/api/time_entries`).then(res => {
-                    //console.log(res);
-                    return res.text();  // Lese die Antwort als Text
+                    return res.text();
                 }),
             ]);
-
-            // console.log("Projects response:", projectsRes);
-            // console.log("Tasks response:", tasksRes);
-            // console.log("Time Entries response:", timeEntriesRes);
 
 
             const projectsData = JSON.parse(projectsRes);
             const tasksData = JSON.parse(tasksRes);
             const timeEntriesData = JSON.parse(timeEntriesRes);
             timeEntries.value = timeEntriesData;
-            // Daten transformieren
             projects.value = mapProjects(projectsData, tasksData, timeEntriesData);
 
         } catch (err) {
@@ -49,16 +42,13 @@ export function useFetchProjects(userId) {
 
     };
 
-    // Transformationslogik für Projekte, Tasks und Time Entries
     const mapProjects = (projects, tasks, timeEntries) => {
 
         projects = projects.filter(project => project.userId.toString() === userId.toString());
 
         return projects.map(project => {
 
-            // console.log(project);
             const projectTasks = tasks.filter(task => {
-                // console.log(task);
                 return task.projectId.toString() === project.id.toString()
             });
 
@@ -66,12 +56,10 @@ export function useFetchProjects(userId) {
 
 
                 const taskTimeEntries = timeEntries.filter(entry => {
-                    // console.log("timeEntries entry.", entry);
 
                     return entry.taskId.toString() === task.task_id.toString();
                 });
 
-                // console.log("parseDurationToSeconds.parseDurationToSeconds", parseDurationToSeconds(taskTimeEntries.trackedTime));
 
                 taskTimer.value.push({
                     id: taskTimeEntries.length > 0 ? taskTimeEntries[0].id : null,

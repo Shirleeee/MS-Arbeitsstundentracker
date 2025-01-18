@@ -1,6 +1,6 @@
 <script setup>
 
-import {ref, computed} from 'vue';
+import {ref} from 'vue';
 import SubmitForm from './SubmitForm.vue';
 
 const props = defineProps({
