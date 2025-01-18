@@ -28,31 +28,33 @@ public class ReportGeneratorService {
         PDPage page = new PDPage();
 
         document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page);
-        List<PDPageContentStream> contentStreams = new ArrayList<>();
-        contentStreams.add(contentStream);
+        List<PDPageContentStream> contentStreams = initializeContentStreams(document, page);
+
 
         float margin = 50;
-        // Anfangsposition für Text
         AtomicReference<Float> yStartPosition = new AtomicReference<>(page.getMediaBox().getHeight() - margin);
 
 
-        // Schreibe Benutzerinformationen
-        yStartPosition.set(writeTextWithCheck(document, contentStreams, "Bericht für Benutzer: " + userId, margin, yStartPosition.get()));
-        yStartPosition.set(yStartPosition.get() - 20);
+        yStartPosition.set(writeUserInfo(document, contentStreams, userId, margin, yStartPosition.get()));
 
-        // Verarbeite Projekte und ihre Aufgaben
-        for (Project project : projects) {
-            this.processProject(document, contentStreams, project, tasks, timeEntries, margin, yStartPosition);
-        }
+        processProjects(document, contentStreams, projects, tasks, timeEntries, margin, yStartPosition);
 
-        // Schließe alle ContentStreams
+        closeContentStreams(contentStreams);
+
+        return saveDocument(document);
+    }
+
+    private void closeContentStreams(List<PDPageContentStream> contentStreams) throws IOException {
         for (PDPageContentStream stream : contentStreams) {
             stream.close();
         }
+    }
 
-        // Speichere das Dokument und gib es als Byte-Array zurück
-        return saveDocument(document);
+    private List<PDPageContentStream> initializeContentStreams(PDDocument document, PDPage page) throws IOException {
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        List<PDPageContentStream> contentStreams = new ArrayList<>();
+        contentStreams.add(contentStream);
+        return contentStreams;
     }
 
     private byte[] saveDocument(PDDocument document) throws IOException {
@@ -60,6 +62,16 @@ public class ReportGeneratorService {
         document.save(outputStream);
         document.close();
         return outputStream.toByteArray();
+    }
+
+    private void processProjects(PDDocument document, List<PDPageContentStream> contentStreams, List<Project> projects, List<Task> tasks, List<TimeEntry> timeEntries, float margin, AtomicReference<Float> yStartPosition) throws IOException {
+        for (Project project : projects) {
+            processProject(document, contentStreams, project, tasks, timeEntries, margin, yStartPosition);
+        }
+    }
+
+    private float writeUserInfo(PDDocument document, List<PDPageContentStream> contentStreams, Long userId, float margin, float yPosition) throws IOException {
+        return writeTextWithCheck(document, contentStreams, "Bericht für Benutzer: " + userId, margin, yPosition - 20);
     }
 
     // Hilfsmethode zur Bereinigung von Leerzeichen von Text
