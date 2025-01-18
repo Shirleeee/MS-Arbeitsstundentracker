@@ -1,10 +1,12 @@
+
+
 <script setup>
 import {ref} from 'vue';
 import axios from 'axios';
 
 import {useFormData, useFormType} from "@/composables/useFormData.js";
-import {getBerlinDateTime} from "@/utils/timeUtils.js";
 import {handleErrorResponse} from "@/utils/errorResponse.js";
+import {getBerlinDateTime} from "../utils/timeUtils.js";
 //definiert Props die von der Elternkomponente übergeben werden
 const props = defineProps({
   formType: String,

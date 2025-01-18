@@ -29,7 +29,6 @@ const handleUpdateTaskSuccess = (data) => {
 };
 
 const handleSubmitTaskSuccess = (data) => {
-  // isModalOpen.value = false;
   emit('submit-task-success', data);
 };
 const handleDeleteTaskSuccess = (task) => {

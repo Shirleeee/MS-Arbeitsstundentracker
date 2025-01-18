@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -30,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-class ReportGeneratorServiceTest {
+ class ReportGeneratorServiceTest {
 
     @Autowired
     private ReportGeneratorService reportGeneratorService;
@@ -61,7 +62,7 @@ class ReportGeneratorServiceTest {
     //endregion
     //region testCreatePdfReport
     @Test
-    void testCreatePdfReport() throws IOException {
+     void testCreatePdfReport() throws IOException {
         Long userId = 1L;
         List<Project> projects = IntStream.range(1, 6)
                 .mapToObj(i -> new Project(
@@ -104,5 +105,66 @@ class ReportGeneratorServiceTest {
         assertTrue(pdfText.contains("ProjectTitle 1"));
 
     }
-    //endregion
+    @Test
+    void testCreatePdfReportWithOnlyProjects() throws IOException {
+        Long userId = 1L;
+        List<Project> projects = IntStream.range(1, 3)
+                .mapToObj(i -> new Project(userId, new ProjectName("Project " + i), new ProjectDescription("Desc " + i), new Deadline(LocalDateTime.now())))
+                .collect(Collectors.toList());
+        List<Task> tasks = Collections.emptyList();
+        List<TimeEntry> timeEntries = Collections.emptyList();
+
+        byte[] pdfContent = reportGeneratorService.createPdfReport(userId, projects, timeEntries, tasks);
+        assertNotNull(pdfContent);
+
+        PDDocument document = Loader.loadPDF(pdfContent);
+        PDFTextStripper stripper = new PDFTextStripper();
+        String pdfText = stripper.getText(document);
+
+        assertTrue(pdfText.contains("Project 1"));
+    }
+    @Test
+    void testCreatePdfReportWithInvalidUserId() {
+        Long userId = -1L;
+        List<Project> projects = Collections.emptyList();
+        List<Task> tasks = Collections.emptyList();
+        List<TimeEntry> timeEntries = Collections.emptyList();
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            reportGeneratorService.createPdfReport(userId, projects, timeEntries, tasks);
+        });
+
+        assertEquals("Invalid user ID", exception.getMessage());
+    }
+    @Test
+    void testCreatePdfReportWithEmptyLists() throws IOException {
+        Long userId = 1L;
+        List<Project> projects = Collections.emptyList();
+        List<Task> tasks = Collections.emptyList();
+        List<TimeEntry> timeEntries = Collections.emptyList();
+
+        byte[] pdfContent = reportGeneratorService.createPdfReport(userId, projects, timeEntries, tasks);
+        assertNotNull(pdfContent);
+    }
+
+    @Test
+    void testCreatePdfReportWithNullInputs() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            reportGeneratorService.createPdfReport(null, null, null, null);
+        });
+    }
+    @Test
+    void testPdfPageCount() throws IOException {
+        Long userId = 1L;
+        List<Project> projects = IntStream.range(1, 6)
+                .mapToObj(i -> new Project(userId, new ProjectName("Project " + i), new ProjectDescription("Description " + i), new Deadline(LocalDateTime.now())))
+                .collect(Collectors.toList());
+        List<Task> tasks = Collections.emptyList();
+        List<TimeEntry> timeEntries = Collections.emptyList();
+
+        byte[] pdfContent = reportGeneratorService.createPdfReport(userId, projects, timeEntries, tasks);
+
+        PDDocument document = Loader.loadPDF(pdfContent);
+        assertEquals(1, document.getNumberOfPages()); // Prüfe Seitenanzahl
+    }
 }

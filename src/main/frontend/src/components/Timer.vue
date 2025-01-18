@@ -1,10 +1,10 @@
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
-import { secondsToTimeFormat, getBerlinDateTime } from "@/utils/timeUtils.js";
+import {onMounted, reactive, ref} from 'vue';
+import {getBerlinDateTime, secondsToTimeFormat} from "@/utils/timeUtils.js";
 import PlayButtonSVG from "@/components/icons/PlaySvg.vue";
 import StopSvg from "@/components/icons/StopSvg.vue";
 import axios from "axios";
-import { handleErrorResponse } from "@/utils/errorResponse.js";
+import {handleErrorResponse} from "@/utils/errorResponse.js";
 
 const props = defineProps({
   timer: Object,
@@ -16,7 +16,6 @@ let errors = ref({
   endTime: '',
   duration: '',
 });
-const hasRestoredState = ref(false);
 const timerId = ref();
 const timerState = reactive({
   activeTimerId: localStorage.getItem('activeTimerId') || null,
@@ -40,7 +39,7 @@ const saveTimerState = (timer) => {
 
 const startTimer = (timer) => {
 
-  const activeId =  localStorage.getItem('activeTimerId');
+  const activeId = localStorage.getItem('activeTimerId');
   console.log("activeId", activeId);
   if (activeId && activeId !== timer.id) {
     console.warn("Ein anderer Timer läuft bereits:", timerState.activeTimerId);
@@ -77,7 +76,7 @@ const stopTimer = (timer) => {
 const restoreTimerState = (timer) => {
   const savedState = localStorage.getItem(`timer_${props.timer.task_id}`);
   if (savedState) {
-    const { id, trackedTime, isPlaying, startTime } = JSON.parse(savedState);
+    const {id, trackedTime, isPlaying, startTime} = JSON.parse(savedState);
     timer.trackedTime = trackedTime || 0;
     timer.startTime = startTime;
     timer.id = id;
@@ -113,7 +112,7 @@ const submitStartTime = async (timer) => {
       const currentDateTimeLocal = getBerlinDateTime();
       const data = {
         taskId: props.timer.task_id,
-        startTime: { startTime: currentDateTimeLocal },
+        startTime: {startTime: currentDateTimeLocal},
       };
       timer.startTime = currentDateTimeLocal;
 
@@ -151,7 +150,7 @@ const submitStopTime = async (timer) => {
 
     const data = {
       id: props.timer.id,
-      endTime: { endTime: currentDateTimeLocal },
+      endTime: {endTime: currentDateTimeLocal},
     };
     const response = await axios.post(import.meta.env.VITE_SUBMIT_ENDTIME_URL, data, {
       headers: {
