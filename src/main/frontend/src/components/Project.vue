@@ -1,9 +1,8 @@
 <script setup>
-import {reactive, ref} from 'vue';
+import {ref} from 'vue';
 import {convertDurationToDHMS} from "@/utils/timeUtils";
 import Task from "./Task.vue";
 import Buttons from "@/components/Buttons.vue";
-import {handleNewDateTime} from "@/composables/handleNewDate.js";
 import PencilUpdate from "@/components/icons/PencilButtonSVG.vue";
 import TrashDelete from "@/components/icons/TrashSvg.vue";
 import axios from "axios";
@@ -36,7 +35,6 @@ const emit = defineEmits(['submit-success', 'delete-success', 'delete-task-succe
 
 
 const handleSubmitSuccess = (data) => {
-  // isModalOpen.value = false;
   emit('submit-task-success', data);
 };
 const handleUpdateSuccess = (data) => {

@@ -26,7 +26,9 @@ public class ReportGeneratorService {
     public byte[] createPdfReport(Long userId, List<Project> projects, List<TimeEntry> timeEntries, List<Task> tasks) throws IOException {
         PDDocument document = new PDDocument();
         PDPage page = new PDPage();
-
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("Invalid user ID");
+        }
         document.addPage(page);
         List<PDPageContentStream> contentStreams = initializeContentStreams(document, page);
 
@@ -34,11 +36,11 @@ public class ReportGeneratorService {
         float margin = 50;
         AtomicReference<Float> yStartPosition = new AtomicReference<>(page.getMediaBox().getHeight() - margin);
 
-
         yStartPosition.set(writeUserInfo(document, contentStreams, userId, margin, yStartPosition.get()));
 
-        processProjects(document, contentStreams, projects, tasks, timeEntries, margin, yStartPosition);
-
+        for (Project project : projects) {
+            processProject(document, contentStreams, project, tasks, timeEntries, margin, yStartPosition);
+        }
         closeContentStreams(contentStreams);
 
         return saveDocument(document);
@@ -64,11 +66,7 @@ public class ReportGeneratorService {
         return outputStream.toByteArray();
     }
 
-    private void processProjects(PDDocument document, List<PDPageContentStream> contentStreams, List<Project> projects, List<Task> tasks, List<TimeEntry> timeEntries, float margin, AtomicReference<Float> yStartPosition) throws IOException {
-        for (Project project : projects) {
-            processProject(document, contentStreams, project, tasks, timeEntries, margin, yStartPosition);
-        }
-    }
+
 
     private float writeUserInfo(PDDocument document, List<PDPageContentStream> contentStreams, Long userId, float margin, float yPosition) throws IOException {
         return writeTextWithCheck(document, contentStreams, "Bericht für Benutzer: " + userId, margin, yPosition - 20);

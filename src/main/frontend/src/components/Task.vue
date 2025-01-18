@@ -100,12 +100,6 @@ ul.task {
       }
     }
 
-    & > .icons-container .icons {
-      & > * {
-        padding-right: 5px;
-        cursor: pointer;
-      }
-    }
 
     & > .trash-container {
       display: flex;

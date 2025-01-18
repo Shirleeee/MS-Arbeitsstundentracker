@@ -1,6 +1,5 @@
 <script setup>
 import CreateModal from "@/components/Modal.vue";
-import {useFetchProjects} from "@/composables/useFetchProjects.js";
 import {ref} from 'vue';
 import axios from "axios";
 
