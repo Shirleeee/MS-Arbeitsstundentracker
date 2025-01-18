@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
     @Autowired
     private ReportGeneratorService reportGeneratorService;
+
     //region testSanitize
     @Test
     void testSanitize() {
@@ -58,8 +59,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         result = reportGeneratorService.sanitize("Hello\r\nWorld");
         assertEquals("Hello World", result);
     }
-
     //endregion
+
     //region testCreatePdfReport
     @Test
      void testCreatePdfReport() throws IOException {
@@ -103,8 +104,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         System.out.println(pdfText);
         // Überprüfe, ob der Text bestimmte Inhalte enthält
         assertTrue(pdfText.contains("ProjectTitle 1"));
-
     }
+
     @Test
     void testCreatePdfReportWithOnlyProjects() throws IOException {
         Long userId = 1L;
@@ -123,6 +124,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
         assertTrue(pdfText.contains("Project 1"));
     }
+
     @Test
     void testCreatePdfReportWithInvalidUserId() {
         Long userId = -1L;
@@ -136,6 +138,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
         assertEquals("Invalid user ID", exception.getMessage());
     }
+
     @Test
     void testCreatePdfReportWithEmptyLists() throws IOException {
         Long userId = 1L;
@@ -153,6 +156,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
             reportGeneratorService.createPdfReport(null, null, null, null);
         });
     }
+
     @Test
     void testPdfPageCount() throws IOException {
         Long userId = 1L;
