@@ -18,7 +18,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @SpringBootTest
-public class ProjectManagementServiceTest {
+class ProjectManagementServiceTest {
 
     @Autowired
     private ProjectManagementService projectManagementService;
@@ -34,7 +34,7 @@ public class ProjectManagementServiceTest {
 
     //region Test createProject
     @Test
-    public void createProject_ValidInput_ReturnProject() {
+    void createProject_ValidInput_ReturnProject() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -45,7 +45,7 @@ public class ProjectManagementServiceTest {
 
     //region Test updatedProject
     @Test
-    public void updateProject_ValidInput_ReturnProject() {
+    void updateProject_ValidInput_ReturnProject() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -59,7 +59,7 @@ public class ProjectManagementServiceTest {
 
     //region Test deleteProject
     @Test
-    public void deleteProject() {
+    void deleteProject() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 
@@ -73,7 +73,7 @@ public class ProjectManagementServiceTest {
 
     //region Test getTotalDurationOfProject
     @Test
-    public void getTotalDurationOfProject_ValidInput_ReturnDurationOfProject() {
+    void getTotalDurationOfProject_ValidInput_ReturnDurationOfProject() {
         User user = userService.createUser("John Doe", "john.doe@mail.de");
         Assertions.assertNotNull(user);
 

@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ProjectRepository {
     Project save(Project project);
 
-    Optional<Project> findById(Long id); //TODO: sollte eigentlich nicht Optional sein, weil ID unique sein muss
+    Optional<Project> findById(Long id);
 
     List<Project> findAll();
 

@@ -19,8 +19,6 @@ public class ReportingController {
 
     @PostMapping("/export_report/{userId}/{projId}")
     public ResponseEntity<?> getReport(@PathVariable Long userId, @PathVariable Long projId) throws Exception {
-
-
         ResponseEntity<?> response = reportingService.createReport(userId, projId);
 
         if (response.getStatusCode().is2xxSuccessful()) {
@@ -29,6 +27,5 @@ public class ReportingController {
             // Fehlerbehandlung basierend auf der Antwort
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }
-
     }
 }

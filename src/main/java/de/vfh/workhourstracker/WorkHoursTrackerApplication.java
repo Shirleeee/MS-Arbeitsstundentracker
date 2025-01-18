@@ -1,5 +1,6 @@
 package de.vfh.workhourstracker;
 
+import de.vfh.workhourstracker.shared.util.EventLogger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,7 +9,6 @@ public class WorkHoursTrackerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(WorkHoursTrackerApplication.class, args);
-		System.out.println("Work Hours Tracker Application started");
+		EventLogger.logInfo("Work Hours Tracker Application started");
 	}
-
 }

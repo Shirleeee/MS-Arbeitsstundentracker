@@ -29,7 +29,6 @@ public class ReportingService {
     private final ReportRepository reportRepository;
     private final TimeEntryRepository timeEntryRepository;
     private final TaskRepository taskRepository;
-    EventLogger eventLogger = new EventLogger();
     private final ProjectRepository projectRepository;
     private final ReportGeneratorService reportGeneratorService;
 
@@ -87,7 +86,7 @@ public class ReportingService {
     }
 
     private ResponseEntity<?> handleReportError(Exception e) {
-        eventLogger.logError("Error creating report: " + e.getMessage());
+        EventLogger.logError("Error creating report: " + e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("An unexpected error occurred.", "report", "ERROR"));
     }
@@ -105,7 +104,7 @@ public class ReportingService {
 
     private ResponseEntity<byte[]> createPdfResponse(Long userId, byte[] pdfContent) {
         if (pdfContent == null) {
-            eventLogger.logError("PDF content is null.");
+            EventLogger.logError("PDF content is null.");
             throw new IllegalStateException("PDF could not be created.");
         }
         return ResponseEntity.ok()

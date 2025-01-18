@@ -29,7 +29,6 @@ public class TaskManagementService {
     private final ApplicationEventPublisher eventPublisher;
     private final TaskRepository taskRepository;
     private final TimeEntryRepository timeEntryRepository;
-    EventLogger eventLogger = new EventLogger();
 
     private static final String TASK_NOT_FOUND_MESSAGE = "Task with ID %s does not exist in database.";
 
@@ -70,7 +69,7 @@ public class TaskManagementService {
     public ResponseEntity<?> updateTask(Long taskId, String name, String description, LocalDateTime deadline) {
         Task existingTask = taskRepository.findById(taskId).orElse(null);
         if (existingTask == null) {
-            eventLogger.logError(String.format(TASK_NOT_FOUND_MESSAGE, taskId));
+            EventLogger.logError(String.format(TASK_NOT_FOUND_MESSAGE, taskId));
             return null;
         }
 
@@ -100,7 +99,7 @@ public class TaskManagementService {
 
             return ResponseEntity.ok().build();
         } else {
-            eventLogger.logError(String.format(TASK_NOT_FOUND_MESSAGE, taskId));
+            EventLogger.logError(String.format(TASK_NOT_FOUND_MESSAGE, taskId));
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse(String.format(TASK_NOT_FOUND_MESSAGE, taskId), "taskId", "INVALID"));
         }
 

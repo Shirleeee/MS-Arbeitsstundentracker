@@ -1,6 +1,5 @@
 package de.vfh.workhourstracker.service;
 
-import de.vfh.workhourstracker.projectmanagement.application.services.ProjectManagementService;
 import de.vfh.workhourstracker.projectmanagement.domain.project.Project;
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectDescription;
 import de.vfh.workhourstracker.projectmanagement.domain.project.ProjectName;
@@ -25,10 +24,8 @@ import de.vfh.workhourstracker.timemanagement.infrastructure.repositories.TimeEn
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -57,15 +54,9 @@ class ReportingServiceTest {
     @Mock
     private ReportRepository reportRepository;
 
-
-    @Mock
-    private EventLogger eventLogger;
-
     @InjectMocks
     private ReportingService reportingService;
 
-    @Mock
-    private ProjectManagementService projectManagementService;
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
@@ -88,12 +79,9 @@ class ReportingServiceTest {
         assertEquals("An unexpected error occurred.", error.getMessage());
         assertEquals("report", error.getField());
         assertEquals("ERROR", error.getErrorCode());
-
     }
 
-
     @Test
-
     //simuliert den gesamten Ablauf von createReport
     void testCreateReport_EventPublished() throws Exception {
         Long userId = 1L;
@@ -114,7 +102,7 @@ class ReportingServiceTest {
 
         // Call the service method
         ResponseEntity<?> response =   reportingService.createReport(userId, projectId);
-eventLogger.logWarning("Error creating report: " + response);
+        EventLogger.logWarning("Error creating report: " + response);
         // Verify interactions - Es wird geprüft, ob die erwarteten Methodenaufrufe tatsächlich ausgeführt wurden
         verify(reportRepository, times(1)).save(any(Report.class));
         verify(eventPublisher, times(1)).publishEvent(any(ReportCreated.class));

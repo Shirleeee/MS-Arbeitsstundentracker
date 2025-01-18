@@ -3,7 +3,6 @@ package de.vfh.workhourstracker.reporting.domain.report;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -18,7 +17,6 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(insertable=false, updatable=false)
-    @NotNull
     private Long id;
 
     @Column(name = "user_id")
