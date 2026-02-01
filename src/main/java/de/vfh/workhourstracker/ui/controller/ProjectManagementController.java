@@ -81,7 +81,6 @@ public class ProjectManagementController {
             if (response.getStatusCode().is2xxSuccessful()) {
                 return response;
             } else {
-                // Fehlerbehandlung basierend auf der Antwort
                 return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
             }
         } catch (Exception e) {
@@ -90,7 +89,6 @@ public class ProjectManagementController {
 
             errors.add(new ErrorResponse("Unexpected error", "general", "INTERNAL_SERVER_ERROR"));
 
-            // Exception weiterverarbeiten und in eine ResponseEntity mit Fehlern zurückgeben
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
         }
     }

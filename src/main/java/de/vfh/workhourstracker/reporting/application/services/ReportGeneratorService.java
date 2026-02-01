@@ -30,17 +30,8 @@ public class ReportGeneratorService {
             throw new IllegalArgumentException("Invalid user ID");
         }
         document.addPage(page);
-        List<PDPageContentStream> contentStreams = initializeContentStreams(document, page);
+        List<PDPageContentStream> contentStreams = initializeContentStreams(document, userId, timeEntries, tasks, projects, page);
 
-
-        float margin = 50;
-        AtomicReference<Float> yStartPosition = new AtomicReference<>(page.getMediaBox().getHeight() - margin);
-
-        yStartPosition.set(writeUserInfo(document, contentStreams, userId, margin, yStartPosition.get()));
-
-        for (Project project : projects) {
-            processProject(document, contentStreams, project, tasks, timeEntries, margin, yStartPosition);
-        }
         closeContentStreams(contentStreams);
 
         return saveDocument(document);
@@ -52,10 +43,18 @@ public class ReportGeneratorService {
         }
     }
 
-    private List<PDPageContentStream> initializeContentStreams(PDDocument document, PDPage page) throws IOException {
+    private List<PDPageContentStream> initializeContentStreams(PDDocument document, Long userId, List<TimeEntry> timeEntries, List<Task> tasks, List<Project> projects, PDPage page) throws IOException {
         PDPageContentStream contentStream = new PDPageContentStream(document, page);
         List<PDPageContentStream> contentStreams = new ArrayList<>();
         contentStreams.add(contentStream);
+        float margin = 50;
+        AtomicReference<Float> yStartPosition = new AtomicReference<>(page.getMediaBox().getHeight() - margin);
+
+        yStartPosition.set(writeUserInfo(document, contentStreams, userId, margin, yStartPosition.get()));
+
+        for (Project project : projects) {
+            processProject(document, contentStreams, project, tasks, timeEntries, margin, yStartPosition);
+        }
         return contentStreams;
     }
 
@@ -65,7 +64,6 @@ public class ReportGeneratorService {
         document.close();
         return outputStream.toByteArray();
     }
-
 
 
     private float writeUserInfo(PDDocument document, List<PDPageContentStream> contentStreams, Long userId, float margin, float yPosition) throws IOException {

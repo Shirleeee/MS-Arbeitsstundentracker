@@ -52,7 +52,8 @@ public class ReportingService {
             publishReportEvent(report, projectId);
             return createPdfResponse(userId, pdfContent);
         } catch (Exception e) {
-            return handleReportError(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("An unexpected error occurred.", "report", "ERROR"));
         }
     }
 
@@ -84,13 +85,6 @@ public class ReportingService {
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
-
-    private ResponseEntity<?> handleReportError(Exception e) {
-        EventLogger.logError("Error creating report: " + e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("An unexpected error occurred.", "report", "ERROR"));
-    }
-
 
     private Report saveReport(Long userId, Long projectId) {
         Report report = new Report(userId, projectId);
